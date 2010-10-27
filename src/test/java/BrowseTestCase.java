@@ -18,7 +18,6 @@
 */
 
 import junit.framework.TestCase;
-import org.staxnav.StaxNavigator;
 import org.staxnav.StaxNavigatorImpl;
 
 import java.io.InputStream;
@@ -46,11 +45,28 @@ public class BrowseTestCase extends TestCase
       assertEquals(2, navigator.getLevel());
    }
 
+   public void testChildWithName() throws Exception {
+      navigator.init();
+      assertEquals("foobar", navigator.child("foobar"));
+   }
+
    public void testSibbling() throws Exception {
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals("foo2", navigator.sibbling());
       assertEquals("foo2", navigator.getName());
+      assertEquals(2, navigator.getLevel());
+      assertEquals("foobar", navigator.sibbling());
+      assertEquals("foobar", navigator.getName());
+      assertEquals(2, navigator.getLevel());
+   }
+
+   public void testSibblingWithName() throws Exception {
+      navigator.init();
+      assertEquals("bar1", navigator.child());
+      assertEquals(2, navigator.getLevel());
+      assertEquals("foobar", navigator.sibbling("foobar"));
+      assertEquals("foobar", navigator.getName());
       assertEquals(2, navigator.getLevel());
    }
 }

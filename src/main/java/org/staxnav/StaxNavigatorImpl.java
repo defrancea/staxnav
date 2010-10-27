@@ -35,7 +35,7 @@ public class StaxNavigatorImpl implements StaxNavigator
    private XMLStreamReader reader;
 
    private Stack<Pair> stack = new Stack<Pair>();
-   private int rewindtype = 0;
+   //private int rewindtype = 0;
 
    public StaxNavigatorImpl(final InputStream is)
    {
@@ -86,7 +86,7 @@ public class StaxNavigatorImpl implements StaxNavigator
       {
          while (reader.hasNext())
          {
-            int type = next();
+            int type = reader.next();
             switch (type)
             {  
                case XMLStreamReader.START_ELEMENT:
@@ -94,17 +94,15 @@ public class StaxNavigatorImpl implements StaxNavigator
                   stack.push(new Pair(reader.getLocalName(), null));
                   if (currentLevel + 1 == stack.size())
                   {
-                     return reader.getLocalName();
+                     if (name == null || (name != null && name.equals(reader.getLocalName())))
+                     {
+                        return reader.getLocalName();
+                     }
                   }
                   break;
                   
                case XMLStreamReader.END_ELEMENT:
                   stack.pop();
-                  if (currentLevel == stack.size())
-                  {
-                     cancelRead(type);
-                     return null;
-                  }
                   break;
             }
          }
@@ -130,14 +128,17 @@ public class StaxNavigatorImpl implements StaxNavigator
       {
          while (reader.hasNext())
          {
-            int type = next();
+            int type = reader.next();
             switch (type)
             {
                case XMLStreamReader.START_ELEMENT:
                   stack.push(new Pair(reader.getLocalName(), null));
                   if (currentLevel == stack.size())
                   {
-                     return reader.getLocalName();
+                     if (name == null || (name != null && name.equals(reader.getLocalName())))
+                     {
+                        return reader.getLocalName();
+                     }
                   }
                   break;
 
@@ -177,12 +178,12 @@ public class StaxNavigatorImpl implements StaxNavigator
       }
    }
 
-   private int next() throws XMLStreamException
+   /*private int next() throws XMLStreamException
    {
       return (rewindtype > 0 ? rewindtype : reader.next());
-   }
+   }*/
 
-   private void cancelRead(int type)
+   /*private void cancelRead(int type)
    {
       rewindtype = type;
    }
@@ -190,7 +191,7 @@ public class StaxNavigatorImpl implements StaxNavigator
    private boolean isInRewind()
    {
       return rewindtype > 0;
-   }
+   }*/
 
    class Pair
    {
