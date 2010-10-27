@@ -26,12 +26,10 @@ package org.staxnav;
 public interface StaxNavigator
 {
    void init();
-   void child();
-   void child(String name, boolean r);
-   void child(String name); // r = false;
-   void next();
-   void next(String name, boolean r);
-   void next(String name); // r = false;
+   String child();
+   String child(String name);
+   String sibbling();
+   String sibbling(String name);
    String getName();
    String getText();
 }

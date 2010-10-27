@@ -19,6 +19,9 @@
 
 import junit.framework.TestCase;
 import org.staxnav.StaxNavigator;
+import org.staxnav.StaxNavigatorImpl;
+
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
@@ -26,71 +29,28 @@ import org.staxnav.StaxNavigator;
  */
 public class BrowseTestCase extends TestCase
 {
-   private StaxNavigator navigator = null;
-   /*
-      <foo>
-         <bar>1</bar>
-         <foo>
-            <bar>2</bar>
-         <foo>
-         <foobar>3</foobar>
-      </foo>
-    */
-   public void testBrowseNotRecursive() throws Exception {
-      navigator.init();
-      navigator.next("foo");
-      navigator.child("bar");
-      try
-      {
-         navigator.child("bar"); // Exception
-         fail();
-      }
-      catch (Exception e)
-      {
+   private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("sample.xml");
+   private StaxNavigatorImpl navigator = new StaxNavigatorImpl(is);
 
-      }
+   public void testInit() throws Exception {
+      navigator.init();
+      assertEquals("foo1", navigator.getName());
+      assertEquals(1, navigator.getLevel());
    }
 
-   public void testRecursive() throws Exception {
+   public void testChild() throws Exception
+   {
       navigator.init();
-      navigator.next("foo");
-      navigator.child("bar");
-      navigator.next("bar", true); // Ok
+      assertEquals("bar1", navigator.child());
+      assertEquals("bar1", navigator.getName());
+      assertEquals(2, navigator.getLevel());
    }
 
-   public void testOutOfScope() throws Exception {
+   public void testSibbling() throws Exception {
       navigator.init();
-      navigator.next("foo");
-      navigator.child("foo");
-      try
-      {
-         navigator.child("foobar"); // Exception : not child
-         fail();
-      }
-      catch (Exception e)
-      {
-
-      }
-   }
-
-   public void testName() throws Exception {
-      navigator.init();
-      navigator.next("foo");
-      assertEquals("foo", navigator.getName());
-      navigator.child("foo", true);
-      assertEquals("foo", navigator.getName());
-      navigator.child("bar");
-      assertEquals("foo", navigator.getName());
-   }
-
-   public void testValue() throws Exception {
-      navigator.init();
-      navigator.next("foo");
-      navigator.child("bar");
-      assertEquals("1", navigator.getText());
-      navigator.next("bar", true);
-      assertEquals("2", navigator.getText());
-      navigator.next("foobar");
-      assertEquals("3", navigator.getText());
+      assertEquals("bar1", navigator.child());
+      assertEquals("foo2", navigator.sibbling());
+      assertEquals("foo2", navigator.getName());
+      assertEquals(2, navigator.getLevel());
    }
 }
