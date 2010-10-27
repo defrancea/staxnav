@@ -37,6 +37,7 @@ public class BrowseTestCase extends TestCase
       </foo>
     */
    public void testBrowseNotRecursive() throws Exception {
+      navigator.init();
       navigator.next("foo");
       navigator.child("bar");
       try
@@ -51,12 +52,14 @@ public class BrowseTestCase extends TestCase
    }
 
    public void testRecursive() throws Exception {
+      navigator.init();
       navigator.next("foo");
       navigator.child("bar");
       navigator.next("bar", true); // Ok
    }
 
    public void testOutOfScope() throws Exception {
+      navigator.init();
       navigator.next("foo");
       navigator.child("foo");
       try
@@ -71,6 +74,7 @@ public class BrowseTestCase extends TestCase
    }
 
    public void testName() throws Exception {
+      navigator.init();
       navigator.next("foo");
       assertEquals("foo", navigator.getName());
       navigator.child("foo", true);
@@ -80,6 +84,7 @@ public class BrowseTestCase extends TestCase
    }
 
    public void testValue() throws Exception {
+      navigator.init();
       navigator.next("foo");
       navigator.child("bar");
       assertEquals("1", navigator.getText());

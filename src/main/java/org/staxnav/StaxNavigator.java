@@ -25,6 +25,7 @@ package org.staxnav;
  */
 public interface StaxNavigator
 {
+   void init();
    void child();
    void child(String name, boolean r);
    void child(String name); // r = false;
