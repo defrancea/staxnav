@@ -48,6 +48,8 @@ public class BrowseTestCase extends TestCase
    public void testChildWithName() throws Exception {
       navigator.init();
       assertEquals("foobar", navigator.child("foobar"));
+      assertEquals("foobar", navigator.getName());
+      assertEquals(2, navigator.getLevel());
    }
 
    public void testSibbling() throws Exception {

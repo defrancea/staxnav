@@ -31,5 +31,6 @@ public interface StaxNavigator
    String sibbling();
    String sibbling(String name);
    String getName();
+   int getLevel();
    String getText();
 }
