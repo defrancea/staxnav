@@ -37,6 +37,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    private Queue<PushbackData> pushbackStream = new LinkedList<PushbackData>();
    private boolean marked;
    private boolean inPushback;
+   private PushbackData currentData;
 
    public PushbackXMLStreamReader(final XMLStreamReader streamReader)
    {
@@ -52,17 +53,18 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    public int next()
            throws XMLStreamException
    {
-      if (inPushback && pushbackStream.size() > 1)
+      if (inPushback && !pushbackStream.isEmpty())
       {
-         pushbackStream.remove();
+         currentData = pushbackStream.remove();
          if (pushbackStream.isEmpty())
          {
             inPushback = false;
          }
-         return pushbackStream.element().getType();
+         return currentData.getType();
       }
       else if (marked)
       {
+         int type = streamReader.next();
          pushbackStream.offer(
                  new PushbackData(
                          streamReader.getEventType(),
@@ -70,6 +72,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
                          (streamReader.hasText() ? streamReader.getText() : null)
                  )
          );
+         return type;
       }
       return streamReader.next();
    }
@@ -89,6 +92,27 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    public int nextTag()
            throws XMLStreamException
    {
+      if (inPushback && !pushbackStream.isEmpty())
+      {
+         currentData = pushbackStream.remove();
+         if (pushbackStream.isEmpty())
+         {
+            inPushback = false;
+         }
+         return currentData.getType();
+      }
+      else if (marked)
+      {
+         int type = streamReader.nextTag();
+         pushbackStream.offer(
+                 new PushbackData(
+                         streamReader.getEventType(),
+                         (streamReader.hasName() ? streamReader.getLocalName() : null),
+                         (streamReader.hasText() ? streamReader.getText() : null)
+                 )
+         );
+         return type;
+      }
       return streamReader.nextTag();
    }
 
@@ -205,7 +229,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    {
       if (inPushback && !pushbackStream.isEmpty())
       {
-         return pushbackStream.element().getType();
+         return currentData.getType();
       }
       else
       {
@@ -215,7 +239,14 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public String getText()
    {
-      return streamReader.getText();
+      if (inPushback && !pushbackStream.isEmpty())
+      {
+         return currentData.getText();
+      }
+      else
+      {
+         return streamReader.getText();
+      }
    }
 
    public char[] getTextCharacters()
@@ -263,7 +294,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    {
       if (inPushback && !pushbackStream.isEmpty())
       {
-         return pushbackStream.element().getName();
+         return currentData.getName();
       }
       else
       {
@@ -331,6 +362,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public void rollbackToMark()
    {
+      currentData = pushbackStream.remove();
       marked = false;
       inPushback = true;
    }
