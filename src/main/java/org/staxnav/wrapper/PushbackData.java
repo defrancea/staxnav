@@ -27,11 +27,13 @@ public class PushbackData
 {
    private int type;
    private String name;
+   private String text;
 
-   public PushbackData(final int type, final String name)
+   public PushbackData(final int type, final String name, final String text)
    {
       this.type = type;
       this.name = name;
+      this.text = text;
    }
 
    public int getType()
@@ -42,5 +44,10 @@ public class PushbackData
    public String getName()
    {
       return name;
+   }
+
+   public String getText()
+   {
+      return text;
    }
 }

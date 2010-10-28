@@ -36,6 +36,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    private XMLStreamReader streamReader;
    private Queue<PushbackData> pushbackStream = new LinkedList<PushbackData>();
    private boolean marked;
+   private boolean inPushback;
 
    public PushbackXMLStreamReader(final XMLStreamReader streamReader)
    {
@@ -51,9 +52,13 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    public int next()
            throws XMLStreamException
    {
-      if (!marked && pushbackStream.size() > 1)
+      if (inPushback && pushbackStream.size() > 1)
       {
          pushbackStream.remove();
+         if (pushbackStream.isEmpty())
+         {
+            inPushback = false;
+         }
          return pushbackStream.element().getType();
       }
       else if (marked)
@@ -61,7 +66,8 @@ public class PushbackXMLStreamReader implements XMLStreamReader
          pushbackStream.offer(
                  new PushbackData(
                          streamReader.getEventType(),
-                         (streamReader.hasName() ? streamReader.getLocalName() : null)
+                         (streamReader.hasName() ? streamReader.getLocalName() : null),
+                         (streamReader.hasText() ? streamReader.getText() : null)
                  )
          );
       }
@@ -89,7 +95,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    public boolean hasNext()
            throws XMLStreamException
    {
-      if (!marked && !pushbackStream.isEmpty())
+      if (inPushback && !pushbackStream.isEmpty())
       {
          return true;
       }
@@ -197,7 +203,14 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public int getEventType()
    {
-      return streamReader.getEventType();
+      if (inPushback && !pushbackStream.isEmpty())
+      {
+         return pushbackStream.element().getType();
+      }
+      else
+      {
+         return streamReader.getEventType();
+      }
    }
 
    public String getText()
@@ -248,7 +261,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public String getLocalName()
    {
-      if (!marked && !pushbackStream.isEmpty())
+      if (inPushback && !pushbackStream.isEmpty())
       {
          return pushbackStream.element().getName();
       }
@@ -305,6 +318,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public void mark()
    {
+      flushPushback();
       marked = true;
    }
 
@@ -312,10 +326,12 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    {
       pushbackStream.clear();
       marked = false;
+      inPushback = false;
    }
 
    public void rollbackToMark()
    {
       marked = false;
+      inPushback = true;
    }
 }

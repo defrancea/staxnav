@@ -58,7 +58,7 @@ public class BrowseTestCase extends TestCase
       assertEquals(2, navigator.getLevel());
    }
 
-   /*public void testSibbling() throws Exception {
+   public void testSibbling() throws Exception {
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals("foo2", navigator.sibbling());
@@ -67,14 +67,14 @@ public class BrowseTestCase extends TestCase
       assertEquals("foobar", navigator.sibbling());
       assertEquals("foobar", navigator.getName());
       assertEquals(2, navigator.getLevel());
-   }*/
+   }
 
-   /*public void testSibblingWithName() throws Exception {
+   public void testSibblingWithName() throws Exception {
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals(2, navigator.getLevel());
       assertEquals("foobar", navigator.sibbling("foobar"));
       assertEquals("foobar", navigator.getName());
       assertEquals(2, navigator.getLevel());
-   }*/
+   }
 }
