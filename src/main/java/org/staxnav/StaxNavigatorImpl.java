@@ -97,7 +97,14 @@ public class StaxNavigatorImpl implements StaxNavigator
                   break;
                   
                case XMLStreamReader.END_ELEMENT:
-                  stack.pop();
+                  if (currentLevel == stack.size())
+                  {
+                     return null;
+                  }
+                  else
+                  {
+                     stack.pop();
+                  }
                   break;
             }
          }

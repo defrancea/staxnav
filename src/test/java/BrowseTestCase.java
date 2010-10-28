@@ -37,14 +37,6 @@ public class BrowseTestCase extends TestCase
       assertEquals(1, navigator.getLevel());
    }
 
-   public void testChild() throws Exception
-   {
-      navigator.init();
-      assertEquals("bar1", navigator.child());
-      assertEquals("bar1", navigator.getName());
-      assertEquals(2, navigator.getLevel());
-   }
-
    public void testContent() throws Exception {
       navigator.init();
       assertEquals("bar1", navigator.child());
@@ -59,11 +51,40 @@ public class BrowseTestCase extends TestCase
       assertEquals("3", navigator.getText());
    }
 
+   public void testChild() throws Exception
+   {
+      navigator.init();
+      assertEquals("bar1", navigator.child());
+      assertEquals("bar1", navigator.getName());
+      assertEquals(2, navigator.getLevel());
+   }
+
    public void testChildWithName() throws Exception {
       navigator.init();
       assertEquals("foobar1", navigator.child("foobar1"));
       assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
+   }
+
+   public void testChildOver() throws Exception {
+      navigator.init();
+      assertEquals("bar1", navigator.child());
+      assertEquals("foo2", navigator.sibbling());
+      assertEquals("bar2", navigator.child());
+      assertEquals("bar3", navigator.sibbling("bar3"));
+      assertEquals("foo3", navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertEquals(4, navigator.getLevel());
+      assertEquals("foo3", navigator.getName());
+      assertEquals("4", navigator.getText());
+      //assertEquals("foobar1", navigator.sibbling());
    }
 
    public void testSibbling() throws Exception {
