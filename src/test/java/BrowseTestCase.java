@@ -49,12 +49,20 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals("1", navigator.getText());
+      assertEquals("foo2", navigator.sibbling());
+      assertEquals("bar2", navigator.child());
+      assertEquals("2", navigator.getText());
+      assertEquals("bar3", navigator.sibbling("bar3"));
+      assertEquals("foo3", navigator.child());
+      assertEquals("4", navigator.getText());
+      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals("3", navigator.getText());
    }
 
    public void testChildWithName() throws Exception {
       navigator.init();
-      assertEquals("foobar", navigator.child("foobar"));
-      assertEquals("foobar", navigator.getName());
+      assertEquals("foobar1", navigator.child("foobar1"));
+      assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
    }
 
@@ -64,8 +72,8 @@ public class BrowseTestCase extends TestCase
       assertEquals("foo2", navigator.sibbling());
       assertEquals("foo2", navigator.getName());
       assertEquals(2, navigator.getLevel());
-      assertEquals("foobar", navigator.sibbling());
-      assertEquals("foobar", navigator.getName());
+      assertEquals("foobar1", navigator.sibbling());
+      assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
    }
 
@@ -73,8 +81,23 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals(2, navigator.getLevel());
-      assertEquals("foobar", navigator.sibbling("foobar"));
-      assertEquals("foobar", navigator.getName());
+      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
+   }
+
+   public void testSibblingOver() throws Exception {
+      navigator.init();
+      assertEquals("foo2", navigator.child("foo2"));
+      assertEquals("bar3", navigator.child("bar3"));
+      assertEquals("foo3", navigator.child("foo3"));
+      assertEquals("foobar1", navigator.sibbling());
+   }
+
+   public void testSibblingWithNameOver() throws Exception {
+      navigator.init();
+      assertEquals("foo2", navigator.child("foo2"));
+      assertEquals("bar2", navigator.child("bar2"));
+      assertEquals("foobar2", navigator.sibbling("foobar2"));
    }
 }

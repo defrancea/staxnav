@@ -140,6 +140,23 @@ public class StaxNavigatorImpl implements StaxNavigator
 
                case XMLStreamReader.END_ELEMENT:
                   stack.pop();
+                  if (currentLevel > stack.size() + 1)
+                  {
+                     while (reader.hasNext())
+                     {
+                        reader.next();
+                        if (reader.isStartElement())
+                        {
+                           reader.mark();
+                           stack.push(new Pair(reader.getLocalName(), readContent()));
+                           reader.rollbackToMark();
+                           if (name == null || (name != null && name.equals(reader.getLocalName())))
+                           {
+                              return reader.getLocalName();
+                           }
+                        }
+                     }
+                  }
                   break;
             }
          }
