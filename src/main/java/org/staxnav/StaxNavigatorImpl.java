@@ -50,15 +50,8 @@ public class StaxNavigatorImpl implements StaxNavigator
       try
       {
          this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
-         while (reader.hasNext())
-         {
-            reader.next();
-            if (reader.isStartElement())
-            {
-               stack.push(new Pair(reader.getLocalName(), null));
-               return;
-            }
-         }
+         reader.nextTag();
+         stack.push(new Pair(reader.getLocalName(), readContent()));
       }
       catch (XMLStreamException e)
       {
@@ -89,9 +82,9 @@ public class StaxNavigatorImpl implements StaxNavigator
                   reader.rollbackToMark();
                   if (currentLevel + 1 == stack.size())
                   {
-                     if (name == null || (name != null && name.equals(reader.getLocalName())))
+                     if (name == null || (name != null && name.equals(stack.peek().name)))
                      {
-                        return reader.getLocalName();
+                        return stack.peek().name;
                      }
                   }
                   break;
@@ -138,9 +131,9 @@ public class StaxNavigatorImpl implements StaxNavigator
                   reader.rollbackToMark();
                   if (currentLevel == stack.size())
                   {
-                     if (name == null || (name != null && name.equals(reader.getLocalName())))
+                     if (name == null || (name != null && name.equals(stack.peek().name)))
                      {
-                        return reader.getLocalName();
+                        return stack.peek().name;
                      }
                   }
                   break;
@@ -157,9 +150,9 @@ public class StaxNavigatorImpl implements StaxNavigator
                            reader.mark();
                            stack.push(new Pair(reader.getLocalName(), readContent()));
                            reader.rollbackToMark();
-                           if (name == null || (name != null && name.equals(reader.getLocalName())))
+                           if (name == null || (name != null && name.equals(stack.peek().name)))
                            {
-                              return reader.getLocalName();
+                              return stack.peek().name;
                            }
                         }
                      }

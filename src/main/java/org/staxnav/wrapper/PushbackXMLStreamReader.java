@@ -24,6 +24,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -365,5 +367,40 @@ public class PushbackXMLStreamReader implements XMLStreamReader
       currentData = pushbackStream.remove();
       marked = false;
       inPushback = true;
+   }
+
+   private Integer invokeNext(String nextName) throws NoSuchMethodException
+   {
+      try
+      {
+         Method m = streamReader.getClass().getMethod(nextName);
+
+      if (inPushback && !pushbackStream.isEmpty())
+      {
+         currentData = pushbackStream.remove();
+         if (pushbackStream.isEmpty())
+         {
+            inPushback = false;
+         }
+         return currentData.getType();
+      }
+      else if (marked)
+      {
+         m.invoke(streamReader);
+         pushbackStream.offer(
+                 new PushbackData(
+                         streamReader.getEventType(),
+                         (streamReader.hasName() ? streamReader.getLocalName() : null),
+                         (streamReader.hasText() ? streamReader.getText() : null)
+                 )
+         );
+         return (Integer) m.invoke(streamReader);
+      }
+      return streamReader.nextTag();
+               }
+      catch (Exception ignore)
+      {
+         return null; // never
+      }
    }
 }

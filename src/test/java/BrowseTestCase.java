@@ -76,6 +76,10 @@ public class BrowseTestCase extends TestCase
       //TODO : finish
    }
 
+   public void testChildWithNameOver() throws Exception {
+      //TODO : finish
+   }
+
    public void testSibbling() throws Exception {
       navigator.init();
       assertEquals("bar1", navigator.child());
@@ -102,6 +106,7 @@ public class BrowseTestCase extends TestCase
       assertEquals("bar3", navigator.child("bar3"));
       assertEquals("foo3", navigator.child("foo3"));
       assertEquals("foobar1", navigator.sibbling());
+      assertEquals("foobar2", navigator.sibbling());
    }
 
    public void testSibblingWithNameOver() throws Exception {
