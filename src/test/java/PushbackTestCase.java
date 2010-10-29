@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 import org.staxnav.wrapper.PushbackXMLStreamReader;
 
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 
 /**
@@ -50,6 +51,27 @@ public class PushbackTestCase extends TestCase
       reader.rollbackToMark();
       assertEquals("foo2", reader.getLocalName());
       reader.nextTag();
+      assertEquals("bar2", reader.getLocalName());
+      reader.next();
+      assertEquals("2", reader.getText());
+   }
+
+   public void testFlushPushback() throws Exception
+   {
+      PushbackXMLStreamReader reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
+      reader.nextTag();
+      assertEquals("foo1", reader.getLocalName());
+      reader.nextTag();
+      assertEquals("bar1", reader.getLocalName());
+      reader.next();
+      reader.next();
+      reader.next();
+      reader.mark();
+      reader.nextTag();
+      assertEquals("foo2", reader.getLocalName());
+      reader.nextTag();
+      assertEquals("bar2", reader.getLocalName());
+      reader.flushPushback();
       assertEquals("bar2", reader.getLocalName());
       reader.next();
       assertEquals("2", reader.getText());
