@@ -68,6 +68,7 @@ public class StaxNavigatorImpl implements StaxNavigator
    public String child(final String name)
    {
       checkinit();
+      reader.wantMark();
       int currentLevel = stack.size();
       try
       {
@@ -77,13 +78,14 @@ public class StaxNavigatorImpl implements StaxNavigator
             {  
                case XMLStreamReader.START_ELEMENT:
 
-                  reader.mark();
+                  //reader.mark();
                   stack.push(new Pair(reader.getLocalName(), readContent()));
-                  reader.rollbackToMark();
+                  //reader.rollbackToMark();
                   if (currentLevel + 1 == stack.size())
                   {
                      if (name == null || (name != null && name.equals(stack.peek().name)))
                      {
+                        reader.flushPushback();
                         return stack.peek().name;
                      }
                   }
@@ -92,6 +94,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                case XMLStreamReader.END_ELEMENT:
                   if (currentLevel == stack.size())
                   {
+                     reader.rollbackToMark();
                      return null;
                   }
                   else
@@ -118,6 +121,7 @@ public class StaxNavigatorImpl implements StaxNavigator
    public String sibbling(final String name)
    {
       checkinit();
+      reader.wantMark();
       int currentLevel = stack.size();
       try
       {
@@ -126,13 +130,14 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch (reader.next())
             {
                case XMLStreamReader.START_ELEMENT:
-                  reader.mark();
+                  //reader.mark();
                   stack.push(new Pair(reader.getLocalName(), readContent()));
-                  reader.rollbackToMark();
+                  //reader.rollbackToMark();
                   if (currentLevel == stack.size())
                   {
                      if (name == null || (name != null && name.equals(stack.peek().name)))
                      {
+                        reader.flushPushback();
                         return stack.peek().name;
                      }
                   }
@@ -147,11 +152,12 @@ public class StaxNavigatorImpl implements StaxNavigator
                         reader.next();
                         if (reader.isStartElement())
                         {
-                           reader.mark();
+                           //reader.mark();
                            stack.push(new Pair(reader.getLocalName(), readContent()));
-                           reader.rollbackToMark();
+                           //reader.rollbackToMark();
                            if (name == null || (name != null && name.equals(stack.peek().name)))
                            {
+                              reader.flushPushback();
                               return stack.peek().name;
                            }
                         }
@@ -165,6 +171,7 @@ public class StaxNavigatorImpl implements StaxNavigator
       {
          e.printStackTrace();
       }
+      reader.flushPushback();
       return null;
    }
 

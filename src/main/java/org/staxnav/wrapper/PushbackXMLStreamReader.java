@@ -38,6 +38,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    private XMLStreamReader streamReader;
    private Queue<PushbackData> pushbackStream = new LinkedList<PushbackData>();
    private boolean marked;
+   private boolean needMark;
    private boolean inPushback;
    private PushbackData currentData;
 
@@ -61,6 +62,10 @@ public class PushbackXMLStreamReader implements XMLStreamReader
          if (pushbackStream.isEmpty())
          {
             inPushback = false;
+            if (needMark)
+            {
+               mark();
+            }
          }
          return currentData.getType();
       }
@@ -100,6 +105,10 @@ public class PushbackXMLStreamReader implements XMLStreamReader
          if (pushbackStream.isEmpty())
          {
             inPushback = false;
+            if (needMark)
+            {
+               mark();
+            }
          }
          return currentData.getType();
       }
@@ -353,10 +362,32 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    {
       if (marked)
       {
-         throw new IllegalStateException("The navigator is already marked");
+         throw new IllegalStateException("The navigator is already marked. Call flushPushback to mark again.");
+      }
+
+      if (inPushback)
+      {
+         throw new IllegalStateException("The navigator cannot mark because pushback is used. Call flushPushback to mark again.");
       }
       flushPushback();
       marked = true;
+   }
+
+   public boolean isMarked()
+   {
+      return marked;
+   }
+
+   public void wantMark()
+   {
+      if (!marked && !inPushback)
+      {
+         mark();
+      }
+      else
+      {
+         needMark = true;
+      }
    }
 
    public void flushPushback()

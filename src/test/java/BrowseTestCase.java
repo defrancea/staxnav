@@ -73,6 +73,13 @@ public class BrowseTestCase extends TestCase
       assertEquals("bar2", navigator.child());
       assertEquals("bar3", navigator.sibbling("bar3"));
       assertEquals("foo3", navigator.child());
+      /*assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());
+      assertNull(navigator.child());*/
       //TODO : finish
    }
 
