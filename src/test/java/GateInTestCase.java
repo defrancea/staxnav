@@ -26,7 +26,7 @@ import java.io.InputStream;
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
  */
-public class ExoTestCase extends TestCase
+public class GateInTestCase extends TestCase
 {
    private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("portlet-application.xml");
    private StaxNavigatorImpl navigator = new StaxNavigatorImpl(is);

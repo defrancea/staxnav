@@ -29,10 +29,11 @@ import java.io.InputStream;
  */
 public class PushbackTestCase extends TestCase
 {
+   private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("sample.xml");
+   private XMLInputFactory factory = XMLInputFactory.newInstance();
+
    public void testRollbackNext() throws Exception
    {
-      InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("sample.xml");
-      XMLInputFactory factory = XMLInputFactory.newInstance();
       PushbackXMLStreamReader reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
       reader.nextTag();
       assertEquals("foo1", reader.getLocalName());
@@ -52,5 +53,20 @@ public class PushbackTestCase extends TestCase
       assertEquals("bar2", reader.getLocalName());
       reader.next();
       assertEquals("2", reader.getText());
+   }
+
+   public void testDoubleMark() throws Exception
+   {
+      PushbackXMLStreamReader reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
+      reader.mark();
+      try
+      {
+         reader.mark();
+         fail("Double mark must be throw an IllegalStageException");
+      }
+      catch (IllegalStateException e)
+      {
+         // ok
+      }
    }
 }

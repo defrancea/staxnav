@@ -351,6 +351,10 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public void mark()
    {
+      if (marked)
+      {
+         throw new IllegalStateException("The navigator is already marked");
+      }
       flushPushback();
       marked = true;
    }
