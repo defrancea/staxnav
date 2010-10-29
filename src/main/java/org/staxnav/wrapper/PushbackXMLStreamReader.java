@@ -368,39 +368,4 @@ public class PushbackXMLStreamReader implements XMLStreamReader
       marked = false;
       inPushback = true;
    }
-
-   private Integer invokeNext(String nextName) throws NoSuchMethodException
-   {
-      try
-      {
-         Method m = streamReader.getClass().getMethod(nextName);
-
-      if (inPushback && !pushbackStream.isEmpty())
-      {
-         currentData = pushbackStream.remove();
-         if (pushbackStream.isEmpty())
-         {
-            inPushback = false;
-         }
-         return currentData.getType();
-      }
-      else if (marked)
-      {
-         m.invoke(streamReader);
-         pushbackStream.offer(
-                 new PushbackData(
-                         streamReader.getEventType(),
-                         (streamReader.hasName() ? streamReader.getLocalName() : null),
-                         (streamReader.hasText() ? streamReader.getText() : null)
-                 )
-         );
-         return (Integer) m.invoke(streamReader);
-      }
-      return streamReader.nextTag();
-               }
-      catch (Exception ignore)
-      {
-         return null; // never
-      }
-   }
 }
