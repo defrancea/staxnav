@@ -77,13 +77,6 @@ public class BrowseTestCase extends TestCase
       assertEquals("bar2", navigator.child());
       assertEquals("bar3", navigator.sibbling("bar3"));
       assertEquals("foo3", navigator.child());
-      /*assertNull(navigator.child());
-      assertNull(navigator.child());
-      assertNull(navigator.child());
-      assertNull(navigator.child());
-      assertNull(navigator.child());
-      assertNull(navigator.child());
-      assertNull(navigator.child());*/
       //TODO : finish
    }
 
@@ -149,5 +142,11 @@ public class BrowseTestCase extends TestCase
       assertEquals("foo2", navigator.getName());
       assertNull(navigator.sibbling("donotexist"));
       assertEquals("foo2", navigator.getName());
+      assertEquals(2, navigator.getLevel());
+      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals("foobar1", navigator.getName());
+      assertEquals("3", navigator.getText());
+      assertEquals(2, navigator.getLevel());
+      //assertEquals("foobar2", navigator.sibbling()); // TODO : fix that
    }
 }

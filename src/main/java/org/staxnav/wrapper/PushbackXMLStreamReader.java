@@ -153,22 +153,22 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public boolean isStartElement()
    {
-      return streamReader.isStartElement();
+      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.START_ELEMENT : streamReader.isStartElement());
    }
 
    public boolean isEndElement()
    {
-      return streamReader.isEndElement();
+      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.END_ELEMENT : streamReader.isEndElement());
    }
 
    public boolean isCharacters()
    {
-      return streamReader.isCharacters();
+      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.CHARACTERS : streamReader.isCharacters());
    }
 
    public boolean isWhiteSpace()
    {
-      return streamReader.isWhiteSpace();
+      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.SPACE : streamReader.isWhiteSpace());
    }
 
    public String getAttributeValue(final String namespaceURI, final String localName)
@@ -238,26 +238,12 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public int getEventType()
    {
-      if (inPushback && !pushbackStream.isEmpty())
-      {
-         return currentData.getType();
-      }
-      else
-      {
-         return streamReader.getEventType();
-      }
+      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() : streamReader.getEventType());
    }
 
    public String getText()
    {
-      if (inPushback && !pushbackStream.isEmpty())
-      {
-         return currentData.getText();
-      }
-      else
-      {
-         return streamReader.getText();
-      }
+      return (inPushback && !pushbackStream.isEmpty() ? currentData.getText() : streamReader.getText());
    }
 
    public char[] getTextCharacters()
@@ -303,14 +289,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public String getLocalName()
    {
-      if (inPushback && !pushbackStream.isEmpty())
-      {
-         return currentData.getName();
-      }
-      else
-      {
-         return streamReader.getLocalName();
-      }
+      return (inPushback && !pushbackStream.isEmpty() ? currentData.getName() : streamReader.getLocalName());
    }
 
    public boolean hasName()

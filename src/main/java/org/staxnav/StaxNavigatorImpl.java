@@ -19,15 +19,12 @@
 
 package org.staxnav;
 
-import org.staxnav.wrapper.PushbackData;
 import org.staxnav.wrapper.PushbackXMLStreamReader;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -82,9 +79,7 @@ public class StaxNavigatorImpl implements StaxNavigator
             {  
                case XMLStreamReader.START_ELEMENT:
 
-                  //reader.mark();
                   stack.push(new Pair(reader.getLocalName(), readContent()));
-                  //reader.rollbackToMark();
                   if (currentLevel + 1 == stack.size())
                   {
                      if (name == null || (name != null && name.equals(stack.peek().name)))
@@ -138,9 +133,7 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch (reader.next())
             {
                case XMLStreamReader.START_ELEMENT:
-                  //reader.mark();
                   stack.push(new Pair(reader.getLocalName(), readContent()));
-                  //reader.rollbackToMark();
                   if (currentLevel == stack.size())
                   {
                      if (name == null || (name != null && name.equals(stack.peek().name)))
@@ -153,7 +146,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                   break;
 
                case XMLStreamReader.END_ELEMENT:
-                  stack.pop();
+                  if (reader.getLocalName().equals(stack.peek().name)) stack.pop();
                   if (currentLevel > stack.size() + 1)
                   {
                      while (reader.hasNext())
@@ -161,9 +154,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                         reader.next();
                         if (reader.isStartElement())
                         {
-                           //reader.mark();
                            stack.push(new Pair(reader.getLocalName(), readContent()));
-                           //reader.rollbackToMark();
                            if (name == null || (name != null && name.equals(stack.peek().name)))
                            {
                               reader.flushPushback();
