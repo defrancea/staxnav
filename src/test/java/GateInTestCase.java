@@ -31,7 +31,8 @@ public class GateInTestCase extends TestCase
    private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("portlet-application.xml");
    private StaxNavigatorImpl navigator = new StaxNavigatorImpl(is);
 
-   public void testPortlet() throws Exception {
+   public void testPortlet() throws Exception
+   {
       navigator.init();
       navigator.child("portlet");
       navigator.child("application-ref");
