@@ -73,20 +73,21 @@ public class BrowseTestCase extends TestCase
    {
       navigator.init();
       assertEquals("bar1", navigator.child());
-      assertEquals("foo2", navigator.sibbling());
-      assertEquals("bar2", navigator.child());
-      assertEquals("bar3", navigator.sibbling("bar3"));
-      assertEquals("foo3", navigator.child());
       assertNull(navigator.child());
-      // assertEquals("foobar1", navigator.sibbling("foobar1")); // TODO : fix that
+      navigator.getStack().pop();
+      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals("foobar2", navigator.sibbling());
    }
 
    public void testChildWithNameOver() throws Exception
    {
       navigator.init();
+      assertEquals("foo2", navigator.child("foo2"));
       assertNull(navigator.child("donotexist"));
-      /*assertEquals("bar1", navigator.child());
-      assertEquals("foobar2", navigator.child("foobar2"));*/ // TODO : fix that
+      assertEquals("foo2", navigator.getName());
+      assertEquals(2, navigator.getLevel());
+      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals("foobar2", navigator.sibbling());
    }
 
    public void testSibbling() throws Exception

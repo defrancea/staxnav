@@ -366,13 +366,22 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    {
       pushbackStream.clear();
       marked = false;
+      needMark = false;
       inPushback = false;
    }
 
    public void rollbackToMark()
    {
       currentData = pushbackStream.remove();
-      marked = false;
-      inPushback = true;
+      if (!pushbackStream.isEmpty())
+      {
+         marked = false;
+         needMark = false;
+         inPushback = true;
+      }
+      else
+      {
+         currentData = null;
+      }
    }
 }
