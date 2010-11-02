@@ -138,7 +138,6 @@ public class StaxNavigatorImpl implements StaxNavigator
                   {
                      if (name == null || (name != null && name.equals(stack.peek().name)))
                      {
-                        reader.flushPushback();
                         backupStack = null;
                         return stack.peek().name;
                      }
@@ -157,7 +156,6 @@ public class StaxNavigatorImpl implements StaxNavigator
                            stack.push(new Pair(reader.getLocalName(), readContent()));
                            if (name == null || (name != null && name.equals(stack.peek().name)))
                            {
-                              reader.flushPushback();
                               backupStack = null;
                               return stack.peek().name;
                            }

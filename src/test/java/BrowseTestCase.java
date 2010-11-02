@@ -147,6 +147,6 @@ public class BrowseTestCase extends TestCase
       assertEquals("foobar1", navigator.getName());
       assertEquals("3", navigator.getText());
       assertEquals(2, navigator.getLevel());
-      //assertEquals("foobar2", navigator.sibbling()); // TODO : fix that
+      assertEquals("foobar2", navigator.sibbling());
    }
 }
