@@ -77,12 +77,16 @@ public class BrowseTestCase extends TestCase
       assertEquals("bar2", navigator.child());
       assertEquals("bar3", navigator.sibbling("bar3"));
       assertEquals("foo3", navigator.child());
-      //TODO : finish
+      assertNull(navigator.child());
+      // assertEquals("foobar1", navigator.sibbling("foobar1")); // TODO : fix that
    }
 
    public void testChildWithNameOver() throws Exception
    {
-      //TODO : finish
+      navigator.init();
+      assertNull(navigator.child("donotexist"));
+      /*assertEquals("bar1", navigator.child());
+      assertEquals("foobar2", navigator.child("foobar2"));*/ // TODO : fix that
    }
 
    public void testSibbling() throws Exception
