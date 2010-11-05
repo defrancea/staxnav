@@ -31,7 +31,7 @@ public interface StaxNavigator
    /**
     * Attempts to navigate to the first child with the specified name.
     * If the navigation occurs, the navigator now points to the first child with the specified name
-    * and the method returns true. Otherwise no navigation occured and the method returns false.
+    * and the method returns true. Otherwise no navigation happens and the method returns false.
     *
     * @param name the child name
     * @return true when the child is found
@@ -51,6 +51,15 @@ public interface StaxNavigator
 
    String sibbling();
 
+   /**
+    * Attempts to navigate to the next sibbling with the specified name.
+    * If the navigation occurs, the navigator now points to the next sibbling with the specified name
+    * and the method returns true. Otherwise no navigation happens and the method returns false.
+    *
+    * @param name the next sibbling name
+    * @return true when the next sibbling is found
+    * @throws NullPointerException if the name argument is null
+    */
    boolean sibbling(String name) throws NullPointerException;
 
    String getName();
