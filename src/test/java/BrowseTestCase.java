@@ -46,10 +46,10 @@ public class BrowseTestCase extends TestCase
       assertEquals("foo2", navigator.sibbling());
       assertEquals("bar2", navigator.child());
       assertEquals("2", navigator.getText());
-      assertEquals("bar3", navigator.sibbling("bar3"));
+      assertEquals(true, navigator.sibbling("bar3"));
       assertEquals("foo3", navigator.child());
       assertEquals("4", navigator.getText());
-      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals(true, navigator.sibbling("foobar1"));
       assertEquals("3", navigator.getText());
    }
 
@@ -75,7 +75,7 @@ public class BrowseTestCase extends TestCase
       assertEquals("bar1", navigator.child());
       assertEquals("foo2", navigator.sibbling());
       assertEquals("bar2", navigator.child());
-      assertEquals("bar3", navigator.sibbling("bar3"));
+      assertEquals(true, navigator.sibbling("bar3"));
       assertEquals("foo3", navigator.child());
       //TODO : finish
    }
@@ -102,7 +102,7 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals(2, navigator.getLevel());
-      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals(true, navigator.sibbling("foobar1"));
       assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
    }
@@ -122,7 +122,7 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals(true, navigator.child("foo2"));
       assertEquals(true, navigator.child("bar2"));
-      assertEquals("foobar2", navigator.sibbling("foobar2"));
+      assertEquals(true, navigator.sibbling("foobar2"));
    }
 
    public void testSibblingEOF() throws Exception
@@ -130,7 +130,7 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals(true, navigator.child("foo2"));
       assertEquals(true, navigator.child("bar2"));
-      assertEquals("foobar2", navigator.sibbling("foobar2"));
+      assertEquals(true, navigator.sibbling("foobar2"));
       assertNull(navigator.sibbling());
       assertEquals("foobar2", navigator.getName());
    }
@@ -140,10 +140,10 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals(true, navigator.child("foo2"));
       assertEquals("foo2", navigator.getName());
-      assertNull(navigator.sibbling("donotexist"));
+      assertFalse(navigator.sibbling("donotexist"));
       assertEquals("foo2", navigator.getName());
       assertEquals(2, navigator.getLevel());
-      assertEquals("foobar1", navigator.sibbling("foobar1"));
+      assertEquals(true, navigator.sibbling("foobar1"));
       assertEquals("foobar1", navigator.getName());
       assertEquals("3", navigator.getText());
       assertEquals(2, navigator.getLevel());

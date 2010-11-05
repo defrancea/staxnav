@@ -50,7 +50,9 @@ public interface StaxNavigator
    String getAttribute(String name) throws NullPointerException, IllegalStateException;
 
    String sibbling();
-   String sibbling(String name);
+
+   boolean sibbling(String name) throws NullPointerException;
+
    String getName();
    int getLevel();
    String getText();

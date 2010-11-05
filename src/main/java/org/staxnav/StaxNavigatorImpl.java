@@ -131,10 +131,15 @@ public class StaxNavigatorImpl implements StaxNavigator
    public String sibbling()
    {
       checkinit();
-      return sibbling(null);
+      return _sibbling(null);
    }
 
-   public String sibbling(final String name)
+   public boolean sibbling(final String name) throws NullPointerException
+   {
+      return name.equals(_sibbling(name));
+   }
+
+   private String _sibbling(final String name)
    {
       checkinit();
       reader.wantMark();
