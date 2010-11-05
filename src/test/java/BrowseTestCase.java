@@ -64,7 +64,7 @@ public class BrowseTestCase extends TestCase
    public void testChildWithName() throws Exception
    {
       navigator.init();
-      assertEquals("foobar1", navigator.child("foobar1"));
+      assertEquals(true, navigator.child("foobar1"));
       assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
    }
@@ -110,9 +110,9 @@ public class BrowseTestCase extends TestCase
    public void testSibblingOver() throws Exception
    {
       navigator.init();
-      assertEquals("foo2", navigator.child("foo2"));
-      assertEquals("bar3", navigator.child("bar3"));
-      assertEquals("foo3", navigator.child("foo3"));
+      assertEquals(true, navigator.child("foo2"));
+      assertEquals(true, navigator.child("bar3"));
+      assertEquals(true, navigator.child("foo3"));
       assertEquals("foobar1", navigator.sibbling());
       assertEquals("foobar2", navigator.sibbling());
    }
@@ -120,16 +120,16 @@ public class BrowseTestCase extends TestCase
    public void testSibblingWithNameOver() throws Exception
    {
       navigator.init();
-      assertEquals("foo2", navigator.child("foo2"));
-      assertEquals("bar2", navigator.child("bar2"));
+      assertEquals(true, navigator.child("foo2"));
+      assertEquals(true, navigator.child("bar2"));
       assertEquals("foobar2", navigator.sibbling("foobar2"));
    }
 
    public void testSibblingEOF() throws Exception
    {
       navigator.init();
-      assertEquals("foo2", navigator.child("foo2"));
-      assertEquals("bar2", navigator.child("bar2"));
+      assertEquals(true, navigator.child("foo2"));
+      assertEquals(true, navigator.child("bar2"));
       assertEquals("foobar2", navigator.sibbling("foobar2"));
       assertNull(navigator.sibbling());
       assertEquals("foobar2", navigator.getName());
@@ -138,7 +138,7 @@ public class BrowseTestCase extends TestCase
    public void testSibblingWithNameEOF() throws Exception
    {
       navigator.init();
-      assertEquals("foo2", navigator.child("foo2"));
+      assertEquals(true, navigator.child("foo2"));
       assertEquals("foo2", navigator.getName());
       assertNull(navigator.sibbling("donotexist"));
       assertEquals("foo2", navigator.getName());

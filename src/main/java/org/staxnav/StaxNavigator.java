@@ -27,7 +27,18 @@ public interface StaxNavigator
 {
    void init();
    String child();
-   String child(String name);
+
+   /**
+    * Attempts to navigate to the first child with the specified name.
+    * If the navigation occurs, the navigator now points to the first child with the specified name
+    * and the method returns true. Otherwise no navigation occured and the method returns false.
+    *
+    * @param name the child name
+    * @return true when the child is found
+    * @throws NullPointerException if the name argument is null
+    */
+   boolean child(String name) throws NullPointerException;
+
    String sibbling();
    String sibbling(String name);
    String getName();

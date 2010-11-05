@@ -62,10 +62,19 @@ public class StaxNavigatorImpl implements StaxNavigator
    public String child()
    {
       checkinit();
-      return child(null);
+      return _child(null);
    }
 
-   public String child(final String name)
+   public boolean child(final String name) throws NullPointerException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+      return name.equals(_child(name));
+   }
+
+   private String _child(final String name)
    {
       checkinit();
       reader.wantMark();

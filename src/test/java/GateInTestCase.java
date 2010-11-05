@@ -34,14 +34,14 @@ public class GateInTestCase extends TestCase
    public void testPortlet() throws Exception
    {
       navigator.init();
-      navigator.child("portlet");
-      navigator.child("application-ref");
+      assertTrue(navigator.child("portlet"));
+      assertTrue(navigator.child("application-ref"));
       String applicationRef = navigator.getText();
       navigator.sibbling("portlet-ref");
       String portletRef = navigator.getText();
       navigator.sibbling("preferences");
-      navigator.child("preference");
-      navigator.child("name");
+      assertTrue(navigator.child("preference"));
+      assertTrue(navigator.child("name"));
       String prefName = navigator.getText();
       navigator.sibbling("value");
       String prefValue = navigator.getText();
