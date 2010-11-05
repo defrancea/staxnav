@@ -39,6 +39,16 @@ public interface StaxNavigator
     */
    boolean child(String name) throws NullPointerException;
 
+   /**
+    * Returns an attribute of the current element or null if such attribute does not exist.
+    *
+    * @param name the attribute name
+    * @return the attribute value
+    * @throws NullPointerException if the name argument is null
+    * @throws IllegalStateException if no element is currently navigated
+    */
+   String getAttribute(String name) throws NullPointerException, IllegalStateException;
+
    String sibbling();
    String sibbling(String name);
    String getName();

@@ -74,6 +74,11 @@ public class StaxNavigatorImpl implements StaxNavigator
       return name.equals(_child(name));
    }
 
+   public String getAttribute(String name) throws NullPointerException, IllegalStateException
+   {
+      throw new UnsupportedOperationException("todo");
+   }
+
    private String _child(final String name)
    {
       checkinit();
