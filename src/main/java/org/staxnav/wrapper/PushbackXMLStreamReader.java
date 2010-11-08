@@ -384,4 +384,10 @@ public class PushbackXMLStreamReader implements XMLStreamReader
          currentData = null;
       }
    }
+
+   public boolean haveCurrent()
+   {
+      return currentData != null;
+   }
+
 }

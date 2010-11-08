@@ -85,11 +85,12 @@ public class StaxNavigatorImpl implements StaxNavigator
       reader.wantMark();
       backupStack = (Stack<Pair>) stack.clone();
       int currentLevel = stack.size();
+      boolean first = true;
       try
       {
          while (reader.hasNext())
          {
-            switch (reader.next())
+            switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
 
@@ -118,6 +119,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                   }
                   break;
             }
+            first = false;
          }
       }
       catch (XMLStreamException e)
@@ -145,11 +147,12 @@ public class StaxNavigatorImpl implements StaxNavigator
       reader.wantMark();
       backupStack = (Stack<Pair>) stack.clone();
       int currentLevel = stack.size();
+      boolean first = true;
       try
       {
          while (reader.hasNext())
          {
-            switch (reader.next())
+            switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
                   stack.push(new Pair(reader.getLocalName(), readContent()));
@@ -187,6 +190,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                   }
                   break;
             }
+            first = false;
          }
       }
       catch (XMLStreamException e)
