@@ -55,7 +55,7 @@ public class StaxNavigatorImpl implements StaxNavigator
       }
       catch (XMLStreamException e)
       {
-         throw new IllegalStateException(e.getMessage(), e);
+         e.printStackTrace();
       }
    }
 
@@ -83,14 +83,14 @@ public class StaxNavigatorImpl implements StaxNavigator
    {
       checkinit();
       reader.wantMark();
-      //backupStack = (Stack<Pair>) stack.clone();
+      backupStack = (Stack<Pair>) stack.clone();
       int currentLevel = stack.size();
       try
       {
          while (reader.hasNext())
          {
             switch (reader.next())
-            {  
+            {
                case XMLStreamReader.START_ELEMENT:
 
                   stack.push(new Pair(reader.getLocalName(), readContent()));
@@ -99,32 +99,33 @@ public class StaxNavigatorImpl implements StaxNavigator
                      if (name == null || (name != null && name.equals(stack.peek().name)))
                      {
                         reader.flushPushback();
-                        //backupStack = null;
+                        backupStack = null;
                         return stack.peek().name;
                      }
                   }
                   break;
-                  
+
                case XMLStreamReader.END_ELEMENT:
                   if (currentLevel == stack.size())
                   {
                      reader.rollbackToMark();
-                     //backupStack = null;
+                     backupStack = null;
                      return null;
                   }
-                  stack.pop();
+                  else
+                  {
+                     stack.pop();
+                  }
                   break;
             }
          }
       }
       catch (XMLStreamException e)
       {
-         throw new IllegalStateException(e.getMessage(), e);
+         e.printStackTrace();
       }
-      reader.rollbackToMark();
-      //stack = backupStack;
-      //backupStack = null;
-      return null;      
+      backupStack = null;
+      return null;
    }
 
    public String sibbling()
@@ -163,10 +164,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                   break;
 
                case XMLStreamReader.END_ELEMENT:
-                  if (reader.getLocalName().equals(stack.peek().name))
-                  {
-                     stack.pop();
-                  }
+                  if (reader.getLocalName().equals(stack.peek().name)) stack.pop();
                   if (currentLevel > stack.size() + 1)
                   {
                      while (reader.hasNext())
@@ -193,7 +191,7 @@ public class StaxNavigatorImpl implements StaxNavigator
       }
       catch (XMLStreamException e)
       {
-         throw new IllegalStateException(e.getMessage(), e);
+         e.printStackTrace();
       }
       reader.rollbackToMark();
       stack = backupStack;
@@ -239,7 +237,7 @@ public class StaxNavigatorImpl implements StaxNavigator
       }
       catch (XMLStreamException e)
       {
-         throw new IllegalStateException(e.getMessage(), e);
+         e.printStackTrace();
       }
       return null;
    }
@@ -254,10 +252,5 @@ public class StaxNavigatorImpl implements StaxNavigator
          this.name = name;
          this.value = value;
       }
-   }
-
-   public Stack<Pair> getStack()
-   {
-      return stack;
    }
 }
