@@ -153,4 +153,31 @@ public class BrowseTestCase extends TestCase
       assertEquals(2, navigator.getLevel());
       assertEquals("foobar2", navigator.sibbling());
    }
+
+   public void testAttribute() throws Exception
+   {
+      navigator.init();
+      navigator.child();
+      navigator.sibbling();
+      navigator.child();
+      assertEquals("bar2", navigator.getName());
+      assertEquals("b", navigator.getAttribute("a"));
+      assertEquals("c", navigator.getAttribute("b"));
+      assertEquals(null, navigator.getAttribute("donotexists"));
+   }
+
+   public void testAttributeInPushback() throws Exception
+   {
+      navigator.init();
+      assertEquals(true, navigator.child("foo2"));
+      assertEquals(true, navigator.child("bar2"));
+      assertEquals("bar2", navigator.getName());
+      assertFalse(navigator.sibbling("donotexist"));
+      assertEquals("bar2", navigator.getName());
+      assertEquals(3, navigator.getLevel());
+      // TODO : fix that
+      assertEquals("b", navigator.getAttribute("a"));
+      assertEquals("c", navigator.getAttribute("b"));
+      assertEquals(null, navigator.getAttribute("donotexists"));
+   }
 }

@@ -189,7 +189,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public int getAttributeCount()
    {
-      return streamReader.getAttributeCount();
+      return (inPushback && currentData != null ? currentData.getAttributes().size() : streamReader.getAttributeCount());
    }
 
    public QName getAttributeName(final int index)
@@ -229,7 +229,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public int getNamespaceCount()
    {
-      return (inPushback && currentData != null ? currentData.getAttributes().size() : streamReader.getAttributeCount());
+      return streamReader.getNamespaceCount();
    }
 
    public String getNamespacePrefix(final int index)

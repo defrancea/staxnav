@@ -25,6 +25,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -39,6 +41,8 @@ public class StaxNavigatorImpl implements StaxNavigator
    private Stack<Pair> stack = new Stack<Pair>();
    private Stack<Pair> backupStack;
 
+   private Map<String, String> currentAttributs = new HashMap<String, String>();
+
    public StaxNavigatorImpl(final InputStream is)
    {
       this.is = is;
@@ -51,6 +55,7 @@ public class StaxNavigatorImpl implements StaxNavigator
       {
          this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
          reader.nextTag();
+         readCurrentAttributs();
          stack.push(new Pair(reader.getLocalName(), readContent()));
       }
       catch (XMLStreamException e)
@@ -76,7 +81,20 @@ public class StaxNavigatorImpl implements StaxNavigator
 
    public String getAttribute(String name) throws NullPointerException, IllegalStateException
    {
-      throw new UnsupportedOperationException("todo");
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+
+      for (String key : currentAttributs.keySet())
+      {
+         if (name.equals(key))
+         {
+            return currentAttributs.get(key);
+         }
+      }
+
+      return null;
    }
 
    private String _child(final String name)
@@ -93,7 +111,7 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
-
+                  readCurrentAttributs();
                   stack.push(new Pair(reader.getLocalName(), readContent()));
                   if (currentLevel + 1 == stack.size())
                   {
@@ -155,6 +173,7 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
+                  readCurrentAttributs();
                   stack.push(new Pair(reader.getLocalName(), readContent()));
                   if (currentLevel == stack.size())
                   {
@@ -175,6 +194,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                         reader.next();
                         if (reader.isStartElement())
                         {
+                           readCurrentAttributs();
                            stack.push(new Pair(reader.getLocalName(), readContent()));
                            if (name == null || (name != null && name.equals(stack.peek().name)))
                            {
@@ -244,6 +264,15 @@ public class StaxNavigatorImpl implements StaxNavigator
          e.printStackTrace();
       }
       return null;
+   }
+
+   private void readCurrentAttributs()
+   {
+      currentAttributs.clear();
+      for (int i = 0; i < reader.getAttributeCount(); ++i)
+      {
+         currentAttributs.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
+      }
    }
 
    class Pair
