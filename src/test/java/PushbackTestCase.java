@@ -18,6 +18,7 @@
 */
 
 import junit.framework.TestCase;
+import org.staxnav.wrapper.PushbackAttribute;
 import org.staxnav.wrapper.PushbackXMLStreamReader;
 
 import javax.xml.stream.XMLInputFactory;
@@ -48,10 +49,20 @@ public class PushbackTestCase extends TestCase
       assertEquals("foo2", reader.getLocalName());
       reader.nextTag();
       assertEquals("bar2", reader.getLocalName());
+      assertEquals(2, reader.getAttributeCount());
+      assertEquals("a", reader.getAttributeLocalName(0));
+      assertEquals("b", reader.getAttributeValue(0));
+      assertEquals("b", reader.getAttributeLocalName(1));
+      assertEquals("c", reader.getAttributeValue(1));
       reader.rollbackToMark();
       assertEquals("foo2", reader.getLocalName());
       reader.nextTag();
       assertEquals("bar2", reader.getLocalName());
+      assertEquals(2, reader.getAttributeCount());
+      assertEquals("a", reader.getAttributeLocalName(0));
+      assertEquals("b", reader.getAttributeValue(0));
+      assertEquals("b", reader.getAttributeLocalName(1));
+      assertEquals("c", reader.getAttributeValue(1));
       reader.next();
       assertEquals("2", reader.getText());
    }
@@ -71,8 +82,16 @@ public class PushbackTestCase extends TestCase
       assertEquals("foo2", reader.getLocalName());
       reader.nextTag();
       assertEquals("bar2", reader.getLocalName());
+      assertEquals("a", reader.getAttributeLocalName(0));
+      assertEquals("b", reader.getAttributeValue(0));
+      assertEquals("b", reader.getAttributeLocalName(1));
+      assertEquals("c", reader.getAttributeValue(1));
       reader.flushPushback();
       assertEquals("bar2", reader.getLocalName());
+      assertEquals("a", reader.getAttributeLocalName(0));
+      assertEquals("b", reader.getAttributeValue(0));
+      assertEquals("b", reader.getAttributeLocalName(1));
+      assertEquals("c", reader.getAttributeValue(1));
       reader.next();
       assertEquals("2", reader.getText());
    }

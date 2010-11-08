@@ -23,7 +23,7 @@
 <foo1>
    <bar1><!--comment-->1</bar1>
    <foo2>
-      <bar2>2</bar2>
+      <bar2 a="b" b="c">2</bar2>
       <bar3>
         <foo3>4</foo3>
       </bar3>

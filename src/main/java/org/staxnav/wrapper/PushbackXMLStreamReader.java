@@ -79,6 +79,15 @@ public class PushbackXMLStreamReader implements XMLStreamReader
                          (streamReader.hasText() ? streamReader.getText() : null)
                  )
          );
+         if (streamReader.isStartElement())
+         {
+            for (int i = 0; i < streamReader.getAttributeCount(); ++i)
+            {
+               pushbackStream.element().getAttributes().add(
+                       new PushbackAttribute(streamReader.getAttributeLocalName(i), streamReader.getAttributeValue(i))
+               );
+            }
+         }
          return type;
       }
       return streamReader.next();
@@ -122,6 +131,15 @@ public class PushbackXMLStreamReader implements XMLStreamReader
                          (streamReader.hasText() ? streamReader.getText() : null)
                  )
          );
+         if (streamReader.isStartElement())
+         {
+            for (int i = 0; i < streamReader.getAttributeCount(); ++i)
+            {
+               pushbackStream.element().getAttributes().add(
+                       new PushbackAttribute(streamReader.getAttributeLocalName(i), streamReader.getAttributeValue(i))
+               );
+            }
+         }
          return type;
       }
       return streamReader.nextTag();
@@ -186,7 +204,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public String getAttributeLocalName(final int index)
    {
-      return streamReader.getAttributeLocalName(index);
+      return (inPushback && currentData != null ? currentData.getAttributes().get(index).getKey() : streamReader.getAttributeLocalName(index));
    }
 
    public String getAttributePrefix(final int index)
@@ -201,7 +219,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public String getAttributeValue(final int index)
    {
-      return streamReader.getAttributeValue(index);
+      return (inPushback && currentData != null ? currentData.getAttributes().get(index).getValue() : streamReader.getAttributeValue(index));
    }
 
    public boolean isAttributeSpecified(final int index)
@@ -211,7 +229,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public int getNamespaceCount()
    {
-      return streamReader.getNamespaceCount();
+      return (inPushback && currentData != null ? currentData.getAttributes().size() : streamReader.getAttributeCount());
    }
 
    public String getNamespacePrefix(final int index)

@@ -19,6 +19,9 @@
 
 package org.staxnav.wrapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
@@ -28,6 +31,7 @@ public class PushbackData
    private int type;
    private String name;
    private String text;
+   private List<PushbackAttribute> attributes = new ArrayList<PushbackAttribute>();
 
    public PushbackData(final int type, final String name, final String text)
    {
@@ -49,5 +53,10 @@ public class PushbackData
    public String getText()
    {
       return text;
+   }
+
+   public List<PushbackAttribute> getAttributes()
+   {
+      return attributes;
    }
 }
