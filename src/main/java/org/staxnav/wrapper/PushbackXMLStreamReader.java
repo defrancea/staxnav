@@ -130,14 +130,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    public boolean hasNext()
            throws XMLStreamException
    {
-      if (inPushback && !pushbackStream.isEmpty())
-      {
-         return true;
-      }
-      else
-      {
-         return streamReader.hasNext();
-      }
+      return (inPushback && !pushbackStream.isEmpty() ? true : streamReader.hasNext());
    }
 
    public void close()
@@ -153,22 +146,22 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public boolean isStartElement()
    {
-      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.START_ELEMENT : streamReader.isStartElement());
+      return (inPushback && currentData != null ? currentData.getType() == XMLStreamReader.START_ELEMENT : streamReader.isStartElement());
    }
 
    public boolean isEndElement()
    {
-      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.END_ELEMENT : streamReader.isEndElement());
+      return (inPushback && currentData != null ? currentData.getType() == XMLStreamReader.END_ELEMENT : streamReader.isEndElement());
    }
 
    public boolean isCharacters()
    {
-      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.CHARACTERS : streamReader.isCharacters());
+      return (inPushback && currentData != null ? currentData.getType() == XMLStreamReader.CHARACTERS : streamReader.isCharacters());
    }
 
    public boolean isWhiteSpace()
    {
-      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() == XMLStreamReader.SPACE : streamReader.isWhiteSpace());
+      return (inPushback && currentData != null ? currentData.getType() == XMLStreamReader.SPACE : streamReader.isWhiteSpace());
    }
 
    public String getAttributeValue(final String namespaceURI, final String localName)
@@ -238,12 +231,12 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public int getEventType()
    {
-      return (inPushback && !pushbackStream.isEmpty() ? currentData.getType() : streamReader.getEventType());
+      return (inPushback && currentData != null ? currentData.getType() : streamReader.getEventType());
    }
 
    public String getText()
    {
-      return (inPushback && !pushbackStream.isEmpty() ? currentData.getText() : streamReader.getText());
+      return (inPushback && currentData != null ? currentData.getText() : streamReader.getText());
    }
 
    public char[] getTextCharacters()
@@ -289,7 +282,7 @@ public class PushbackXMLStreamReader implements XMLStreamReader
 
    public String getLocalName()
    {
-      return (inPushback && !pushbackStream.isEmpty() ? currentData.getName() : streamReader.getLocalName());
+      return (inPushback && currentData != null ? currentData.getName() : streamReader.getLocalName());
    }
 
    public boolean hasName()
@@ -373,13 +366,22 @@ public class PushbackXMLStreamReader implements XMLStreamReader
    {
       pushbackStream.clear();
       marked = false;
+      needMark = false;
       inPushback = false;
    }
 
    public void rollbackToMark()
    {
       currentData = pushbackStream.remove();
-      marked = false;
-      inPushback = true;
+      if (!pushbackStream.isEmpty())
+      {
+         marked = false;
+         needMark = false;
+         inPushback = true;
+      }
+      else
+      {
+         currentData = null;
+      }
    }
 }
