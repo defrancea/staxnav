@@ -175,9 +175,10 @@ public class BrowseTestCase extends TestCase
       assertFalse(navigator.sibling("donotexist"));
       assertEquals("bar2", navigator.getName());
       assertEquals(3, navigator.getLevel());
-      // TODO : fix that
       assertEquals("b", navigator.getAttribute("a"));
       assertEquals("c", navigator.getAttribute("b"));
       assertEquals(null, navigator.getAttribute("donotexists"));
+      assertEquals(true, navigator.sibling("foobar1"));
+      assertEquals("bar", navigator.getAttribute("foo"));
    }
 }

@@ -28,6 +28,6 @@
         <foo3>4</foo3>
       </bar3>
    </foo2>
-   <foobar1>3</foobar1>
+   <foobar1 foo="bar">3</foobar1>
    <foobar2/>
 </foo1>

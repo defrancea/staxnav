@@ -37,10 +37,7 @@ public class StaxNavigatorImpl implements StaxNavigator
 {
    private InputStream is;
    private PushbackXMLStreamReader reader;
-
    private Stack<Pair> stack = new Stack<Pair>();
-   private Stack<Pair> backupStack;
-
    private Map<String, String> currentAttributs = new HashMap<String, String>();
 
    public StaxNavigatorImpl(final InputStream is)
@@ -101,7 +98,8 @@ public class StaxNavigatorImpl implements StaxNavigator
    {
       checkinit();
       reader.wantMark();
-      backupStack = (Stack<Pair>) stack.clone();
+      Stack<Pair> backupStack = (Stack<Pair>) stack.clone();
+      Map<String, String> backupAttributs = new HashMap<String, String>(currentAttributs);
       int currentLevel = stack.size();
       boolean first = true;
       try
@@ -119,6 +117,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                      {
                         reader.flushPushback();
                         backupStack = null;
+                        backupAttributs = null;
                         return stack.peek().name;
                      }
                   }
@@ -128,7 +127,10 @@ public class StaxNavigatorImpl implements StaxNavigator
                   if (currentLevel == stack.size())
                   {
                      reader.rollbackToMark();
+                     stack = backupStack;
+                     currentAttributs = backupAttributs;
                      backupStack = null;
+                     backupAttributs = null;
                      return null;
                   }
                   else
@@ -145,6 +147,7 @@ public class StaxNavigatorImpl implements StaxNavigator
          e.printStackTrace();
       }
       backupStack = null;
+      backupAttributs = null;
       return null;
    }
 
@@ -163,7 +166,8 @@ public class StaxNavigatorImpl implements StaxNavigator
    {
       checkinit();
       reader.wantMark();
-      backupStack = (Stack<Pair>) stack.clone();
+      Stack<Pair> backupStack = (Stack<Pair>) stack.clone();
+      Map<String, String> backupAttributs = new HashMap<String, String>(currentAttributs);
       int currentLevel = stack.size();
       boolean first = true;
       try
@@ -180,6 +184,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                      if (name == null || (name != null && name.equals(stack.peek().name)))
                      {
                         backupStack = null;
+                        backupAttributs = null;
                         return stack.peek().name;
                      }
                   }
@@ -199,6 +204,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                            if (name == null || (name != null && name.equals(stack.peek().name)))
                            {
                               backupStack = null;
+                              backupAttributs = null;
                               return stack.peek().name;
                            }
                         }
@@ -219,7 +225,9 @@ public class StaxNavigatorImpl implements StaxNavigator
       }
       reader.rollbackToMark();
       stack = backupStack;
+      currentAttributs = backupAttributs;
       backupStack = null;
+      backupAttributs = null;
       return null;
    }
 

@@ -47,6 +47,7 @@ public class PushbackTestCase extends TestCase
       reader.mark();
       reader.nextTag();
       assertEquals("foo2", reader.getLocalName());
+      assertEquals(0, reader.getAttributeCount());
       reader.nextTag();
       assertEquals("bar2", reader.getLocalName());
       assertEquals(2, reader.getAttributeCount());
@@ -56,6 +57,7 @@ public class PushbackTestCase extends TestCase
       assertEquals("c", reader.getAttributeValue(1));
       reader.rollbackToMark();
       assertEquals("foo2", reader.getLocalName());
+      assertEquals(0, reader.getAttributeCount());
       reader.nextTag();
       assertEquals("bar2", reader.getLocalName());
       assertEquals(2, reader.getAttributeCount());
@@ -80,6 +82,7 @@ public class PushbackTestCase extends TestCase
       reader.mark();
       reader.nextTag();
       assertEquals("foo2", reader.getLocalName());
+      assertEquals(0, reader.getAttributeCount());
       reader.nextTag();
       assertEquals("bar2", reader.getLocalName());
       assertEquals("a", reader.getAttributeLocalName(0));

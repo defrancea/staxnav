@@ -72,19 +72,18 @@ public class PushbackXMLStreamReader implements XMLStreamReader
       else if (marked)
       {
          int type = streamReader.next();
-         pushbackStream.offer(
-                 new PushbackData(
-                         streamReader.getEventType(),
-                         (streamReader.hasName() ? streamReader.getLocalName() : null),
-                         (streamReader.hasText() ? streamReader.getText() : null)
-                 )
+         PushbackData newPushbackData = new PushbackData(
+            streamReader.getEventType(),
+            (streamReader.hasName() ? streamReader.getLocalName() : null),
+            (streamReader.hasText() ? streamReader.getText() : null)
          );
+         pushbackStream.offer(newPushbackData);
          if (streamReader.isStartElement())
          {
             for (int i = 0; i < streamReader.getAttributeCount(); ++i)
             {
-               pushbackStream.element().getAttributes().add(
-                       new PushbackAttribute(streamReader.getAttributeLocalName(i), streamReader.getAttributeValue(i))
+               newPushbackData.getAttributes().add(
+                  new PushbackAttribute(streamReader.getAttributeLocalName(i), streamReader.getAttributeValue(i))
                );
             }
          }
@@ -124,19 +123,18 @@ public class PushbackXMLStreamReader implements XMLStreamReader
       else if (marked)
       {
          int type = streamReader.nextTag();
-         pushbackStream.offer(
-                 new PushbackData(
-                         streamReader.getEventType(),
-                         (streamReader.hasName() ? streamReader.getLocalName() : null),
-                         (streamReader.hasText() ? streamReader.getText() : null)
-                 )
+         PushbackData newPushbackData = new PushbackData(
+            streamReader.getEventType(),
+            (streamReader.hasName() ? streamReader.getLocalName() : null),
+            (streamReader.hasText() ? streamReader.getText() : null)
          );
+         pushbackStream.offer(newPushbackData);
          if (streamReader.isStartElement())
          {
             for (int i = 0; i < streamReader.getAttributeCount(); ++i)
             {
-               pushbackStream.element().getAttributes().add(
-                       new PushbackAttribute(streamReader.getAttributeLocalName(i), streamReader.getAttributeValue(i))
+               newPushbackData.getAttributes().add(
+                  new PushbackAttribute(streamReader.getAttributeLocalName(i), streamReader.getAttributeValue(i))
                );
             }
          }
