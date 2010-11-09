@@ -43,13 +43,13 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals("1", navigator.getText());
-      assertEquals("foo2", navigator.sibbling());
+      assertEquals("foo2", navigator.sibling());
       assertEquals("bar2", navigator.child());
       assertEquals("2", navigator.getText());
-      assertEquals(true, navigator.sibbling("bar3"));
+      assertEquals(true, navigator.sibling("bar3"));
       assertEquals("foo3", navigator.child());
       assertEquals("4", navigator.getText());
-      assertEquals(true, navigator.sibbling("foobar1"));
+      assertEquals(true, navigator.sibling("foobar1"));
       assertEquals("3", navigator.getText());
    }
 
@@ -74,8 +74,8 @@ public class BrowseTestCase extends TestCase
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertNull(navigator.child());
-      assertEquals(true, navigator.sibbling("foobar1"));
-      assertEquals("foobar2", navigator.sibbling());
+      assertEquals(true, navigator.sibling("foobar1"));
+      assertEquals("foobar2", navigator.sibling());
    }
 
    public void testChildWithNameOver() throws Exception
@@ -85,80 +85,80 @@ public class BrowseTestCase extends TestCase
       assertFalse(navigator.child("donotexist"));
       assertEquals("foo2", navigator.getName());
       assertEquals(2, navigator.getLevel());
-      assertEquals(true, navigator.sibbling("foobar1"));
-      assertEquals("foobar2", navigator.sibbling());
+      assertEquals(true, navigator.sibling("foobar1"));
+      assertEquals("foobar2", navigator.sibling());
    }
 
-   public void testSibbling() throws Exception
+   public void testsibling() throws Exception
    {
       navigator.init();
       assertEquals("bar1", navigator.child());
-      assertEquals("foo2", navigator.sibbling());
+      assertEquals("foo2", navigator.sibling());
       assertEquals("foo2", navigator.getName());
       assertEquals(2, navigator.getLevel());
-      assertEquals("foobar1", navigator.sibbling());
+      assertEquals("foobar1", navigator.sibling());
       assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
    }
 
-   public void testSibblingWithName() throws Exception
+   public void testsiblingWithName() throws Exception
    {
       navigator.init();
       assertEquals("bar1", navigator.child());
       assertEquals(2, navigator.getLevel());
-      assertEquals(true, navigator.sibbling("foobar1"));
+      assertEquals(true, navigator.sibling("foobar1"));
       assertEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
    }
 
-   public void testSibblingOver() throws Exception
+   public void testsiblingOver() throws Exception
    {
       navigator.init();
       assertEquals(true, navigator.child("foo2"));
       assertEquals(true, navigator.child("bar3"));
       assertEquals(true, navigator.child("foo3"));
-      assertEquals("foobar1", navigator.sibbling());
-      assertEquals("foobar2", navigator.sibbling());
+      assertEquals("foobar1", navigator.sibling());
+      assertEquals("foobar2", navigator.sibling());
    }
 
-   public void testSibblingWithNameOver() throws Exception
+   public void testsiblingWithNameOver() throws Exception
    {
       navigator.init();
       assertEquals(true, navigator.child("foo2"));
       assertEquals(true, navigator.child("bar2"));
-      assertEquals(true, navigator.sibbling("foobar2"));
+      assertEquals(true, navigator.sibling("foobar2"));
    }
 
-   public void testSibblingEOF() throws Exception
+   public void testsiblingEOF() throws Exception
    {
       navigator.init();
       assertEquals(true, navigator.child("foo2"));
       assertEquals(true, navigator.child("bar2"));
-      assertEquals(true, navigator.sibbling("foobar2"));
-      assertNull(navigator.sibbling());
+      assertEquals(true, navigator.sibling("foobar2"));
+      assertNull(navigator.sibling());
       assertEquals("foobar2", navigator.getName());
    }
 
-   public void testSibblingWithNameEOF() throws Exception
+   public void testsiblingWithNameEOF() throws Exception
    {
       navigator.init();
       assertEquals(true, navigator.child("foo2"));
       assertEquals("foo2", navigator.getName());
-      assertFalse(navigator.sibbling("donotexist"));
+      assertFalse(navigator.sibling("donotexist"));
       assertEquals("foo2", navigator.getName());
       assertEquals(2, navigator.getLevel());
-      assertEquals(true, navigator.sibbling("foobar1"));
+      assertEquals(true, navigator.sibling("foobar1"));
       assertEquals("foobar1", navigator.getName());
       assertEquals("3", navigator.getText());
       assertEquals(2, navigator.getLevel());
-      assertEquals("foobar2", navigator.sibbling());
+      assertEquals("foobar2", navigator.sibling());
    }
 
    public void testAttribute() throws Exception
    {
       navigator.init();
       navigator.child();
-      navigator.sibbling();
+      navigator.sibling();
       navigator.child();
       assertEquals("bar2", navigator.getName());
       assertEquals("b", navigator.getAttribute("a"));
@@ -172,7 +172,7 @@ public class BrowseTestCase extends TestCase
       assertEquals(true, navigator.child("foo2"));
       assertEquals(true, navigator.child("bar2"));
       assertEquals("bar2", navigator.getName());
-      assertFalse(navigator.sibbling("donotexist"));
+      assertFalse(navigator.sibling("donotexist"));
       assertEquals("bar2", navigator.getName());
       assertEquals(3, navigator.getLevel());
       // TODO : fix that

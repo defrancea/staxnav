@@ -49,18 +49,18 @@ public interface StaxNavigator
     */
    String getAttribute(String name) throws NullPointerException, IllegalStateException;
 
-   String sibbling();
+   String sibling();
 
    /**
-    * Attempts to navigate to the next sibbling with the specified name.
-    * If the navigation occurs, the navigator now points to the next sibbling with the specified name
+    * Attempts to navigate to the next sibling with the specified name.
+    * If the navigation occurs, the navigator now points to the next sibling with the specified name
     * and the method returns true. Otherwise no navigation happens and the method returns false.
     *
-    * @param name the next sibbling name
-    * @return true when the next sibbling is found
+    * @param name the next sibling name
+    * @return true when the next sibling is found
     * @throws NullPointerException if the name argument is null
     */
-   boolean sibbling(String name) throws NullPointerException;
+   boolean sibling(String name) throws NullPointerException;
 
    String getName();
    int getLevel();

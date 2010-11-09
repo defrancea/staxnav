@@ -148,18 +148,18 @@ public class StaxNavigatorImpl implements StaxNavigator
       return null;
    }
 
-   public String sibbling()
+   public String sibling()
    {
       checkinit();
-      return _sibbling(null);
+      return _sibling(null);
    }
 
-   public boolean sibbling(final String name) throws NullPointerException
+   public boolean sibling(final String name) throws NullPointerException
    {
-      return name.equals(_sibbling(name));
+      return name.equals(_sibling(name));
    }
 
-   private String _sibbling(final String name)
+   private String _sibling(final String name)
    {
       checkinit();
       reader.wantMark();
