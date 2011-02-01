@@ -114,7 +114,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                   stack.push(new Pair(reader.getLocalName(), readContent()));
                   if (currentLevel + 1 == stack.size())
                   {
-                     if (name == null || (name != null && name.equals(stack.peek().name)))
+                     if (name == null || name.equals(stack.peek().name))
                      {
                         reader.flushPushback();
                         backupStack = null;
