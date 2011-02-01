@@ -38,12 +38,12 @@ public class StaxNavigatorImpl implements StaxNavigator
 {
    private InputStream is;
    private PushbackXMLStreamReader reader;
-   private Deque<Pair> stack = new ArrayDeque<Pair>();
-   private Map<String, String> currentAttributs = new HashMap<String, String>();
+   private State state;
 
    public StaxNavigatorImpl(final InputStream is)
    {
       this.is = is;
+      this.state = new State();
    }
 
    public void init()
@@ -53,8 +53,8 @@ public class StaxNavigatorImpl implements StaxNavigator
       {
          this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
          reader.nextTag();
-         readCurrentAttributs();
-         stack.push(new Pair(reader.getLocalName(), readContent()));
+         state.readCurrentAttributs(reader);
+         state.push(reader);
       }
       catch (XMLStreamException e)
       {
@@ -84,11 +84,11 @@ public class StaxNavigatorImpl implements StaxNavigator
          throw new NullPointerException("No null name accepted");
       }
 
-      for (String key : currentAttributs.keySet())
+      for (String key : state.currentAttributs.keySet())
       {
          if (name.equals(key))
          {
-            return currentAttributs.get(key);
+            return state.currentAttributs.get(key);
          }
       }
 
@@ -99,9 +99,10 @@ public class StaxNavigatorImpl implements StaxNavigator
    {
       checkinit();
       reader.wantMark();
-      Deque<Pair> backupStack = new ArrayDeque<Pair>(stack);
-      Map<String, String> backupAttributs = new HashMap<String, String>(currentAttributs);
-      int currentLevel = stack.size();
+
+      State backup = new State(state);
+
+      int currentLevel = state.stack.size();
       boolean first = true;
       try
       {
@@ -110,33 +111,28 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
-                  readCurrentAttributs();
-                  stack.push(new Pair(reader.getLocalName(), readContent()));
-                  if (currentLevel + 1 == stack.size())
+                  state.readCurrentAttributs(reader);
+                  state.push(reader);
+                  if (currentLevel + 1 == state.stack.size())
                   {
-                     if (name == null || name.equals(stack.peek().name))
+                     if (name == null || name.equals(state.stack.peek().name))
                      {
                         reader.flushPushback();
-                        backupStack = null;
-                        backupAttributs = null;
-                        return stack.peek().name;
+                        return state.stack.peek().name;
                      }
                   }
                   break;
 
                case XMLStreamReader.END_ELEMENT:
-                  if (currentLevel == stack.size())
+                  if (currentLevel == state.stack.size())
                   {
                      reader.rollbackToMark();
-                     stack = backupStack;
-                     currentAttributs = backupAttributs;
-                     backupStack = null;
-                     backupAttributs = null;
+                     state = backup;
                      return null;
                   }
                   else
                   {
-                     stack.pop();
+                     state.stack.pop();
                   }
                   break;
             }
@@ -147,8 +143,6 @@ public class StaxNavigatorImpl implements StaxNavigator
       {
          e.printStackTrace();
       }
-      backupStack = null;
-      backupAttributs = null;
       return null;
    }
 
@@ -167,9 +161,8 @@ public class StaxNavigatorImpl implements StaxNavigator
    {
       checkinit();
       reader.wantMark();
-      Deque<Pair> backupStack = new ArrayDeque<Pair>(stack);
-      Map<String, String> backupAttributs = new HashMap<String, String>(currentAttributs);
-      int currentLevel = stack.size();
+      State backup = new State(state);
+      int currentLevel = state.stack.size();
       boolean first = true;
       try
       {
@@ -178,40 +171,39 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
-                  readCurrentAttributs();
-                  stack.push(new Pair(reader.getLocalName(), readContent()));
-                  if (currentLevel == stack.size())
+                  state.readCurrentAttributs(reader);
+                  state.push(reader);
+                  if (currentLevel == state.stack.size())
                   {
-                     if (name == null || (name != null && name.equals(stack.peek().name)))
+                     if (name == null || name.equals(state.stack.peek().name))
                      {
-                        backupStack = null;
-                        backupAttributs = null;
-                        return stack.peek().name;
+                        return state.stack.peek().name;
                      }
                   }
                   break;
 
                case XMLStreamReader.END_ELEMENT:
-                  if (reader.getLocalName().equals(stack.peek().name)) stack.pop();
-                  if (currentLevel > stack.size() + 1)
+                  if (reader.getLocalName().equals(state.stack.peek().name))
+                  {
+                     state.stack.pop();
+                  }
+                  if (currentLevel > state.stack.size() + 1)
                   {
                      while (reader.hasNext())
                      {
                         reader.next();
                         if (reader.isStartElement())
                         {
-                           readCurrentAttributs();
-                           stack.push(new Pair(reader.getLocalName(), readContent()));
-                           if (name == null || (name != null && name.equals(stack.peek().name)))
+                           state.readCurrentAttributs(reader);
+                           state.push(reader);
+                           if (name == null || name.equals(state.stack.peek().name))
                            {
-                              backupStack = null;
-                              backupAttributs = null;
-                              return stack.peek().name;
+                              return state.stack.peek().name;
                            }
                         }
                         if (reader.isEndElement())
                         {
-                           stack.pop();
+                           state.stack.pop();
                         }
                      }
                   }
@@ -225,26 +217,23 @@ public class StaxNavigatorImpl implements StaxNavigator
          e.printStackTrace();
       }
       reader.rollbackToMark();
-      stack = backupStack;
-      currentAttributs = backupAttributs;
-      backupStack = null;
-      backupAttributs = null;
+      state = backup;
       return null;
    }
 
    public String getName()
    {
-      return stack.peek().name;
+      return state.stack.peek().name;
    }
 
    public int getLevel()
    {
-      return stack.size();
+      return state.stack.size();
    }
 
    public String getText()
    {
-      return stack.peek().value;
+      return state.stack.peek().value;
    }
 
    private void checkinit()
@@ -255,36 +244,61 @@ public class StaxNavigatorImpl implements StaxNavigator
       }
    }
 
-   private String readContent()
+   static class State
    {
-      try
+
+      final Deque<Pair> stack;
+      final Map<String, String> currentAttributs;
+
+      State()
       {
-         while (reader.hasNext())
+         this.stack = new ArrayDeque<Pair>();
+         this.currentAttributs = new HashMap<String, String>();
+      }
+
+      State(State that)
+      {
+         this.stack = new ArrayDeque<Pair>(that.stack);
+         this.currentAttributs = new HashMap<String, String>(that.currentAttributs);
+      }
+
+      void push(PushbackXMLStreamReader reader)
+      {
+         stack.push(new Pair(reader.getLocalName(), readContent(reader)));
+      }
+
+      String readContent(PushbackXMLStreamReader reader)
+      {
+         try
          {
-            reader.next();
-            if (reader.isCharacters())
+            while (reader.hasNext())
             {
-               return reader.getText();
+               reader.next();
+               if (reader.isCharacters())
+               {
+                  return reader.getText();
+               }
             }
          }
+         catch (XMLStreamException e)
+         {
+            e.printStackTrace();
+         }
+         return null;
       }
-      catch (XMLStreamException e)
+
+      void readCurrentAttributs(PushbackXMLStreamReader reader)
       {
-         e.printStackTrace();
+         currentAttributs.clear();
+         for (int i = 0; i < reader.getAttributeCount(); ++i)
+         {
+            currentAttributs.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
+         }
       }
-      return null;
+
    }
 
-   private void readCurrentAttributs()
-   {
-      currentAttributs.clear();
-      for (int i = 0; i < reader.getAttributeCount(); ++i)
-      {
-         currentAttributs.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
-      }
-   }
-
-   class Pair
+   static class Pair
    {
       private String name;
       private String value;
