@@ -53,8 +53,7 @@ public class StaxNavigatorImpl implements StaxNavigator
       {
          this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
          reader.nextTag();
-         state.readCurrentAttributs(reader);
-         state.push(reader);
+         state.read(reader);
       }
       catch (XMLStreamException e)
       {
@@ -111,8 +110,7 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
-                  state.readCurrentAttributs(reader);
-                  state.push(reader);
+                  state.read(reader);
                   if (currentLevel + 1 == state.stack.size())
                   {
                      if (name == null || name.equals(state.stack.peek().name))
@@ -171,8 +169,7 @@ public class StaxNavigatorImpl implements StaxNavigator
             switch ((first ? reader.getEventType() : reader.next()))
             {
                case XMLStreamReader.START_ELEMENT:
-                  state.readCurrentAttributs(reader);
-                  state.push(reader);
+                  state.read(reader);
                   if (currentLevel == state.stack.size())
                   {
                      if (name == null || name.equals(state.stack.peek().name))
@@ -194,8 +191,7 @@ public class StaxNavigatorImpl implements StaxNavigator
                         reader.next();
                         if (reader.isStartElement())
                         {
-                           state.readCurrentAttributs(reader);
-                           state.push(reader);
+                           state.read(reader);
                            if (name == null || name.equals(state.stack.peek().name))
                            {
                               return state.stack.peek().name;
@@ -262,13 +258,18 @@ public class StaxNavigatorImpl implements StaxNavigator
          this.currentAttributs = new HashMap<String, String>(that.currentAttributs);
       }
 
-      void push(PushbackXMLStreamReader reader)
+      private void read(PushbackXMLStreamReader reader)
       {
-         stack.push(new Pair(reader.getLocalName(), readContent(reader)));
-      }
+         currentAttributs.clear();
+         for (int i = 0; i < reader.getAttributeCount(); ++i)
+         {
+            currentAttributs.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
+         }
 
-      String readContent(PushbackXMLStreamReader reader)
-      {
+         //
+         String localName = reader.getLocalName();
+
+         String content = null;
          try
          {
             while (reader.hasNext())
@@ -276,7 +277,8 @@ public class StaxNavigatorImpl implements StaxNavigator
                reader.next();
                if (reader.isCharacters())
                {
-                  return reader.getText();
+                  content = reader.getText();
+                  break;
                }
             }
          }
@@ -284,16 +286,8 @@ public class StaxNavigatorImpl implements StaxNavigator
          {
             e.printStackTrace();
          }
-         return null;
-      }
 
-      void readCurrentAttributs(PushbackXMLStreamReader reader)
-      {
-         currentAttributs.clear();
-         for (int i = 0; i < reader.getAttributeCount(); ++i)
-         {
-            currentAttributs.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
-         }
+         stack.push(new Pair(localName, content));
       }
 
    }
