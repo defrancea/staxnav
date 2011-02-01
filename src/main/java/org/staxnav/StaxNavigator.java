@@ -26,6 +26,13 @@ package org.staxnav;
 public interface StaxNavigator
 {
    void init();
+
+   /**
+    * Attempts to navigate to the first child found and return its name. If no such child exist then null
+    * is returned.
+    *
+    * @return the child name
+    */
    String child();
 
    /**
@@ -49,6 +56,12 @@ public interface StaxNavigator
     */
    String getAttribute(String name) throws NullPointerException, IllegalStateException;
 
+   /**
+    * Attempt to navigate to the next sibling and return its name. If no such sibling exists
+    * then null is returned.
+    *
+    * @return the next sibling name
+    */
    String sibling();
 
    /**
@@ -62,7 +75,26 @@ public interface StaxNavigator
     */
    boolean sibling(String name) throws NullPointerException;
 
+   /**
+    * Returns the current navigated element name.
+    *
+    * @return the element name
+    */
    String getName();
+
+   /**
+    * Returns the current navigated element level.
+    *
+    * @return the element level
+    */
    int getLevel();
+
+   /**
+    * Returns the current navigated element textual content. Note that this method is only valid when an element
+    * content is not mixed, if an element has a mixed content then this method will not return an accurate result
+    * it would likely return the first chunk of text found.
+    *
+    * @return the element text
+    */
    String getText();
 }
