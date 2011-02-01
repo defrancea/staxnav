@@ -25,9 +25,10 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
@@ -37,7 +38,7 @@ public class StaxNavigatorImpl implements StaxNavigator
 {
    private InputStream is;
    private PushbackXMLStreamReader reader;
-   private Stack<Pair> stack = new Stack<Pair>();
+   private Deque<Pair> stack = new ArrayDeque<Pair>();
    private Map<String, String> currentAttributs = new HashMap<String, String>();
 
    public StaxNavigatorImpl(final InputStream is)
@@ -98,7 +99,7 @@ public class StaxNavigatorImpl implements StaxNavigator
    {
       checkinit();
       reader.wantMark();
-      Stack<Pair> backupStack = (Stack<Pair>) stack.clone();
+      Deque<Pair> backupStack = new ArrayDeque<Pair>(stack);
       Map<String, String> backupAttributs = new HashMap<String, String>(currentAttributs);
       int currentLevel = stack.size();
       boolean first = true;
@@ -166,7 +167,7 @@ public class StaxNavigatorImpl implements StaxNavigator
    {
       checkinit();
       reader.wantMark();
-      Stack<Pair> backupStack = (Stack<Pair>) stack.clone();
+      Deque<Pair> backupStack = new ArrayDeque<Pair>(stack);
       Map<String, String> backupAttributs = new HashMap<String, String>(currentAttributs);
       int currentLevel = stack.size();
       boolean first = true;
