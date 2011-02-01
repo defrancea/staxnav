@@ -83,15 +83,8 @@ public class StaxNavigatorImpl implements StaxNavigator
          throw new NullPointerException("No null name accepted");
       }
 
-      for (String key : state.currentAttributs.keySet())
-      {
-         if (name.equals(key))
-         {
-            return state.currentAttributs.get(key);
-         }
-      }
-
-      return null;
+      //
+      return state.currentAttributs.get(name);
    }
 
    private String _child(final String name)
