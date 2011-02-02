@@ -35,62 +35,26 @@ public class QualifedStaxNavigator extends AbstractStaxNavigator<QName>
    }
 
    @Override
+   protected QName getName(String uri, String prefix, String localPart)
+   {
+      return prefix != null ? new QName(uri, localPart, prefix) : new QName(uri, localPart);
+   }
+
+   @Override
    protected String getURI(QName name)
    {
       return name != null ? name.getNamespaceURI() : null;
    }
 
    @Override
-   protected String getLocalPart(QName name)
+   protected String getPrefix(QName name)
    {
-      return name != null ? name.getLocalPart() : null;
+      return name != null ? name.getPrefix() : null;
    }
 
    @Override
-   protected Pair createPair(String uri, String prefix, String localPart, String content)
+   protected String getLocalPart(QName name)
    {
-      return new Pair2(uri, prefix, localPart, content);
-   }
-
-   class Pair2 extends Pair
-   {
-      private QName name;
-      private String value;
-
-      @Override
-      protected String getURI()
-      {
-         return name.getNamespaceURI();
-      }
-
-      @Override
-      protected String getPrefix()
-      {
-         return name.getPrefix();
-      }
-
-      @Override
-      protected String getLocalPart()
-      {
-         return name.getLocalPart();
-      }
-
-      @Override
-      protected QName getName()
-      {
-         return name;
-      }
-
-      @Override
-      protected String getValue()
-      {
-         return value;
-      }
-
-      public Pair2(String uri, String prefix, String localPart, String value)
-      {
-         this.name = prefix != null ? new QName(uri, localPart, prefix) : new QName(uri, localPart);
-         this.value = value;
-      }
+      return name != null ? name.getLocalPart() : null;
    }
 }

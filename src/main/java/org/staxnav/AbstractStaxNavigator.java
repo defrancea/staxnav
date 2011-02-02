@@ -87,7 +87,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return state.currentAttributs.get(name);
    }
 
-   private N _child(final String namespaceURI, final String localName)
+   private N _child(final String namespaceURI, final String localPart)
    {
       checkinit();
       reader.wantMark();
@@ -106,7 +106,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                   state.push(reader);
                   if (currentLevel + 1 == state.getLevel())
                   {
-                     if (state.matchName(namespaceURI, localName))
+                     if (state.matchName(namespaceURI, localPart))
                      {
                         reader.flushPushback();
                         return state.peekName();
@@ -147,10 +147,6 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    {
       return name.equals(_sibling(getURI(name), getLocalPart(name)));
    }
-
-   protected abstract String getLocalPart(N name);
-
-   protected abstract String getURI(N name);
 
    private N _sibling(final String namespaceURI, final String name)
    {
@@ -269,23 +265,23 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          else
          {
             Pair p = stack.peek();
-            return (namespaceURI == null || namespaceURI.equals(p.getURI())) && localPart.equals(p.getLocalPart());
+            return (namespaceURI == null || namespaceURI.equals(getURI(p.name))) && localPart.equals(getLocalPart(p.name));
          }
       }
 
       private N peekName()
       {
-         return stack.peek().getName();
+         return stack.peek().name;
       }
 
       private String peekURI()
       {
-         return stack.peek().getURI();
+         return getURI(stack.peek().name);
       }
 
       private String peekValue()
       {
-         return stack.peek().getValue();
+         return stack.peek().value;
       }
 
       private void push(PushbackXMLStreamReader reader)
@@ -299,7 +295,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          //
          String prefix = reader.getPrefix();
          String uri = reader.getNamespaceURI();
-         String localName = reader.getLocalName();
+         String localPart = reader.getLocalName();
 
          String content = null;
          try
@@ -319,7 +315,9 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
             e.printStackTrace();
          }
 
-         stack.push(createPair(uri, prefix, localName, content));
+         N name = getName(uri, prefix, localPart);
+         Pair p = new Pair(name, content);
+         stack.push(p);
       }
 
       private void pop()
@@ -328,14 +326,24 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       }
    }
 
-   protected abstract Pair createPair(String uri, String prefix, String localPart, String content);
+   protected abstract String getLocalPart(N name);
 
-   abstract class Pair
+   protected abstract String getURI(N name);
+
+   protected abstract String getPrefix(N name);
+
+   protected abstract N getName(String uri, String prefix, String localPart);
+
+   class Pair
    {
-      protected abstract String getURI();
-      protected abstract N getName();
-      protected abstract String getPrefix();
-      protected abstract String getLocalPart();
-      protected abstract String getValue();
+
+      final N name;
+      final String value;
+
+      protected Pair(N name, String value)
+      {
+         this.name = name;
+         this.value = value;
+      }
    }
 }
