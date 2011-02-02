@@ -41,13 +41,13 @@ public class SimpleStaxNavigator extends AbstractStaxNavigator<String>
    @Override
    protected String getPrefix(String name)
    {
-      return null;
+      return name == null ? null : "";
    }
 
    @Override
    protected String getURI(String name)
    {
-      return null;
+      return name == null ? null : "";
    }
 
    @Override

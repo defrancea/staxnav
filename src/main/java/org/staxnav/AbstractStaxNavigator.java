@@ -19,15 +19,20 @@
 
 package org.staxnav;
 
-import org.staxnav.wrapper.PushbackXMLStreamReader;
-
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -37,7 +42,7 @@ import java.util.Map;
 public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 {
    private InputStream is;
-   private PushbackXMLStreamReader reader;
+   private PushbackXMLEventReader reader;
    private State state;
 
    public AbstractStaxNavigator(final InputStream is)
@@ -49,8 +54,8 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    public N init() throws XMLStreamException
    {
       XMLInputFactory factory = XMLInputFactory.newInstance();
-      this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
-      reader.nextTag();
+      this.reader = new PushbackXMLEventReader(factory.createXMLEventReader(is));
+      reader.skipToStart();
       return state.push(reader).name;
    }
 
@@ -83,15 +88,13 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    private N _child(final String namespaceURI, final String localPart) throws XMLStreamException
    {
       checkinit();
-      reader.wantMark();
-
+      reader.mark();
       State backup = new State(state);
-
       int currentLevel = state.getLevel();
-      boolean first = true;
       while (reader.hasNext())
       {
-         switch ((first ? reader.getEventType() : reader.next()))
+         XMLEvent event = reader.peek();
+         switch (event.getEventType())
          {
             case XMLStreamReader.START_ELEMENT:
                state.push(reader);
@@ -99,16 +102,17 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                {
                   if (state.matchName(namespaceURI, localPart))
                   {
-                     reader.flushPushback();
+                     reader.unmark();
                      return state.peekName();
                   }
                }
                break;
 
             case XMLStreamReader.END_ELEMENT:
+               reader.nextEvent();
                if (currentLevel == state.getLevel())
                {
-                  reader.rollbackToMark();
+                  reader.rollback();
                   state = backup;
                   return null;
                }
@@ -117,8 +121,9 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                   state.pop();
                }
                break;
+            default:
+               reader.nextEvent();
          }
-         first = false;
       }
       return null;
    }
@@ -137,13 +142,13 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    private N _sibling(final String namespaceURI, final String name) throws XMLStreamException
    {
       checkinit();
-      reader.wantMark();
+      reader.mark();
       State backup = new State(state);
       int currentLevel = state.getLevel();
-      boolean first = true;
       while (reader.hasNext())
       {
-         switch ((first ? reader.getEventType() : reader.next()))
+         XMLEvent event = reader.peek();
+         switch (event.getEventType())
          {
             case XMLStreamReader.START_ELEMENT:
                state.push(reader);
@@ -151,13 +156,16 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                {
                   if (state.matchName(namespaceURI, name))
                   {
+                     reader.unmark();
                      return state.peekName();
                   }
                }
                break;
 
             case XMLStreamReader.END_ELEMENT:
-               if (state.matchName(reader.getNamespaceURI(), reader.getLocalName()))
+               reader.nextEvent();
+               EndElement end = event.asEndElement();
+               if (state.matchName(end.getName().getNamespaceURI(), end.getName().getLocalPart()))
                {
                   state.pop();
                }
@@ -165,26 +173,33 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                {
                   while (reader.hasNext())
                   {
-                     reader.next();
-                     if (reader.isStartElement())
+                     XMLEvent a = reader.peek();
+                     if (a.getEventType() == XMLStreamConstants.START_ELEMENT)
                      {
                         state.push(reader);
                         if (state.matchName(namespaceURI, name))
                         {
+                           reader.unmark();
                            return state.peekName();
                         }
                      }
-                     if (reader.isEndElement())
+                     else if (a.getEventType() == XMLStreamConstants.END_ELEMENT)
                      {
+                        reader.nextEvent();
                         state.pop();
+                     }
+                     else
+                     {
+                        reader.nextEvent();
                      }
                   }
                }
                break;
+            default:
+               reader.nextEvent();
          }
-         first = false;
       }
-      reader.rollbackToMark();
+      reader.rollback();
       state = backup;
       return null;
    }
@@ -263,30 +278,38 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          return stack.peek().value;
       }
 
-      private Pair push(PushbackXMLStreamReader reader)
+      private Pair push(PushbackXMLEventReader reader) throws XMLStreamException
       {
+         StartElement start = reader.nextEvent().asStartElement();
          currentAttributs.clear();
-         for (int i = 0; i < reader.getAttributeCount(); ++i)
+         for (Iterator i = start.getAttributes(); i.hasNext();)
          {
-            currentAttributs.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
+            Attribute attr = (Attribute)i.next();
+            currentAttributs.put(attr.getName().getLocalPart(), attr.getValue());
          }
 
          //
-         String prefix = reader.getPrefix();
-         String uri = reader.getNamespaceURI();
-         String localPart = reader.getLocalName();
+         String prefix = start.getName().getPrefix();
+         String uri = start.getName().getNamespaceURI();
+         String localPart = start.getName().getLocalPart();
 
-         String content = null;
+         StringBuilder content = new StringBuilder();
          try
          {
             while (reader.hasNext())
             {
-               reader.next();
-               if (reader.isCharacters())
+               XMLEvent next = reader.peek();
+               int eventType = next.getEventType();
+               if (eventType == XMLStreamConstants.CHARACTERS)
                {
-                  content = reader.getText();
+                  Characters chars = (Characters)next;
+                  content.append(chars.getData());
+               }
+               else if (eventType == XMLStreamConstants.START_ELEMENT || eventType == XMLStreamConstants.END_ELEMENT)
+               {
                   break;
                }
+               reader.nextEvent();
             }
          }
          catch (XMLStreamException e)
@@ -295,7 +318,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          }
 
          N name = getName(uri, prefix, localPart);
-         Pair p = new Pair(name, content);
+         Pair p = new Pair(name, content.toString());
          stack.push(p);
          return p;
       }
