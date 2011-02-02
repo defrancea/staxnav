@@ -78,7 +78,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      return name.equals(_child(namespaceURI, name));
+      return name.equals(getLocalPart(_child(namespaceURI, name)));
    }
 
    public String getAttribute(String name) throws NullPointerException, IllegalStateException
@@ -145,15 +145,17 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    public N sibling()
    {
       checkinit();
-      return _sibling(null);
+      return _sibling(null, null);
    }
 
    public boolean sibling(final String name) throws NullPointerException
    {
-      return name.equals(_sibling(name));
+      return name.equals(getLocalPart(_sibling(null, name)));
    }
 
-   private N _sibling(final String name)
+   protected abstract String getLocalPart(N name);
+
+   private N _sibling(final String namespaceURI, final String name)
    {
       checkinit();
       reader.wantMark();
@@ -170,7 +172,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                   state.push(reader);
                   if (currentLevel == state.getLevel())
                   {
-                     if (name == null || name.equals(state.peekName()))
+                     if (state.matchName(namespaceURI, name))
                      {
                         return state.peekName();
                      }
@@ -178,7 +180,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                   break;
 
                case XMLStreamReader.END_ELEMENT:
-                  if (reader.getLocalName().equals(state.peekName()))
+                  if (state.matchName(reader.getNamespaceURI(), reader.getLocalName()))
                   {
                      state.pop();
                   }
@@ -190,7 +192,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                         if (reader.isStartElement())
                         {
                            state.push(reader);
-                           if (name == null || name.equals(state.peekName()))
+                           if (state.matchName(namespaceURI, name))
                            {
                               return state.peekName();
                            }
@@ -261,16 +263,16 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          return stack.size();
       }
 
-      private boolean matchName(String namespaceURI, String localName)
+      private boolean matchName(String namespaceURI, String localPart)
       {
-         if (localName == null)
+         if (localPart == null)
          {
             return true;
          }
          else
          {
             Pair p = stack.peek();
-            return (namespaceURI == null || namespaceURI.equals(p.getURI())) && localName.equals(p.getName());
+            return (namespaceURI == null || namespaceURI.equals(p.getURI())) && localPart.equals(p.getLocalPart());
          }
       }
 

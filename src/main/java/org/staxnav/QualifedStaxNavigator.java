@@ -35,6 +35,12 @@ public class QualifedStaxNavigator extends AbstractStaxNavigator<QName>
    }
 
    @Override
+   protected String getLocalPart(QName name)
+   {
+      return name != null ? name.getLocalPart() : null;
+   }
+
+   @Override
    protected Pair createPair(String uri, String prefix, String localPart, String content)
    {
       return new Pair2(uri, prefix, localPart, content);
@@ -77,7 +83,7 @@ public class QualifedStaxNavigator extends AbstractStaxNavigator<QName>
 
       public Pair2(String uri, String prefix, String localPart, String value)
       {
-         this.name = new QName(uri, localPart, prefix);
+         this.name = prefix != null ? new QName(uri, localPart, prefix) : new QName(uri, localPart);
          this.value = value;
       }
    }
