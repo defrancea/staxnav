@@ -18,7 +18,7 @@
  */
 
 import junit.framework.TestCase;
-import org.staxnav.StaxNavigatorImpl;
+import org.staxnav.SimpleStaxNavigator;
 
 import java.io.InputStream;
 
@@ -30,7 +30,7 @@ public class MixedContentTestCase extends TestCase
 {
 
    private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("mixedcontent.xml");
-   private StaxNavigatorImpl navigator = new StaxNavigatorImpl(is);
+   private SimpleStaxNavigator navigator = new SimpleStaxNavigator(is);
 
    public void testFoo()
    {

@@ -25,9 +25,9 @@ import java.io.InputStream;
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
  */
-public class StaxNavigatorImpl extends AbstractStaxNavigator<String>
+public class SimpleStaxNavigator extends AbstractStaxNavigator<String>
 {
-   public StaxNavigatorImpl(final InputStream is)
+   public SimpleStaxNavigator(final InputStream is)
    {
       super (is);
    }

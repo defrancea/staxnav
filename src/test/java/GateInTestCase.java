@@ -18,7 +18,7 @@
 */
 
 import junit.framework.TestCase;
-import org.staxnav.StaxNavigatorImpl;
+import org.staxnav.SimpleStaxNavigator;
 
 import java.io.InputStream;
 
@@ -29,7 +29,7 @@ import java.io.InputStream;
 public class GateInTestCase extends TestCase
 {
    private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("portlet-application.xml");
-   private StaxNavigatorImpl navigator = new StaxNavigatorImpl(is);
+   private SimpleStaxNavigator navigator = new SimpleStaxNavigator(is);
 
    public void testPortlet() throws Exception
    {

@@ -19,7 +19,6 @@
 
 import junit.framework.TestCase;
 import org.staxnav.StaxNavigator;
-import org.staxnav.StaxNavigatorImpl;
 
 import java.io.InputStream;
 
