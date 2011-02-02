@@ -19,9 +19,7 @@
 
 import junit.framework.TestCase;
 import org.staxnav.StaxNavigator;
-import org.staxnav.wrapper.PushbackXMLStreamReader;
 
-import javax.xml.stream.XMLInputFactory;
 import java.io.InputStream;
 
 /**
@@ -45,14 +43,14 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testInit() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertNameEquals("foo1", navigator.getName());
       assertEquals(1, navigator.getLevel());
    }
 
    public void testContent() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertNameEquals("bar1", navigator.child());
       assertEquals("1", navigator.getText());
       assertNameEquals("foo2", navigator.sibling());
@@ -67,7 +65,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testChild() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertNameEquals("bar1", navigator.child());
       assertNameEquals("bar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
@@ -75,7 +73,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testChildWithName() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(true, navigator.child(createName("foobar1")));
       assertNameEquals("foobar1", navigator.getName());
       assertEquals(2, navigator.getLevel());
@@ -83,7 +81,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testChildOver() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertNameEquals("bar1", navigator.child());
       assertNull(navigator.child());
       assertEquals(true, navigator.sibling(createName("foobar1")));
@@ -92,7 +90,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testChildWithNameOver() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(true, navigator.child(createName("foo2")));
       assertFalse(navigator.child(createName("donotexist")));
       assertNameEquals("foo2", navigator.getName());
@@ -103,7 +101,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testsibling() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertNameEquals("bar1", navigator.child());
       assertNameEquals("foo2", navigator.sibling());
       assertNameEquals("foo2", navigator.getName());
@@ -115,7 +113,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testsiblingWithName() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertNameEquals("bar1", navigator.child());
       assertEquals(2, navigator.getLevel());
       assertEquals(true, navigator.sibling(createName("foobar1")));
@@ -125,7 +123,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testsiblingOver() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(true, navigator.child(createName("foo2")));
       assertEquals(true, navigator.child(createName("bar3")));
       assertEquals(true, navigator.child(createName("foo3")));
@@ -135,7 +133,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testsiblingWithNameOver() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(true, navigator.child(createName("foo2")));
       assertEquals(true, navigator.child(createName("bar2")));
       assertEquals(true, navigator.sibling(createName("foobar2")));
@@ -143,7 +141,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testsiblingEOF() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(true, navigator.child(createName("foo2")));
       assertEquals(true, navigator.child(createName("bar2")));
       assertEquals(true, navigator.sibling(createName("foobar2")));
@@ -153,7 +151,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testsiblingWithNameEOF() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(true, navigator.child(createName("foo2")));
       assertNameEquals("foo2", navigator.getName());
       assertFalse(navigator.sibling(createName("donotexist")));
@@ -168,7 +166,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testAttribute() throws Exception
    {
-      navigator.init();
+      navigator.root();
       navigator.child();
       navigator.sibling();
       navigator.child();
@@ -180,7 +178,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testAttributeInPushback() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(true, navigator.child(createName("foo2")));
       assertEquals(true, navigator.child(createName("bar2")));
       assertNameEquals("bar2", navigator.getName());
@@ -196,25 +194,25 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
 
    public void testDescendant1() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(0, navigator.descendant(createName("foo1")));
    }
 
    public void testDescendant2() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(1, navigator.descendant(createName("bar1")));
    }
 
    public void testDescendant3() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(2, navigator.descendant(createName("bar2")));
    }
 
    public void testDescendant4() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertEquals(-1, navigator.descendant(createName("blah")));
    }
 }

@@ -34,7 +34,7 @@ public interface StaxNavigator<N>
     * @return the root name
     * @throws XMLStreamException any underlying XMLStreamException
     */
-   N init() throws XMLStreamException;
+   N root() throws XMLStreamException;
 
    /**
     * Attempts to navigate to the first child found and return its name. If no such child exist then null

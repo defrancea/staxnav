@@ -51,7 +51,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       this.state = new State();
    }
 
-   public N init() throws XMLStreamException
+   public N root() throws XMLStreamException
    {
       XMLInputFactory factory = XMLInputFactory.newInstance();
       this.reader = new PushbackXMLEventReader(factory.createXMLEventReader(is));
@@ -61,7 +61,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    public N child() throws XMLStreamException
    {
-      checkinit();
+      check();
       return _child(null, null);
    }
 
@@ -87,7 +87,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    private N _child(final String namespaceURI, final String localPart) throws XMLStreamException
    {
-      checkinit();
+      check();
       reader.mark();
       State backup = new State(state);
       int currentLevel = state.getLevel();
@@ -139,7 +139,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    public int _descendant(final String namespaceURI, final String localPart) throws NullPointerException, XMLStreamException
    {
-      checkinit();
+      check();
       reader.mark();
       State backup = new State(state);
 
@@ -180,7 +180,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    public N sibling() throws XMLStreamException
    {
-      checkinit();
+      check();
       return _sibling(null, null);
    }
 
@@ -191,7 +191,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    private N _sibling(final String namespaceURI, final String name) throws XMLStreamException
    {
-      checkinit();
+      check();
       reader.mark();
       State backup = new State(state);
       int currentLevel = state.getLevel();
@@ -269,7 +269,10 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return state.peekValue();
    }
 
-   private void checkinit()
+   /**
+    * Perform check prior most of the operations
+    */
+   private void check()
    {
       if (reader == null)
       {

@@ -33,7 +33,7 @@ public class GateInTestCase extends TestCase
 
    public void testPortlet() throws Exception
    {
-      navigator.init();
+      navigator.root();
       assertTrue(navigator.child("portlet"));
       assertTrue(navigator.child("application-ref"));
       String applicationRef = navigator.getText();
