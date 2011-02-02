@@ -33,16 +33,17 @@ public class StaxNavigatorImpl extends AbstractStaxNavigator<String>
    }
 
    @Override
-   protected Pair createPair(String uri, String localName, String content)
+   protected Pair createPair(String uri, String prefix, String localPart, String content)
    {
-      return new Pair2(uri, localName, content);
+      return new Pair2(uri, prefix, localPart, content);
    }
 
    class Pair2 extends Pair
    {
-      private String uri;
-      private String name;
-      private String value;
+      private final String uri;
+      private final String prefix;
+      private final String localPart;
+      private final String value;
 
       @Override
       protected String getURI()
@@ -51,9 +52,21 @@ public class StaxNavigatorImpl extends AbstractStaxNavigator<String>
       }
 
       @Override
+      protected String getPrefix()
+      {
+         return prefix;
+      }
+
+      @Override
+      protected String getLocalPart()
+      {
+         return localPart;
+      }
+
+      @Override
       protected String getName()
       {
-         return name;
+         return localPart;
       }
 
       @Override
@@ -62,10 +75,11 @@ public class StaxNavigatorImpl extends AbstractStaxNavigator<String>
          return value;
       }
 
-      public Pair2(final String uri, final String name, final String value)
+      public Pair2(String uri, String prefix, String localPart, String value)
       {
          this.uri = uri;
-         this.name = name;
+         this.prefix = prefix;
+         this.localPart = localPart;
          this.value = value;
       }
    }

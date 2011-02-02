@@ -35,21 +35,32 @@ public class QualifedStaxNavigator extends AbstractStaxNavigator<QName>
    }
 
    @Override
-   protected Pair createPair(String uri, String localName, String content)
+   protected Pair createPair(String uri, String prefix, String localPart, String content)
    {
-      return new Pair2(uri, localName, content);
+      return new Pair2(uri, prefix, localPart, content);
    }
 
    class Pair2 extends Pair
    {
-      private String uri;
       private QName name;
       private String value;
 
       @Override
       protected String getURI()
       {
-         return uri;
+         return name.getNamespaceURI();
+      }
+
+      @Override
+      protected String getPrefix()
+      {
+         return name.getPrefix();
+      }
+
+      @Override
+      protected String getLocalPart()
+      {
+         return name.getLocalPart();
       }
 
       @Override
@@ -64,10 +75,9 @@ public class QualifedStaxNavigator extends AbstractStaxNavigator<QName>
          return value;
       }
 
-      public Pair2(final String uri, final String name, final String value)
+      public Pair2(String uri, String prefix, String localPart, String value)
       {
-         this.uri = uri;
-         this.name = new QName(uri, name);
+         this.name = new QName(uri, localPart, prefix);
          this.value = value;
       }
    }

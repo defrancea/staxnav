@@ -83,8 +83,6 @@ public interface StaxNavigator<N>
     */
    N getName();
 
-   String getNamespaceURI();
-
    /**
     * Returns the current navigated element level.
     *
