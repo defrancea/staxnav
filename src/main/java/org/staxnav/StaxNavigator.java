@@ -32,6 +32,7 @@ public interface StaxNavigator<N>
     * Initialize the parsing and returns the root name found.
     *
     * @return the root name
+    * @throws XMLStreamException any underlying XMLStreamException
     */
    N init() throws XMLStreamException;
 
@@ -40,6 +41,7 @@ public interface StaxNavigator<N>
     * is returned.
     *
     * @return the child name
+    * @throws XMLStreamException any underlying XMLStreamException
     */
    N child() throws XMLStreamException;
 
@@ -51,6 +53,7 @@ public interface StaxNavigator<N>
     * @param name the child name
     * @return true when the child is found
     * @throws NullPointerException if the name argument is null
+    * @throws XMLStreamException any underlying XMLStreamException
     */
    boolean child(N name) throws NullPointerException, XMLStreamException;
 
@@ -69,6 +72,7 @@ public interface StaxNavigator<N>
     * then null is returned.
     *
     * @return the next sibling name
+    * @throws XMLStreamException any underlying XMLStreamException
     */
    N sibling() throws XMLStreamException;
 
@@ -80,6 +84,7 @@ public interface StaxNavigator<N>
     * @param name the next sibling name
     * @return true when the next sibling is found
     * @throws NullPointerException if the name argument is null
+    * @throws XMLStreamException any underlying XMLStreamException
     */
    boolean sibling(N name) throws NullPointerException, XMLStreamException;
 
