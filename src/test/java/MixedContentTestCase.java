@@ -20,6 +20,7 @@
 import junit.framework.TestCase;
 import org.staxnav.SimpleStaxNavigator;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 
 /**
@@ -32,7 +33,7 @@ public class MixedContentTestCase extends TestCase
    private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("mixedcontent.xml");
    private SimpleStaxNavigator navigator = new SimpleStaxNavigator(is);
 
-   public void testFoo()
+   public void testFoo() throws XMLStreamException
    {
       navigator.init();
       assertEquals("foo", navigator.getName());

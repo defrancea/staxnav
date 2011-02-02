@@ -19,6 +19,8 @@
 
 package org.staxnav;
 
+import javax.xml.stream.XMLStreamException;
+
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
@@ -31,7 +33,7 @@ public interface StaxNavigator<N>
     *
     * @return the root name
     */
-   N init();
+   N init() throws XMLStreamException;
 
    /**
     * Attempts to navigate to the first child found and return its name. If no such child exist then null
@@ -39,7 +41,7 @@ public interface StaxNavigator<N>
     *
     * @return the child name
     */
-   N child();
+   N child() throws XMLStreamException;
 
    /**
     * Attempts to navigate to the first child with the specified name.
@@ -50,7 +52,7 @@ public interface StaxNavigator<N>
     * @return true when the child is found
     * @throws NullPointerException if the name argument is null
     */
-   boolean child(N name) throws NullPointerException;
+   boolean child(N name) throws NullPointerException, XMLStreamException;
 
    /**
     * Returns an attribute of the current element or null if such attribute does not exist.
@@ -68,7 +70,7 @@ public interface StaxNavigator<N>
     *
     * @return the next sibling name
     */
-   N sibling();
+   N sibling() throws XMLStreamException;
 
    /**
     * Attempts to navigate to the next sibling with the specified name.
@@ -79,7 +81,7 @@ public interface StaxNavigator<N>
     * @return true when the next sibling is found
     * @throws NullPointerException if the name argument is null
     */
-   boolean sibling(N name) throws NullPointerException;
+   boolean sibling(N name) throws NullPointerException, XMLStreamException;
 
    /**
     * Returns the current navigated element name.

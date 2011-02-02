@@ -46,29 +46,21 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       this.state = new State();
    }
 
-   public N init()
+   public N init() throws XMLStreamException
    {
       XMLInputFactory factory = XMLInputFactory.newInstance();
-      try
-      {
-         this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
-         reader.nextTag();
-         return state.push(reader).name;
-      }
-      catch (XMLStreamException e)
-      {
-         e.printStackTrace();
-         return null;
-      }
+      this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
+      reader.nextTag();
+      return state.push(reader).name;
    }
 
-   public N child()
+   public N child() throws XMLStreamException
    {
       checkinit();
       return _child(null, null);
    }
 
-   public boolean child(N name) throws NullPointerException
+   public boolean child(N name) throws NullPointerException, XMLStreamException
    {
       if (name == null)
       {
@@ -88,7 +80,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return state.currentAttributs.get(name);
    }
 
-   private N _child(final String namespaceURI, final String localPart)
+   private N _child(final String namespaceURI, final String localPart) throws XMLStreamException
    {
       checkinit();
       reader.wantMark();
@@ -97,114 +89,100 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
       int currentLevel = state.getLevel();
       boolean first = true;
-      try
+      while (reader.hasNext())
       {
-         while (reader.hasNext())
+         switch ((first ? reader.getEventType() : reader.next()))
          {
-            switch ((first ? reader.getEventType() : reader.next()))
-            {
-               case XMLStreamReader.START_ELEMENT:
-                  state.push(reader);
-                  if (currentLevel + 1 == state.getLevel())
+            case XMLStreamReader.START_ELEMENT:
+               state.push(reader);
+               if (currentLevel + 1 == state.getLevel())
+               {
+                  if (state.matchName(namespaceURI, localPart))
                   {
-                     if (state.matchName(namespaceURI, localPart))
-                     {
-                        reader.flushPushback();
-                        return state.peekName();
-                     }
+                     reader.flushPushback();
+                     return state.peekName();
                   }
-                  break;
+               }
+               break;
 
-               case XMLStreamReader.END_ELEMENT:
-                  if (currentLevel == state.getLevel())
-                  {
-                     reader.rollbackToMark();
-                     state = backup;
-                     return null;
-                  }
-                  else
-                  {
-                     state.pop();
-                  }
-                  break;
-            }
-            first = false;
+            case XMLStreamReader.END_ELEMENT:
+               if (currentLevel == state.getLevel())
+               {
+                  reader.rollbackToMark();
+                  state = backup;
+                  return null;
+               }
+               else
+               {
+                  state.pop();
+               }
+               break;
          }
-      }
-      catch (XMLStreamException e)
-      {
-         e.printStackTrace();
+         first = false;
       }
       return null;
    }
 
-   public N sibling()
+   public N sibling() throws XMLStreamException
    {
       checkinit();
       return _sibling(null, null);
    }
 
-   public boolean sibling(N name) throws NullPointerException
+   public boolean sibling(N name) throws NullPointerException, XMLStreamException
    {
       return name.equals(_sibling(getURI(name), getLocalPart(name)));
    }
 
-   private N _sibling(final String namespaceURI, final String name)
+   private N _sibling(final String namespaceURI, final String name) throws XMLStreamException
    {
       checkinit();
       reader.wantMark();
       State backup = new State(state);
       int currentLevel = state.getLevel();
       boolean first = true;
-      try
+      while (reader.hasNext())
       {
-         while (reader.hasNext())
+         switch ((first ? reader.getEventType() : reader.next()))
          {
-            switch ((first ? reader.getEventType() : reader.next()))
-            {
-               case XMLStreamReader.START_ELEMENT:
-                  state.push(reader);
-                  if (currentLevel == state.getLevel())
+            case XMLStreamReader.START_ELEMENT:
+               state.push(reader);
+               if (currentLevel == state.getLevel())
+               {
+                  if (state.matchName(namespaceURI, name))
                   {
-                     if (state.matchName(namespaceURI, name))
-                     {
-                        return state.peekName();
-                     }
+                     return state.peekName();
                   }
-                  break;
+               }
+               break;
 
-               case XMLStreamReader.END_ELEMENT:
-                  if (state.matchName(reader.getNamespaceURI(), reader.getLocalName()))
+            case XMLStreamReader.END_ELEMENT:
+               if (state.matchName(reader.getNamespaceURI(), reader.getLocalName()))
+               {
+                  state.pop();
+               }
+               if (currentLevel > state.getLevel() + 1)
+               {
+                  while (reader.hasNext())
                   {
-                     state.pop();
-                  }
-                  if (currentLevel > state.getLevel() + 1)
-                  {
-                     while (reader.hasNext())
+                     reader.next();
+                     if (reader.isStartElement())
                      {
-                        reader.next();
-                        if (reader.isStartElement())
+                        state.push(reader);
+                        if (state.matchName(namespaceURI, name))
                         {
-                           state.push(reader);
-                           if (state.matchName(namespaceURI, name))
-                           {
-                              return state.peekName();
-                           }
-                        }
-                        if (reader.isEndElement())
-                        {
-                           state.pop();
+                           return state.peekName();
                         }
                      }
+                     if (reader.isEndElement())
+                     {
+                        state.pop();
+                     }
                   }
-                  break;
-            }
-            first = false;
+               }
+               break;
          }
-      }
-      catch (XMLStreamException e)
-      {
-         e.printStackTrace();
+         first = false;
       }
       reader.rollbackToMark();
       state = backup;
