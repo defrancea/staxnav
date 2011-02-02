@@ -35,6 +35,12 @@ public class QualifedStaxNavigator extends AbstractStaxNavigator<QName>
    }
 
    @Override
+   protected String getURI(QName name)
+   {
+      return name != null ? name.getNamespaceURI() : null;
+   }
+
+   @Override
    protected String getLocalPart(QName name)
    {
       return name != null ? name.getLocalPart() : null;

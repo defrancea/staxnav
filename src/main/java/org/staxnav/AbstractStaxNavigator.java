@@ -67,18 +67,13 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return _child(null, null);
    }
 
-   public boolean child(final String name) throws NullPointerException
-   {
-      return child(null, name);
-   }
-
-   public boolean child(String namespaceURI, String name) throws NullPointerException
+   public boolean child(N name) throws NullPointerException
    {
       if (name == null)
       {
          throw new NullPointerException("No null name accepted");
       }
-      return name.equals(getLocalPart(_child(namespaceURI, name)));
+      return name.equals(_child(getURI(name), getLocalPart(name)));
    }
 
    public String getAttribute(String name) throws NullPointerException, IllegalStateException
@@ -148,12 +143,14 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return _sibling(null, null);
    }
 
-   public boolean sibling(final String name) throws NullPointerException
+   public boolean sibling(N name) throws NullPointerException
    {
-      return name.equals(getLocalPart(_sibling(null, name)));
+      return name.equals(_sibling(getURI(name), getLocalPart(name)));
    }
 
    protected abstract String getLocalPart(N name);
+
+   protected abstract String getURI(N name);
 
    private N _sibling(final String namespaceURI, final String name)
    {

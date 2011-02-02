@@ -45,7 +45,7 @@ public interface StaxNavigator<N>
     * @return true when the child is found
     * @throws NullPointerException if the name argument is null
     */
-   boolean child(String name) throws NullPointerException;
+   boolean child(N name) throws NullPointerException;
 
    /**
     * Returns an attribute of the current element or null if such attribute does not exist.
@@ -74,7 +74,7 @@ public interface StaxNavigator<N>
     * @return true when the next sibling is found
     * @throws NullPointerException if the name argument is null
     */
-   boolean sibling(String name) throws NullPointerException;
+   boolean sibling(N name) throws NullPointerException;
 
    /**
     * Returns the current navigated element name.

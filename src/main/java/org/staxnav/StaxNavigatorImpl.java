@@ -33,6 +33,12 @@ public class StaxNavigatorImpl extends AbstractStaxNavigator<String>
    }
 
    @Override
+   protected String getURI(String name)
+   {
+      return null;
+   }
+
+   @Override
    protected String getLocalPart(String name)
    {
       return name;
