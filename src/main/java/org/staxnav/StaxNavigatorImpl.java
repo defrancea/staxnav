@@ -19,298 +19,52 @@
 
 package org.staxnav;
 
-import org.staxnav.wrapper.PushbackXMLStreamReader;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
  */
-public class StaxNavigatorImpl implements StaxNavigator
+public class StaxNavigatorImpl extends AbstractStaxNavigator<String>
 {
-   private InputStream is;
-   private PushbackXMLStreamReader reader;
-   private State state;
-
    public StaxNavigatorImpl(final InputStream is)
    {
-      this.is = is;
-      this.state = new State();
+      super (is);
    }
 
-   public void init()
+   @Override
+   protected Pair createPair(String uri, String localName, String content)
    {
-      XMLInputFactory factory = XMLInputFactory.newInstance();
-      try
-      {
-         this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
-         reader.nextTag();
-         state.push(reader);
-      }
-      catch (XMLStreamException e)
-      {
-         e.printStackTrace();
-      }
+      return new Pair2(uri, localName, content);
    }
 
-   public String child()
+   class Pair2 extends Pair
    {
-      checkinit();
-      return _child(null);
-   }
-
-   public boolean child(final String name) throws NullPointerException
-   {
-      if (name == null)
-      {
-         throw new NullPointerException("No null name accepted");
-      }
-      return name.equals(_child(name));
-   }
-
-   public String getAttribute(String name) throws NullPointerException, IllegalStateException
-   {
-      if (name == null)
-      {
-         throw new NullPointerException("No null name accepted");
-      }
-
-      //
-      return state.currentAttributs.get(name);
-   }
-
-   private String _child(final String name)
-   {
-      checkinit();
-      reader.wantMark();
-
-      State backup = new State(state);
-
-      int currentLevel = state.getLevel();
-      boolean first = true;
-      try
-      {
-         while (reader.hasNext())
-         {
-            switch ((first ? reader.getEventType() : reader.next()))
-            {
-               case XMLStreamReader.START_ELEMENT:
-                  state.push(reader);
-                  if (currentLevel + 1 == state.getLevel())
-                  {
-                     if (name == null || name.equals(state.peekName()))
-                     {
-                        reader.flushPushback();
-                        return state.peekName();
-                     }
-                  }
-                  break;
-
-               case XMLStreamReader.END_ELEMENT:
-                  if (currentLevel == state.getLevel())
-                  {
-                     reader.rollbackToMark();
-                     state = backup;
-                     return null;
-                  }
-                  else
-                  {
-                     state.pop();
-                  }
-                  break;
-            }
-            first = false;
-         }
-      }
-      catch (XMLStreamException e)
-      {
-         e.printStackTrace();
-      }
-      return null;
-   }
-
-   public String sibling()
-   {
-      checkinit();
-      return _sibling(null);
-   }
-
-   public boolean sibling(final String name) throws NullPointerException
-   {
-      return name.equals(_sibling(name));
-   }
-
-   private String _sibling(final String name)
-   {
-      checkinit();
-      reader.wantMark();
-      State backup = new State(state);
-      int currentLevel = state.getLevel();
-      boolean first = true;
-      try
-      {
-         while (reader.hasNext())
-         {
-            switch ((first ? reader.getEventType() : reader.next()))
-            {
-               case XMLStreamReader.START_ELEMENT:
-                  state.push(reader);
-                  if (currentLevel == state.getLevel())
-                  {
-                     if (name == null || name.equals(state.peekName()))
-                     {
-                        return state.peekName();
-                     }
-                  }
-                  break;
-
-               case XMLStreamReader.END_ELEMENT:
-                  if (reader.getLocalName().equals(state.peekName()))
-                  {
-                     state.pop();
-                  }
-                  if (currentLevel > state.getLevel() + 1)
-                  {
-                     while (reader.hasNext())
-                     {
-                        reader.next();
-                        if (reader.isStartElement())
-                        {
-                           state.push(reader);
-                           if (name == null || name.equals(state.peekName()))
-                           {
-                              return state.peekName();
-                           }
-                        }
-                        if (reader.isEndElement())
-                        {
-                           state.pop();
-                        }
-                     }
-                  }
-                  break;
-            }
-            first = false;
-         }
-      }
-      catch (XMLStreamException e)
-      {
-         e.printStackTrace();
-      }
-      reader.rollbackToMark();
-      state = backup;
-      return null;
-   }
-
-   public String getName()
-   {
-      return state.peekName();
-   }
-
-   public int getLevel()
-   {
-      return state.getLevel();
-   }
-
-   public String getText()
-   {
-      return state.peekValue();
-   }
-
-   private void checkinit()
-   {
-      if (reader == null)
-      {
-         throw new IllegalStateException("The navigator must be initialized");
-      }
-   }
-
-   static class State
-   {
-
-      final Deque<Pair> stack;
-      final Map<String, String> currentAttributs;
-
-      State()
-      {
-         this.stack = new ArrayDeque<Pair>();
-         this.currentAttributs = new HashMap<String, String>();
-      }
-
-      State(State that)
-      {
-         this.stack = new ArrayDeque<Pair>(that.stack);
-         this.currentAttributs = new HashMap<String, String>(that.currentAttributs);
-      }
-
-      private int getLevel()
-      {
-         return stack.size();
-      }
-
-      private String peekName()
-      {
-         return stack.peek().name;
-      }
-
-      private String peekValue()
-      {
-         return stack.peek().value;
-      }
-
-      private void push(PushbackXMLStreamReader reader)
-      {
-         currentAttributs.clear();
-         for (int i = 0; i < reader.getAttributeCount(); ++i)
-         {
-            currentAttributs.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
-         }
-
-         //
-         String localName = reader.getLocalName();
-
-         String content = null;
-         try
-         {
-            while (reader.hasNext())
-            {
-               reader.next();
-               if (reader.isCharacters())
-               {
-                  content = reader.getText();
-                  break;
-               }
-            }
-         }
-         catch (XMLStreamException e)
-         {
-            e.printStackTrace();
-         }
-
-         stack.push(new Pair(localName, content));
-      }
-
-      private void pop()
-      {
-         stack.pop();
-      }
-   }
-
-   static class Pair
-   {
+      private String uri;
       private String name;
       private String value;
 
-      public Pair(final String name, final String value)
+      @Override
+      protected String getURI()
       {
+         return uri;
+      }
+
+      @Override
+      protected String getName()
+      {
+         return name;
+      }
+
+      @Override
+      protected String getValue()
+      {
+         return value;
+      }
+
+      public Pair2(final String uri, final String name, final String value)
+      {
+         this.uri = uri;
          this.name = name;
          this.value = value;
       }

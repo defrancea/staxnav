@@ -22,8 +22,9 @@ package org.staxnav;
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
+ * @param <N> the name type
  */
-public interface StaxNavigator
+public interface StaxNavigator<N>
 {
    void init();
 
@@ -33,7 +34,7 @@ public interface StaxNavigator
     *
     * @return the child name
     */
-   String child();
+   N child();
 
    /**
     * Attempts to navigate to the first child with the specified name.
@@ -62,7 +63,7 @@ public interface StaxNavigator
     *
     * @return the next sibling name
     */
-   String sibling();
+   N sibling();
 
    /**
     * Attempts to navigate to the next sibling with the specified name.
@@ -80,7 +81,9 @@ public interface StaxNavigator
     *
     * @return the element name
     */
-   String getName();
+   N getName();
+
+   String getNamespaceURI();
 
    /**
     * Returns the current navigated element level.
