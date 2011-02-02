@@ -19,7 +19,9 @@
 
 import junit.framework.TestCase;
 import org.staxnav.StaxNavigator;
+import org.staxnav.wrapper.PushbackXMLStreamReader;
 
+import javax.xml.stream.XMLInputFactory;
 import java.io.InputStream;
 
 /**
@@ -190,5 +192,29 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertEquals(null, navigator.getAttribute("donotexists"));
       assertEquals(true, navigator.sibling(createName("foobar1")));
       assertEquals("bar", navigator.getAttribute("foo"));
+   }
+
+   public void testDescendant1() throws Exception
+   {
+      navigator.init();
+      assertEquals(0, navigator.descendant(createName("foo1")));
+   }
+
+   public void testDescendant2() throws Exception
+   {
+      navigator.init();
+      assertEquals(1, navigator.descendant(createName("bar1")));
+   }
+
+   public void testDescendant3() throws Exception
+   {
+      navigator.init();
+      assertEquals(2, navigator.descendant(createName("bar2")));
+   }
+
+   public void testDescendant4() throws Exception
+   {
+      navigator.init();
+      assertEquals(-1, navigator.descendant(createName("blah")));
    }
 }

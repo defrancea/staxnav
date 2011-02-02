@@ -128,6 +128,56 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return null;
    }
 
+   public int descendant(N name) throws NullPointerException, XMLStreamException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+      return _descendant(getURI(name), getLocalPart(name));
+   }
+
+   public int _descendant(final String namespaceURI, final String localPart) throws NullPointerException, XMLStreamException
+   {
+      checkinit();
+      reader.mark();
+      State backup = new State(state);
+
+      int currentLevel = state.getLevel();
+      while (reader.hasNext())
+      {
+         if (state.matchName(namespaceURI, localPart))
+         {
+            return state.getLevel() - currentLevel;
+         }
+         XMLEvent event = reader.peek();
+         switch (event.getEventType())
+         {
+            case XMLStreamReader.START_ELEMENT:
+               state.push(reader);
+               break;
+            case XMLStreamReader.END_ELEMENT:
+               reader.nextEvent();
+               if (currentLevel == state.getLevel())
+               {
+                  reader.rollback();
+                  state = backup;
+                  return -1;
+               }
+               else
+               {
+                  state.pop();
+               }
+               break;
+            default:
+               reader.nextEvent();
+         }
+      }
+
+      //
+      return -1;
+   }
+
    public N sibling() throws XMLStreamException
    {
       checkinit();

@@ -88,6 +88,10 @@ public interface StaxNavigator<N>
     */
    boolean sibling(N name) throws NullPointerException, XMLStreamException;
 
+   int descendant(N name) throws NullPointerException, XMLStreamException;
+
+//   boolean parent(N name) throws NullPointerException, XMLStreamException;
+
    /**
     * Returns the current navigated element name.
     *
