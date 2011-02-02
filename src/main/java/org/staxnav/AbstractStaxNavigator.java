@@ -46,18 +46,19 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       this.state = new State();
    }
 
-   public void init()
+   public N init()
    {
       XMLInputFactory factory = XMLInputFactory.newInstance();
       try
       {
          this.reader = new PushbackXMLStreamReader(factory.createXMLStreamReader(is));
          reader.nextTag();
-         state.push(reader);
+         return state.push(reader).name;
       }
       catch (XMLStreamException e)
       {
          e.printStackTrace();
+         return null;
       }
    }
 
@@ -284,7 +285,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          return stack.peek().value;
       }
 
-      private void push(PushbackXMLStreamReader reader)
+      private Pair push(PushbackXMLStreamReader reader)
       {
          currentAttributs.clear();
          for (int i = 0; i < reader.getAttributeCount(); ++i)
@@ -318,6 +319,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          N name = getName(uri, prefix, localPart);
          Pair p = new Pair(name, content);
          stack.push(p);
+         return p;
       }
 
       private void pop()

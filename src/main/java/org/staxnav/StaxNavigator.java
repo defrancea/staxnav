@@ -26,7 +26,12 @@ package org.staxnav;
  */
 public interface StaxNavigator<N>
 {
-   void init();
+   /**
+    * Initialize the parsing and returns the root name found.
+    *
+    * @return the root name
+    */
+   N init();
 
    /**
     * Attempts to navigate to the first child found and return its name. If no such child exist then null
