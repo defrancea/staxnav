@@ -125,7 +125,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                reader.nextEvent();
          }
       }
-      return null;
+      throw new AssertionError("This statement should not be reached");
    }
 
    public int descendant(N name) throws NullPointerException, XMLStreamException
