@@ -28,6 +28,30 @@ import javax.xml.stream.XMLStreamException;
  */
 public interface StaxNavigator<N>
 {
+
+   /**
+    * Returns the current navigated element name.
+    *
+    * @return the element name
+    */
+   N getName();
+
+   /**
+    * Returns the current navigated element level.
+    *
+    * @return the element level
+    */
+   int getLevel();
+
+   /**
+    * Returns the current navigated element textual content. Note that this method is only valid when an element
+    * content is not mixed, if an element has a mixed content then this method will not return an accurate result
+    * it would likely return the first chunk of text found.
+    *
+    * @return the element text
+    */
+   String getText();
+
    /**
     * Initialize the parsing and returns the root name found.
     *
@@ -120,27 +144,4 @@ public interface StaxNavigator<N>
     * @throws XMLStreamException any underlying XMLStreamException
     */
    int descendant(N name) throws NullPointerException, XMLStreamException;
-
-   /**
-    * Returns the current navigated element name.
-    *
-    * @return the element name
-    */
-   N getName();
-
-   /**
-    * Returns the current navigated element level.
-    *
-    * @return the element level
-    */
-   int getLevel();
-
-   /**
-    * Returns the current navigated element textual content. Note that this method is only valid when an element
-    * content is not mixed, if an element has a mixed content then this method will not return an accurate result
-    * it would likely return the first chunk of text found.
-    *
-    * @return the element text
-    */
-   String getText();
 }
