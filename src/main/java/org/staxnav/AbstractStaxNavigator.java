@@ -59,6 +59,52 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return state.push(reader).name;
    }
 
+   public N next() throws XMLStreamException
+   {
+      return _next(null, null);
+   }
+
+   public boolean next(N name) throws XMLStreamException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+      return name.equals(_child(getURI(name), getLocalPart(name)));
+   }
+
+   private N _next(final String namespaceURI, final String localPart) throws XMLStreamException
+   {
+      check();
+      reader.mark();
+      State backup = new State(state);
+      while (reader.hasNext())
+      {
+         XMLEvent event = reader.peek();
+         switch (event.getEventType())
+         {
+            case XMLStreamReader.START_ELEMENT:
+               state.push(reader);
+               if (state.matchName(namespaceURI, localPart))
+               {
+                  reader.unmark();
+                  return state.peekName();
+               }
+               break;
+
+            case XMLStreamReader.END_ELEMENT:
+               reader.nextEvent();
+               state.pop();
+               break;
+            default:
+               reader.nextEvent();
+         }
+      }
+      reader.rollback();
+      state = backup;
+      return null;
+   }
+
    public N child() throws XMLStreamException
    {
       check();

@@ -215,4 +215,22 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       navigator.root();
       assertEquals(-1, navigator.descendant(createName("blah")));
    }
+
+   public void testNext1() throws Exception
+   {
+      navigator.root();
+      assertEquals(createName("bar1"), navigator.next());
+      assertEquals(createName("foo2"), navigator.next());
+      assertEquals(createName("bar2"), navigator.next());
+      assertEquals(createName("bar3"), navigator.next());
+      assertEquals(createName("foo3"), navigator.next());
+      assertEquals(createName("foobar1"), navigator.next());
+      assertEquals(createName("foobar2"), navigator.next());
+   }
+
+   public void testNext2() throws Exception {
+      navigator.root();
+      assertEquals(false, navigator.next(createName("bilto")));
+      assertEquals(createName("bar1"), navigator.next());
+   }
 }

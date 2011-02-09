@@ -37,6 +37,25 @@ public interface StaxNavigator<N>
    N root() throws XMLStreamException;
 
    /**
+    * Navigates to the next element and returns its name.
+    *
+    * @return the element name
+    * @throws XMLStreamException any underlying XMLStreamException
+    */
+   N next() throws XMLStreamException;
+
+   /**
+    * Attempt to navigate to the next element having the specified name.
+    * If the navigation occurs, the navigator now points to the next element with the specified name
+    * and the method returns true. Otherwise no navigation happens and the method returns false.
+    *
+    * @param name the desired element name
+    * @return true if the element is reached
+    * @throws XMLStreamException any underlying XMLStreamException
+    */
+   boolean next(N name) throws XMLStreamException;
+
+   /**
     * Attempts to navigate to the first child found and return its name. If no such child exist then null
     * is returned.
     *
@@ -88,9 +107,19 @@ public interface StaxNavigator<N>
     */
    boolean sibling(N name) throws NullPointerException, XMLStreamException;
 
+   /**
+    * Attempts to navigate to the first descendant with the specified name. The returned value should be interpreted as:
+    * <ul>
+    * <li>a negative value means that no navigation occured</li>
+    * <li>any other value is the difference of depth between the two elements</li>
+    * </ul>
+    *
+    * @param name the descendant name
+    * @return the
+    * @throws NullPointerException if the name is null
+    * @throws XMLStreamException any underlying XMLStreamException
+    */
    int descendant(N name) throws NullPointerException, XMLStreamException;
-
-//   boolean parent(N name) throws NullPointerException, XMLStreamException;
 
    /**
     * Returns the current navigated element name.
