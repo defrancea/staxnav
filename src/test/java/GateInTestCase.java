@@ -36,17 +36,17 @@ public class GateInTestCase extends TestCase
       navigator.root();
       assertTrue(navigator.child("portlet"));
       assertTrue(navigator.child("application-ref"));
-      String applicationRef = navigator.getText();
+      String applicationRef = navigator.getContent();
       navigator.sibling("portlet-ref");
-      String portletRef = navigator.getText();
+      String portletRef = navigator.getContent();
       assertTrue(navigator.sibling("preferences"));
       assertTrue(navigator.child("preference"));
       assertTrue(navigator.child("name"));
-      String prefName = navigator.getText();
+      String prefName = navigator.getContent();
       assertTrue(navigator.sibling("value"));
-      String prefValue = navigator.getText();
+      String prefValue = navigator.getContent();
       assertTrue(navigator.sibling("read-only"));
-      String prefReadonly = navigator.getText();
+      String prefReadonly = navigator.getContent();
 
       assertEquals("web", applicationRef);
       assertEquals("BannerPortlet", portletRef);

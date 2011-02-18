@@ -17,26 +17,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import junit.framework.TestCase;
-import org.staxnav.SimpleStaxNavigator;
-
-import javax.xml.stream.XMLStreamException;
-import java.io.InputStream;
+package org.staxnav;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class MixedContentTestCase extends TestCase
+public class StaxNavException extends RuntimeException
 {
-
-   private InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("mixedcontent.xml");
-   private SimpleStaxNavigator navigator = new SimpleStaxNavigator(is);
-
-   public void testFoo() throws XMLStreamException
+   public StaxNavException()
    {
-      navigator.root();
-      assertEquals("foo", navigator.getName());
-      assertEquals("abc", navigator.getContent());
+   }
+
+   public StaxNavException(String message)
+   {
+      super(message);
+   }
+
+   public StaxNavException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
+
+   public StaxNavException(Throwable cause)
+   {
+      super(cause);
    }
 }

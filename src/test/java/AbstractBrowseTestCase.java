@@ -52,15 +52,15 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
    {
       navigator.root();
       assertNameEquals("bar1", navigator.child());
-      assertEquals("1", navigator.getText());
+      assertEquals("1", navigator.getContent());
       assertNameEquals("foo2", navigator.sibling());
       assertNameEquals("bar2", navigator.child());
-      assertEquals("2", navigator.getText());
+      assertEquals("2", navigator.getContent());
       assertEquals(true, navigator.sibling(createName("bar3")));
       assertNameEquals("foo3", navigator.child());
-      assertEquals("4", navigator.getText());
+      assertEquals("4", navigator.getContent());
       assertEquals(true, navigator.sibling(createName("foobar1")));
-      assertEquals("3", navigator.getText());
+      assertEquals("3", navigator.getContent());
    }
 
    public void testChild() throws Exception
@@ -159,7 +159,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertEquals(2, navigator.getLevel());
       assertEquals(true, navigator.sibling(createName("foobar1")));
       assertNameEquals("foobar1", navigator.getName());
-      assertEquals("3", navigator.getText());
+      assertEquals("3", navigator.getContent());
       assertEquals(2, navigator.getLevel());
       assertNameEquals("foobar2", navigator.sibling());
    }

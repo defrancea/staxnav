@@ -48,9 +48,23 @@ public interface StaxNavigator<N>
     * content is not mixed, if an element has a mixed content then this method will not return an accurate result
     * it would likely return the first chunk of text found.
     *
-    * @return the element text
+    * @return the element text content
     */
-   String getText();
+   String getContent();
+
+   String getTrimmedContent();
+
+   /**
+    * Parse the current content to the specified value type.
+    *
+    * @param valueType the value type to parse to
+    * @param <V> the value generic type
+    * @return the parsed value
+    * @throws NullPointerException if the value type is null
+    * @throws IllegalStateException if the navigator is not navigated to a content container
+    * @throws TypeConversionException anything that would prevent type conversion to happen
+    */
+   <V> V parseContent(ValueType<V> valueType) throws NullPointerException, IllegalStateException, TypeConversionException;
 
    /**
     * Initialize the parsing and returns the root name found.

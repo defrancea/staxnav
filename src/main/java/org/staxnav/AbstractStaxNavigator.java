@@ -310,9 +310,28 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return state.getLevel();
    }
 
-   public String getText()
+   public String getContent()
    {
       return state.peekValue();
+   }
+
+   public String getTrimmedContent()
+   {
+      String content = getContent();
+      return content != null ? content.trim() : null;
+   }
+
+   public <V> V parseContent(ValueType<V> valueType) throws NullPointerException, IllegalStateException, TypeConversionException
+   {
+      if (valueType == null)
+      {
+         throw new NullPointerException("No null value type accepted");
+      }
+      if (state == null || state.peekValue() == null)
+      {
+         throw new IllegalStateException();
+      }
+      return valueType.convert(state.peekValue());
    }
 
    /**
