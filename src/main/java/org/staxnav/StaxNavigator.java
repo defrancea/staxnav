@@ -80,14 +80,6 @@ public interface StaxNavigator<N>
    boolean next(N name) throws XMLStreamException;
 
    /**
-    * Navigation to the next element having the specified name or fail.
-    *
-    * @param name the name to navigate to
-    * @throws XMLStreamException any underlying XMLStreamException
-    */
-   void assertNext(N name) throws XMLStreamException;
-
-   /**
     * Attempts to navigate to the first child found and return its name. If no such child exist then null
     * is returned.
     *

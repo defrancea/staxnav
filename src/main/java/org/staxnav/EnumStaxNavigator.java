@@ -40,7 +40,12 @@ public class EnumStaxNavigator<E extends Enum<E>> extends AbstractStaxNavigator<
    @Override
    protected String getLocalPart(E name)
    {
-      return name.name();
+      String s = name.name();
+      if (s.indexOf('_') >= 0)
+      {
+         s = s.replace('_', '-');
+      }
+      return s;
    }
 
    @Override
@@ -58,6 +63,10 @@ public class EnumStaxNavigator<E extends Enum<E>> extends AbstractStaxNavigator<
    @Override
    protected E getName(String uri, String prefix, String localPart)
    {
+      if (localPart.indexOf('-') != -1)
+      {
+         localPart = localPart.replace('-', '_');
+      }
       return Enum.valueOf(enumType, localPart);
    }
 }

@@ -73,14 +73,6 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       return name.equals(_child(getURI(name), getLocalPart(name)));
    }
 
-   public void assertNext(N name) throws XMLStreamException
-   {
-      if (!next(name))
-      {
-         throw new AssertionError();
-      }
-   }
-
    private N _next(final String namespaceURI, final String localPart) throws XMLStreamException
    {
       check();
