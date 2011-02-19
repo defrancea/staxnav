@@ -22,6 +22,7 @@ package org.staxnav.xml.event;
 import org.staxnav.xml.XMLTokenType;
 import org.staxnav.xml.XMLTokenizer;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -192,13 +193,13 @@ public class EventXMLTokenizer implements XMLTokenizer
       }
    }
 
-   public String getElementName() throws XMLStreamException
+   public QName getElementName() throws XMLStreamException
    {
       XMLEvent current = peekEvent();
       if (current instanceof StartElement)
       {
          StartElement start = (StartElement)current;
-         return start.getName().getLocalPart();
+         return start.getName();
       }
       else
       {

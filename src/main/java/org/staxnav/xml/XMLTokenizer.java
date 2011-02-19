@@ -19,6 +19,7 @@
 
 package org.staxnav.xml;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 /**
@@ -42,7 +43,7 @@ public interface XMLTokenizer
 
    XMLTokenType peek() throws XMLStreamException;
 
-   String getElementName() throws XMLStreamException;
+   QName getElementName() throws XMLStreamException;
 
    String getCharacters() throws IllegalStateException, XMLStreamException;
 

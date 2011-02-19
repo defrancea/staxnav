@@ -48,7 +48,7 @@ public abstract class XMLTokenizerTestCase extends TestCase
       assertTrue(tokenizer.hasNext());
       XMLTokenType type = tokenizer.peek();
       assertEquals(XMLTokenType.START_ELEMENT, type);
-      assertEquals(localName, tokenizer.getElementName());
+      assertEquals(localName, tokenizer.getElementName().getLocalPart());
       if (consume)
       {
          tokenizer.next();
