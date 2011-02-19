@@ -21,6 +21,7 @@ package org.staxnav.xml;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -43,7 +44,9 @@ public interface XMLTokenizer
 
    XMLTokenType peek() throws XMLStreamException;
 
-   QName getElementName() throws XMLStreamException;
+   QName getElementName() throws IllegalStateException, XMLStreamException;
+
+   void fillAttributes(Map<QName, String> attributes) throws IllegalStateException, XMLStreamException;
 
    String getCharacters() throws IllegalStateException, XMLStreamException;
 

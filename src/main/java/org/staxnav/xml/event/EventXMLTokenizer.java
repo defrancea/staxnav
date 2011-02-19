@@ -26,10 +26,14 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -200,6 +204,29 @@ public class EventXMLTokenizer implements XMLTokenizer
       {
          StartElement start = (StartElement)current;
          return start.getName();
+      }
+      else if (current instanceof EndElement)
+      {
+         EndElement end = (EndElement)current;
+         return end.getName();
+      }
+      else
+      {
+         throw new IllegalStateException();
+      }
+   }
+
+   public void fillAttributes(Map<QName, String> attributes) throws IllegalStateException, XMLStreamException
+   {
+      XMLEvent current = peekEvent();
+      if (current instanceof StartElement)
+      {
+         StartElement start = (StartElement)current;
+         for (Iterator<Attribute> i = start.getAttributes();i.hasNext();)
+         {
+            Attribute attribute = i.next();
+            attributes.put(attribute.getName(), attribute.getValue());
+         }
       }
       else
       {
