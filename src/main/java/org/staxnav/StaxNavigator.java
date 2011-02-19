@@ -83,7 +83,7 @@ public interface StaxNavigator<N>
    N next() throws XMLStreamException;
 
    /**
-    * Attempt to navigate to the next element having the specified name.
+    * Attempt to navigate to the next element when it has the specified name.
     * If the navigation occurs, the navigator now points to the next element with the specified name
     * and the method returns true. Otherwise no navigation happens and the method returns false.
     *

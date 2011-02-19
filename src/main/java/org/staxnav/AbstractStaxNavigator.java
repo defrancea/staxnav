@@ -70,7 +70,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      return name.equals(_child(getURI(name), getLocalPart(name)));
+      return name.equals(_next(getURI(name), getLocalPart(name)));
    }
 
    private N _next(final String namespaceURI, final String localPart) throws XMLStreamException
@@ -90,8 +90,12 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                   reader.unmark();
                   return state.peekName();
                }
-               break;
-
+               else
+               {
+                  reader.rollback();
+                  state = backup;
+                  return null;
+               }
             case XMLStreamReader.END_ELEMENT:
                reader.nextEvent();
                state.pop();
