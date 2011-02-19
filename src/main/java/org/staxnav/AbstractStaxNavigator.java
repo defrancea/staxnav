@@ -39,7 +39,7 @@ import java.util.Map;
 public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 {
    private InputStream is;
-   private XMLTokenizer reader;
+   private XMLTokenizer tokenizer;
    private Stack state;
 
    public AbstractStaxNavigator(final InputStream is)
@@ -51,9 +51,9 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    public N root() throws XMLStreamException
    {
       XMLInputFactory factory = XMLInputFactory.newInstance();
-      this.reader = new EventXMLTokenizer(factory.createXMLEventReader(is));
-      reader.skipTo(XMLTokenType.START_ELEMENT);
-      return state.push(reader).name;
+      this.tokenizer = new EventXMLTokenizer(factory.createXMLEventReader(is));
+      tokenizer.skipTo(XMLTokenType.START_ELEMENT);
+      return state.push(tokenizer).name;
    }
 
    public N next() throws XMLStreamException
@@ -73,35 +73,35 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    private N _next(final String namespaceURI, final String localPart) throws XMLStreamException
    {
       check();
-      reader.mark();
+      tokenizer.mark();
       Stack backup = new Stack(state);
-      while (reader.hasNext())
+      while (tokenizer.hasNext())
       {
-         XMLTokenType event = reader.peek();
-         switch (event)
+         XMLTokenType type = tokenizer.peek();
+         switch (type)
          {
             case START_ELEMENT:
-               state.push(reader);
+               state.push(tokenizer);
                if (state.matchName(namespaceURI, localPart))
                {
-                  reader.unmark();
+                  tokenizer.unmark();
                   return state.peekName();
                }
                else
                {
-                  reader.rollback();
+                  tokenizer.rollback();
                   state = backup;
                   return null;
                }
             case END_ELEMENT:
-               reader.next();
+               tokenizer.next();
                state.pop();
                break;
             default:
-               reader.next();
+               tokenizer.next();
          }
       }
-      reader.rollback();
+      tokenizer.rollback();
       state = backup;
       return null;
    }
@@ -135,31 +135,31 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    private N _child(final String namespaceURI, final String localPart) throws XMLStreamException
    {
       check();
-      reader.mark();
+      tokenizer.mark();
       Stack backup = new Stack(state);
       int currentLevel = state.getLevel();
-      while (reader.hasNext())
+      while (tokenizer.hasNext())
       {
-         XMLTokenType event = reader.peek();
-         switch (event)
+         XMLTokenType type = tokenizer.peek();
+         switch (type)
          {
             case START_ELEMENT:
-               state.push(reader);
+               state.push(tokenizer);
                if (currentLevel + 1 == state.getLevel())
                {
                   if (state.matchName(namespaceURI, localPart))
                   {
-                     reader.unmark();
+                     tokenizer.unmark();
                      return state.peekName();
                   }
                }
                break;
 
             case END_ELEMENT:
-               reader.next();
+               tokenizer.next();
                if (currentLevel == state.getLevel())
                {
-                  reader.rollback();
+                  tokenizer.rollback();
                   state = backup;
                   return null;
                }
@@ -169,7 +169,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                }
                break;
             default:
-               reader.next();
+               tokenizer.next();
          }
       }
       throw new AssertionError("This statement should not be reached");
@@ -187,27 +187,27 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    public int _descendant(final String namespaceURI, final String localPart) throws NullPointerException, XMLStreamException
    {
       check();
-      reader.mark();
+      tokenizer.mark();
       Stack backup = new Stack(state);
 
       int currentLevel = state.getLevel();
-      while (reader.hasNext())
+      while (tokenizer.hasNext())
       {
          if (state.matchName(namespaceURI, localPart))
          {
             return state.getLevel() - currentLevel;
          }
-         XMLTokenType event = reader.peek();
-         switch (event)
+         XMLTokenType type = tokenizer.peek();
+         switch (type)
          {
             case START_ELEMENT:
-               state.push(reader);
+               state.push(tokenizer);
                break;
             case END_ELEMENT:
-               reader.next();
+               tokenizer.next();
                if (currentLevel == state.getLevel())
                {
-                  reader.rollback();
+                  tokenizer.rollback();
                   state = backup;
                   return -1;
                }
@@ -217,7 +217,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
                }
                break;
             default:
-               reader.next();
+               tokenizer.next();
          }
       }
 
@@ -239,64 +239,64 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    private N _sibling(final String namespaceURI, final String name) throws XMLStreamException
    {
       check();
-      reader.mark();
+      tokenizer.mark();
       Stack backup = new Stack(state);
       int currentLevel = state.getLevel();
-      while (reader.hasNext())
+      while (tokenizer.hasNext())
       {
-         XMLTokenType event = reader.peek();
-         switch (event)
+         XMLTokenType type = tokenizer.peek();
+         switch (type)
          {
             case START_ELEMENT:
-               state.push(reader);
+               state.push(tokenizer);
                if (currentLevel == state.getLevel())
                {
                   if (state.matchName(namespaceURI, name))
                   {
-                     reader.unmark();
+                     tokenizer.unmark();
                      return state.peekName();
                   }
                }
                break;
 
             case END_ELEMENT:
-               QName end = reader.getElementName();
-               reader.next();
+               QName end = tokenizer.getElementName();
+               tokenizer.next();
                if (state.matchName(end.getNamespaceURI(), end.getLocalPart()))
                {
                   state.pop();
                }
                if (currentLevel > state.getLevel() + 1)
                {
-                  while (reader.hasNext())
+                  while (tokenizer.hasNext())
                   {
-                     XMLTokenType a = reader.peek();
+                     XMLTokenType a = tokenizer.peek();
                      if (a == XMLTokenType.START_ELEMENT)
                      {
-                        state.push(reader);
+                        state.push(tokenizer);
                         if (state.matchName(namespaceURI, name))
                         {
-                           reader.unmark();
+                           tokenizer.unmark();
                            return state.peekName();
                         }
                      }
                      else if (a == XMLTokenType.END_ELEMENT)
                      {
-                        reader.next();
+                        tokenizer.next();
                         state.pop();
                      }
                      else
                      {
-                        reader.next();
+                        tokenizer.next();
                      }
                   }
                }
                break;
             default:
-               reader.next();
+               tokenizer.next();
          }
       }
-      reader.rollback();
+      tokenizer.rollback();
       state = backup;
       return null;
    }
@@ -340,7 +340,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
     */
    private void check()
    {
-      if (reader == null)
+      if (tokenizer == null)
       {
          throw new IllegalStateException("The navigator must be initialized");
       }
