@@ -29,9 +29,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
-import java.util.ArrayDeque;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,12 +42,12 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 {
    private InputStream is;
    private PushbackXMLEventReader reader;
-   private State state;
+   private Stack state;
 
    public AbstractStaxNavigator(final InputStream is)
    {
       this.is = is;
-      this.state = new State();
+      this.state = new Stack();
    }
 
    public N root() throws XMLStreamException
@@ -78,7 +76,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    {
       check();
       reader.mark();
-      State backup = new State(state);
+      Stack backup = new Stack(state);
       while (reader.hasNext())
       {
          XMLEvent event = reader.peek();
@@ -140,7 +138,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    {
       check();
       reader.mark();
-      State backup = new State(state);
+      Stack backup = new Stack(state);
       int currentLevel = state.getLevel();
       while (reader.hasNext())
       {
@@ -192,7 +190,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    {
       check();
       reader.mark();
-      State backup = new State(state);
+      Stack backup = new Stack(state);
 
       int currentLevel = state.getLevel();
       while (reader.hasNext())
@@ -244,7 +242,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    {
       check();
       reader.mark();
-      State backup = new State(state);
+      Stack backup = new Stack(state);
       int currentLevel = state.getLevel();
       while (reader.hasNext())
       {
@@ -350,21 +348,21 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       }
    }
 
-   class State
+   class Stack
    {
 
-      Pair stack;
+      Element current;
       int depth;
 
-      State()
+      Stack()
       {
-         this.stack = null;
+         this.current = null;
          this.depth = 0;
       }
 
-      State(State that)
+      Stack(Stack that)
       {
-         this.stack = that.stack;
+         this.current = that.current;
          this.depth = that.depth;
       }
 
@@ -381,7 +379,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          }
          else
          {
-            Pair p = peek();
+            Element p = peek();
             return (namespaceURI == null || namespaceURI.equals(getURI(p.name))) && localPart.equals(getLocalPart(p.name));
          }
       }
@@ -401,12 +399,12 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          return peek().value;
       }
 
-      private Pair peek()
+      private Element peek()
       {
-         return stack;
+         return current;
       }
 
-      private Pair push(PushbackXMLEventReader reader) throws XMLStreamException
+      private Element push(PushbackXMLEventReader reader) throws XMLStreamException
       {
          StartElement start = reader.nextEvent().asStartElement();
 
@@ -459,15 +457,15 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          N name = getName(uri, prefix, localPart);
 
          //
-         stack = new Pair(stack, name, content.toString(), attributes);
+         current = new Element(current, name, content.toString(), attributes);
          depth++;
-         return stack;
+         return current;
       }
 
       private void pop()
       {
          depth--;
-         stack = stack.parent;
+         current = current.parent;
       }
    }
 
@@ -479,20 +477,20 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    protected abstract N getName(String uri, String prefix, String localPart);
 
-   class Pair
+   class Element
    {
 
-      final Pair parent;
+      final Element parent;
       final N name;
       final String value;
       final Map<String, String> attributes;
 
-      protected Pair(N name, String value, Map<String, String> attributes)
+      protected Element(N name, String value, Map<String, String> attributes)
       {
          this(null, name, value, attributes);
       }
 
-      protected Pair(Pair parent, N name, String value, Map<String, String> attributes)
+      protected Element(Element parent, N name, String value, Map<String, String> attributes)
       {
          this.parent = parent;
          this.name = name;
