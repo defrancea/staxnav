@@ -20,33 +20,14 @@
 package org.staxnav.xml;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 
 /**
+ * Defines a container for attributes.
+ *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public interface XMLTokenizer
+public interface AttributeContainer
 {
-
-   void mark() throws IllegalStateException;
-
-   void unmark() throws IllegalStateException;
-
-   void rollback() throws IllegalStateException;
-
-   void skipTo(XMLTokenType type) throws XMLStreamException;
-
-   boolean hasNext();
-
-   XMLTokenType next() throws XMLStreamException;
-
-   XMLTokenType peek() throws XMLStreamException;
-
-   QName getElementName() throws IllegalStateException, XMLStreamException;
-
-   void fillAttributes(AttributeContainer container) throws IllegalStateException, XMLStreamException;
-
-   String getCharacters() throws IllegalStateException, XMLStreamException;
-
+   void add(QName name, String value);
 }

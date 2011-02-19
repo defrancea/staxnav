@@ -19,6 +19,7 @@
 
 package org.staxnav.xml.event;
 
+import org.staxnav.xml.AttributeContainer;
 import org.staxnav.xml.XMLTokenType;
 import org.staxnav.xml.XMLTokenizer;
 
@@ -216,7 +217,7 @@ public class EventXMLTokenizer implements XMLTokenizer
       }
    }
 
-   public void fillAttributes(Map<QName, String> attributes) throws IllegalStateException, XMLStreamException
+   public void fillAttributes(AttributeContainer container) throws IllegalStateException, XMLStreamException
    {
       XMLEvent current = peekEvent();
       if (current instanceof StartElement)
@@ -225,7 +226,7 @@ public class EventXMLTokenizer implements XMLTokenizer
          for (Iterator<Attribute> i = start.getAttributes();i.hasNext();)
          {
             Attribute attribute = i.next();
-            attributes.put(attribute.getName(), attribute.getValue());
+            container.add(attribute.getName(), attribute.getValue());
          }
       }
       else
