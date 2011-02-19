@@ -22,6 +22,13 @@ package org.staxnav.xml.event;
 import java.util.NoSuchElementException;
 
 /**
+ * A list that combines:
+ * <ul>
+ *    <li>o(1) removal of its head</li>
+ *    <li>o(1) addition to the tail (except when it resizes)</li>
+ *    <li>o(1) direct access</li>
+ * </ul>
+ *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */

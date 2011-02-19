@@ -49,7 +49,7 @@ public class EventXMLTokenizer implements XMLTokenizer
    private int status;
    
    /** . */
-   private final LinkedList<XMLEvent> queue = new LinkedList<XMLEvent>();
+   private final CircularList<XMLEvent> queue = new CircularList<XMLEvent>(10);
    
    /** . */
    private final XMLEventReader reader;
