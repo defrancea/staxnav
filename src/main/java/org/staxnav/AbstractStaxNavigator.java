@@ -353,21 +353,24 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    class State
    {
 
-      final Deque<Pair> stack;
+      Pair stack;
+      int depth;
 
       State()
       {
-         this.stack = new ArrayDeque<Pair>();
+         this.stack = null;
+         this.depth = 0;
       }
 
       State(State that)
       {
-         this.stack = new ArrayDeque<Pair>(that.stack);
+         this.stack = that.stack;
+         this.depth = that.depth;
       }
 
       private int getLevel()
       {
-         return stack.size();
+         return depth;
       }
 
       private boolean matchName(String namespaceURI, String localPart)
@@ -378,29 +381,29 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          }
          else
          {
-            Pair p = stack.peek();
+            Pair p = peek();
             return (namespaceURI == null || namespaceURI.equals(getURI(p.name))) && localPart.equals(getLocalPart(p.name));
          }
       }
 
       private N peekName()
       {
-         return stack.peek().name;
+         return peek().name;
       }
 
       private String peekURI()
       {
-         return getURI(stack.peek().name);
+         return getURI(peek().name);
       }
 
       private String peekValue()
       {
-         return stack.peek().value;
+         return peek().value;
       }
 
       private Pair peek()
       {
-         return stack.peek();
+         return stack;
       }
 
       private Pair push(PushbackXMLEventReader reader) throws XMLStreamException
@@ -454,14 +457,17 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          }
 
          N name = getName(uri, prefix, localPart);
-         Pair p = new Pair(name, content.toString(), attributes);
-         stack.push(p);
-         return p;
+
+         //
+         stack = new Pair(stack, name, content.toString(), attributes);
+         depth++;
+         return stack;
       }
 
       private void pop()
       {
-         stack.pop();
+         depth--;
+         stack = stack.parent;
       }
    }
 
@@ -476,12 +482,19 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    class Pair
    {
 
+      final Pair parent;
       final N name;
       final String value;
       final Map<String, String> attributes;
 
       protected Pair(N name, String value, Map<String, String> attributes)
       {
+         this(null, name, value, attributes);
+      }
+
+      protected Pair(Pair parent, N name, String value, Map<String, String> attributes)
+      {
+         this.parent = parent;
          this.name = name;
          this.value = value;
          this.attributes = attributes;
