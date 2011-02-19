@@ -29,5 +29,10 @@ import javax.xml.namespace.QName;
  */
 public interface AttributeContainer
 {
+
+   void start();
+
    void add(QName name, String value);
+
+   void end();
 }

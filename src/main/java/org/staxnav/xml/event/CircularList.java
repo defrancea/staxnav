@@ -114,12 +114,13 @@ class CircularList<E>
 
    E get(int index)
    {
-      if (index > tail && index < head)
+      if (index < 0 || index >= size())
       {
          throw new IndexOutOfBoundsException();
       }
+      int ptr = (head + index) % elements.length;
       @SuppressWarnings("unchecked")
-      E element = (E)elements[(head + index) % elements.length];
+      E element = (E)elements[ptr];
       return element;
    }
 }

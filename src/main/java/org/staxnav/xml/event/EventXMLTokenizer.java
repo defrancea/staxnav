@@ -223,10 +223,16 @@ public class EventXMLTokenizer implements XMLTokenizer
       if (current instanceof StartElement)
       {
          StartElement start = (StartElement)current;
-         for (Iterator<Attribute> i = start.getAttributes();i.hasNext();)
+         Iterator<Attribute> i = start.getAttributes();
+         if (i.hasNext())
          {
-            Attribute attribute = i.next();
-            container.add(attribute.getName(), attribute.getValue());
+            container.start();
+            while (i.hasNext())
+            {
+               Attribute attribute = i.next();
+               container.add(attribute.getName(), attribute.getValue());
+            }
+            container.end();
          }
       }
       else

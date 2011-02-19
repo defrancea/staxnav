@@ -28,99 +28,157 @@ import junit.framework.TestCase;
 public class CircularListTestCase extends TestCase
 {
 
+   CircularList<String> l;
+
+   @Override
+   protected void setUp() throws Exception
+   {
+      l = new CircularList<String>(3);
+   }
+
+   private void assertFirst(String a)
+   {
+      assertEquals(a, l.peekFirst());
+   }
+
+   private void assertElement(String a, int index)
+   {
+      assertEquals(a, l.get(index));
+   }
+
+   private void addLast(String a)
+   {
+      l.addLast(a);
+   }
+
+   private void removeFirst(String a)
+   {
+      assertEquals(a, l.removeFirst());
+   }
+
+   private void assertSize(int i)
+   {
+      assertEquals(i, l.size());
+   }
+
+   private void assertOut(int i)
+   {
+      try
+      {
+         l.get(i);
+         fail();
+      }
+      catch (IndexOutOfBoundsException ignore)
+      {
+      }
+   }
+
    public void testResizeTailBeforeHead()
    {
-      CircularList<String> l = new CircularList<String>(3);
-      l.addLast("a");
-      l.addLast("b");
-      l.addLast("c");
-      assertEquals("a", l.peekFirst());
-      assertEquals("a", l.get(0));
-      assertEquals("b", l.get(1));
-      assertEquals("c", l.get(2));
-      assertEquals(3, l.size());
+      addLast("a");
+      addLast("b");
+      addLast("c");
+      assertFirst("a");
+      assertElement("a", 0);
+      assertElement("b", 1);
+      assertElement("c", 2);
+      assertSize(3);
    }
 
    public void testResizeHeadBeforeTail()
    {
-      CircularList<String> l = new CircularList<String>(3);
-      l.addLast("a");
-      l.addLast("b");
-      assertEquals("a", l.removeFirst());
-      l.addLast("c");
-      assertEquals("b", l.removeFirst());
-      l.addLast("d");
-      assertEquals("c", l.removeFirst());
-      l.addLast("e");
-      assertEquals("d", l.removeFirst());
-      l.addLast("f");
-      assertEquals("e", l.removeFirst());
-      l.addLast("g");
+      addLast("a");
+      addLast("b");
+      removeFirst("a");
+      addLast("c");
+      removeFirst("b");
+      addLast("d");
+      removeFirst("c");
+      addLast("e");
+      removeFirst("d");
+      addLast("f");
+      removeFirst("e");
+      addLast("g");
 
       //
-      l.addLast("h");
-      assertEquals("f", l.get(0));
-      assertEquals("g", l.get(1));
-      assertEquals("h", l.get(2));
-      assertEquals(3, l.size());
+      addLast("h");
+      assertElement("f", 0);
+      assertElement("g", 1);
+      assertElement("h", 2);
+      assertSize(3);
    }
 
    public void testRotation()
    {
-
-      CircularList<String> l = new CircularList<String>(3);
-
-      //
-      assertEquals(null, l.peekFirst());
-      assertEquals(0, l.size());
-
-      //
-      l.addLast("a");
-      assertEquals("a", l.peekFirst());
-      assertEquals("a", l.get(0));
-      assertEquals(1, l.size());
+      assertFirst(null);
+      assertSize(0);
+      assertOut(-1);
+      assertOut(0);
+      assertOut(1);
 
       //
-      l.addLast("b");
-      assertEquals("a", l.peekFirst());
-      assertEquals("a", l.get(0));
-      assertEquals("b", l.get(1));
-      assertEquals(2, l.size());
+      addLast("a");
+      assertFirst("a");
+      assertElement("a", 0);
+      assertOut(-1);
+      assertOut(1);
+      assertSize(1);
 
       //
-      assertEquals("a", l.removeFirst());
-      assertEquals("b", l.get(0));
-      assertEquals(1, l.size());
+      addLast("b");
+      assertFirst("a");
+      assertElement("a", 0);
+      assertElement("b", 1);
+      assertOut(-1);
+      assertOut(2);
+      assertSize(2);
 
       //
-      l.addLast("c");
-      assertEquals("b", l.peekFirst());
-      assertEquals("b", l.get(0));
-      assertEquals("c", l.get(1));
-      assertEquals(2, l.size());
+      removeFirst("a");
+      assertElement("b", 0);
+      assertOut(-1);
+      assertOut(1);
+      assertSize(1);
 
       //
-      assertEquals("b", l.removeFirst());
-      assertEquals("c", l.get(0));
-      assertEquals(1, l.size());
+      addLast("c");
+      assertFirst("b");
+      assertElement("b", 0);
+      assertElement("c", 1);
+      assertOut(-1);
+      assertOut(2);
+      assertSize(2);
 
       //
-      l.addLast("d");
-      assertEquals("c", l.peekFirst());
-      assertEquals("c", l.get(0));
-      assertEquals("d", l.get(1));
-      assertEquals(2, l.size());
+      removeFirst("b");
+      assertElement("c", 0);
+      assertOut(-1);
+      assertOut(1);
+      assertSize(1);
 
       //
-      assertEquals("c", l.removeFirst());
-      assertEquals("d", l.get(0));
-      assertEquals(1, l.size());
+      addLast("d");
+      assertFirst("c");
+      assertElement("c", 0);
+      assertElement("d", 1);
+      assertOut(-1);
+      assertOut(2);
+      assertSize(2);
 
       //
-      l.addLast("e");
-      assertEquals("d", l.peekFirst());
-      assertEquals("d", l.get(0));
-      assertEquals("e", l.get(1));
-      assertEquals(2, l.size());
+      removeFirst("c");
+      assertElement("d", 0);
+      assertOut(-1);
+      assertOut(1);
+      assertSize(1);
+
+      //
+      addLast("e");
+      assertFirst("d");
+      assertElement("d", 0);
+      assertElement("e", 1);
+      assertOut(-1);
+      assertOut(2);
+      assertSize(2);
    }
 }
