@@ -30,6 +30,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -132,7 +133,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       }
 
       //
-      return state.currentAttributs.get(name);
+      return state.peek().attributes.get(name);
    }
 
    private N _child(final String namespaceURI, final String localPart) throws XMLStreamException
@@ -353,18 +354,15 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
    {
 
       final Deque<Pair> stack;
-      final Map<String, String> currentAttributs;
 
       State()
       {
          this.stack = new ArrayDeque<Pair>();
-         this.currentAttributs = new HashMap<String, String>();
       }
 
       State(State that)
       {
          this.stack = new ArrayDeque<Pair>(that.stack);
-         this.currentAttributs = new HashMap<String, String>(that.currentAttributs);
       }
 
       private int getLevel()
@@ -400,14 +398,30 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          return stack.peek().value;
       }
 
+      private Pair peek()
+      {
+         return stack.peek();
+      }
+
       private Pair push(PushbackXMLEventReader reader) throws XMLStreamException
       {
          StartElement start = reader.nextEvent().asStartElement();
-         currentAttributs.clear();
-         for (Iterator i = start.getAttributes(); i.hasNext();)
+
+         //
+         Map<String, String> attributes;
+         Iterator attributesIt = start.getAttributes();
+         if (attributesIt.hasNext())
          {
-            Attribute attr = (Attribute)i.next();
-            currentAttributs.put(attr.getName().getLocalPart(), attr.getValue());
+            attributes = new HashMap<String, String>();
+            while (attributesIt.hasNext())
+            {
+               Attribute attr = (Attribute)attributesIt.next();
+               attributes.put(attr.getName().getLocalPart(), attr.getValue());
+            }
+         }
+         else
+         {
+            attributes = Collections.emptyMap();
          }
 
          //
@@ -440,7 +454,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          }
 
          N name = getName(uri, prefix, localPart);
-         Pair p = new Pair(name, content.toString());
+         Pair p = new Pair(name, content.toString(), attributes);
          stack.push(p);
          return p;
       }
@@ -464,11 +478,13 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
       final N name;
       final String value;
+      final Map<String, String> attributes;
 
-      protected Pair(N name, String value)
+      protected Pair(N name, String value, Map<String, String> attributes)
       {
          this.name = name;
          this.value = value;
+         this.attributes = attributes;
       }
    }
 }
