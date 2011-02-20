@@ -353,23 +353,20 @@ class AbstractStaxNavigator<N> implements StaxNavigator<N>
    {
 
       Element current;
-      int depth;
 
       Stack()
       {
          this.current = null;
-         this.depth = 0;
       }
 
       Stack(Stack that)
       {
          this.current = that.current;
-         this.depth = that.depth;
       }
 
       private int getLevel()
       {
-         return depth;
+         return current != null ? current.depth : 0;
       }
 
       private boolean matchName(String namespaceURI, String localPart)
@@ -453,7 +450,6 @@ class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
          //
          current = element;
-         depth++;
 
          //
          return current;
@@ -461,7 +457,6 @@ class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
       private void pop()
       {
-         depth--;
          current = current.parent;
       }
    }
@@ -471,6 +466,7 @@ class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
       final Element parent;
       final N name;
+      final int depth;
       String value;
       private Map<String, String> attributes;
       private Map<String, String> namespaces;
@@ -482,6 +478,7 @@ class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
       protected Element(Element parent, N name)
       {
+         this.depth = parent != null ? (1 + parent.depth) : 1;
          this.parent = parent;
          this.name = name;
          this.value = null;
