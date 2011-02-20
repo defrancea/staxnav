@@ -34,6 +34,8 @@ abstract class Naming<N>
 
    abstract String getPrefix(N name);
 
+   abstract N getName(QName name);
+
    abstract N getName(String uri, String prefix, String localPart);
 
    static class Local extends Naming<String>
@@ -43,6 +45,12 @@ abstract class Naming<N>
       protected String getName(String uri, String prefix, String localPart)
       {
          return localPart;
+      }
+
+      @Override
+      String getName(QName name)
+      {
+         return name == null ? null : name.getLocalPart();
       }
 
       @Override
@@ -74,6 +82,12 @@ abstract class Naming<N>
       }
 
       @Override
+      QName getName(QName name)
+      {
+         return name;
+      }
+
+      @Override
       protected String getURI(QName name)
       {
          return name != null ? name.getNamespaceURI() : null;
@@ -101,6 +115,12 @@ abstract class Naming<N>
       Enumerated(Class<E> enumType)
       {
          this.enumType = enumType;
+      }
+
+      @Override
+      E getName(QName name)
+      {
+         return name == null ? null : getName(name.getNamespaceURI(), name.getPrefix(), name.getLocalPart());
       }
 
       @Override
