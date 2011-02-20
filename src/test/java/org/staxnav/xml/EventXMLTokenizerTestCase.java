@@ -34,10 +34,10 @@ public class EventXMLTokenizerTestCase extends XMLTokenizerTestCase
 {
 
    @Override
-   protected XMLTokenizer tokenizer(InputStream in) throws XMLStreamException
+   protected TokenizerAsserter tokenizer(InputStream in) throws XMLStreamException
    {
       XMLInputFactory factory = XMLInputFactory.newInstance();
       XMLEventReader eventReader = factory.createXMLEventReader(in);
-      return new EventXMLTokenizer(eventReader);
+      return new TokenizerAsserter(eventReader);
    }
 }

@@ -31,10 +31,10 @@ import java.io.InputStream;
 public abstract class XMLTokenizerTestCase extends TestCase
 {
 
-   protected abstract XMLTokenizer tokenizer(InputStream in) throws XMLStreamException;
+   protected abstract TokenizerAsserter tokenizer(InputStream in) throws XMLStreamException;
 
    /** . */
-   private XMLTokenizer tokenizer;
+   private TokenizerAsserter tokenizer;
 
    @Override
    protected void setUp() throws Exception
@@ -43,85 +43,41 @@ public abstract class XMLTokenizerTestCase extends TestCase
       this.tokenizer = tokenizer(is);
    }
 
-   private void assertStartElement(String localName, boolean consume) throws Exception
-   {
-      assertTrue(tokenizer.hasNext());
-      XMLTokenType type = tokenizer.peek();
-      assertEquals(XMLTokenType.START_ELEMENT, type);
-      assertEquals(localName, tokenizer.getElementName().getLocalPart());
-      if (consume)
-      {
-         tokenizer.next();
-      }
-   }
-
-   private void assertChars() throws Exception
-   {
-      assertChars(null);
-   }
-
-   private void assertChars(String expectedChars) throws Exception
-   {
-      assertTrue(tokenizer.hasNext());
-      XMLTokenType type = tokenizer.peek();
-      assertEquals(XMLTokenType.CHARACTERS, type);
-      if (expectedChars != null)
-      {
-         assertEquals(expectedChars, tokenizer.getCharacters());
-      }
-      tokenizer.next();
-   }
-
-   private void assertNext() throws Exception
-   {
-      assertNext(null);
-   }
-
-   private void assertNext(XMLTokenType expectedType) throws Exception
-   {
-      assertTrue(tokenizer.hasNext());
-      XMLTokenType type = tokenizer.next();
-      if (expectedType != null)
-      {
-         assertEquals(expectedType, type);
-      }
-   }
-
    public final void testA() throws Exception
    {
       tokenizer.skipTo(XMLTokenType.START_ELEMENT);
       tokenizer.mark();
-      assertStartElement("foo1", true);
+      tokenizer.assertStartElement("foo1", true);
       while (tokenizer.hasNext())
       {
          tokenizer.next();
       }
       tokenizer.rollback();
       assertTrue(tokenizer.hasNext());
-      assertStartElement("foo1", false);
+      tokenizer.assertStartElement("foo1", false);
       tokenizer.mark();
       assertTrue(tokenizer.hasNext());
-      assertStartElement("foo1", true);
+      tokenizer.assertStartElement("foo1", true);
       tokenizer.unmark();
-      assertChars();
-      assertStartElement("bar1", true);
+      tokenizer.assertChars();
+      tokenizer.assertStartElement("bar1", true);
    }
 
    public void testRollbackNext() throws Exception
    {
       tokenizer.skipTo(XMLTokenType.START_ELEMENT);
-      assertStartElement("foo1", true);
-      assertChars();
-      assertStartElement("bar1", true);
-      assertNext();
-      assertNext();
-      assertNext();
+      tokenizer.assertStartElement("foo1", true);
+      tokenizer.assertChars();
+      tokenizer.assertStartElement("bar1", true);
+      tokenizer.assertNext();
+      tokenizer.assertNext();
+      tokenizer.assertNext();
       tokenizer.skipTo(XMLTokenType.START_ELEMENT);
       tokenizer.mark();
-      assertStartElement("foo2", true);
+      tokenizer.assertStartElement("foo2", true);
 //      assertEquals(0, reader.getAttributeCount());
       tokenizer.skipTo(XMLTokenType.START_ELEMENT);
-      assertStartElement("bar2", true);
+      tokenizer.assertStartElement("bar2", true);
 //      assertEquals(2, reader.getAttributeCount());
 //      assertEquals("a", reader.getAttributeLocalName(0));
 //      assertEquals("b", reader.getAttributeValue(0));
@@ -129,15 +85,15 @@ public abstract class XMLTokenizerTestCase extends TestCase
 //      assertEquals("c", reader.getAttributeValue(1));
 
       tokenizer.rollback();
-      assertStartElement("foo2", true);
+      tokenizer.assertStartElement("foo2", true);
 //      assertEquals(0, reader.getAttributeCount());
       tokenizer.skipTo(XMLTokenType.START_ELEMENT);
-      assertStartElement("bar2", true);
+      tokenizer.assertStartElement("bar2", true);
 //      assertEquals(2, reader.getAttributeCount());
 //      assertEquals("a", reader.getAttributeLocalName(0));
 //      assertEquals("b", reader.getAttributeValue(0));
 //      assertEquals("b", reader.getAttributeLocalName(1));
 //      assertEquals("c", reader.getAttributeValue(1));
-      assertChars("2");
+      tokenizer.assertChars("2");
    }
 }
