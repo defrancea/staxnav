@@ -17,8 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import org.staxnav.EnumStaxNavigator;
 import org.staxnav.StaxNavigator;
+import org.staxnav.StaxNavigatorFactory;
 
 import java.io.InputStream;
 
@@ -32,7 +32,7 @@ public class EnumBrowseTestCase extends AbstractBrowseTestCase<SampleName>
    @Override
    protected StaxNavigator<SampleName> createNavigator(InputStream is)
    {
-      return new EnumStaxNavigator<SampleName>(is, SampleName.class);
+      return StaxNavigatorFactory.newEnumeratedStaxNavigator(SampleName.class, is);
    }
 
    @Override

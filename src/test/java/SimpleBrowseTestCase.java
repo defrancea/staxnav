@@ -18,7 +18,7 @@
  */
 
 import org.staxnav.StaxNavigator;
-import org.staxnav.SimpleStaxNavigator;
+import org.staxnav.StaxNavigatorFactory;
 
 import java.io.InputStream;
 
@@ -32,7 +32,7 @@ public class SimpleBrowseTestCase extends AbstractBrowseTestCase<String>
    @Override
    protected StaxNavigator<String> createNavigator(InputStream is)
    {
-      return new SimpleStaxNavigator(is);
+      return StaxNavigatorFactory.newLocalStaxNavigator(is);
    }
 
    @Override

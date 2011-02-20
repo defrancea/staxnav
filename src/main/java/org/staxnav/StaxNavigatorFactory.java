@@ -19,54 +19,28 @@
 
 package org.staxnav;
 
+import javax.xml.namespace.QName;
 import java.io.InputStream;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class EnumStaxNavigator<E extends Enum<E>> extends AbstractStaxNavigator<E>
+public class StaxNavigatorFactory
 {
 
-   /** . */
-   private final Class<E> enumType;
-
-   public EnumStaxNavigator(InputStream is, Class<E> enumType)
+   public static StaxNavigator<String> newLocalStaxNavigator(InputStream in)
    {
-      super(is);
-      this.enumType = enumType;
+      return new AbstractStaxNavigator<String>(new Naming.Local(), in);
    }
 
-   @Override
-   protected String getLocalPart(E name)
+   public static StaxNavigator<QName> newQualifiedStaxNavigator(InputStream in)
    {
-      String s = name.name();
-      if (s.indexOf('_') >= 0)
-      {
-         s = s.replace('_', '-');
-      }
-      return s;
+      return new AbstractStaxNavigator<QName>(new Naming.Qualified(), in);
    }
 
-   @Override
-   protected String getURI(E name)
+   public static <E extends Enum<E>> StaxNavigator<E> newEnumeratedStaxNavigator(Class<E> enumType, InputStream in)
    {
-      return name == null ? null : "";
-   }
-
-   @Override
-   protected String getPrefix(E name)
-   {
-      return name == null ? null : "";
-   }
-
-   @Override
-   protected E getName(String uri, String prefix, String localPart)
-   {
-      if (localPart.indexOf('-') != -1)
-      {
-         localPart = localPart.replace('-', '_');
-      }
-      return Enum.valueOf(enumType, localPart);
+      return new AbstractStaxNavigator<E>(new Naming.Enumerated<E>(enumType), in);
    }
 }

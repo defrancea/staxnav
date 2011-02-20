@@ -36,14 +36,17 @@ import java.util.Map;
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
  */
-public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
+class AbstractStaxNavigator<N> implements StaxNavigator<N>
 {
+
+   private final Naming<N> naming;
    private InputStream is;
    private XMLTokenizer tokenizer;
    private Stack state;
 
-   public AbstractStaxNavigator(final InputStream is)
+   AbstractStaxNavigator(Naming<N> naming, final InputStream is)
    {
+      this.naming = naming;
       this.is = is;
       this.state = new Stack();
    }
@@ -67,7 +70,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      return name.equals(_next(getURI(name), getLocalPart(name)));
+      return name.equals(_next(naming.getURI(name), naming.getLocalPart(name)));
    }
 
    private N _next(final String namespaceURI, final String localPart) throws XMLStreamException
@@ -118,7 +121,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      return name.equals(_child(getURI(name), getLocalPart(name)));
+      return name.equals(_child(naming.getURI(name), naming.getLocalPart(name)));
    }
 
    public String getAttribute(String name) throws NullPointerException, IllegalStateException
@@ -181,7 +184,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      return _descendant(getURI(name), getLocalPart(name));
+      return _descendant(naming.getURI(name), naming.getLocalPart(name));
    }
 
    public int _descendant(final String namespaceURI, final String localPart) throws NullPointerException, XMLStreamException
@@ -233,7 +236,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    public boolean sibling(N name) throws NullPointerException, XMLStreamException
    {
-      return name.equals(_sibling(getURI(name), getLocalPart(name)));
+      return name.equals(_sibling(naming.getURI(name), naming.getLocalPart(name)));
    }
 
    private N _sibling(final String namespaceURI, final String name) throws XMLStreamException
@@ -378,7 +381,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          else
          {
             Element p = peek();
-            return (namespaceURI == null || namespaceURI.equals(getURI(p.name))) && localPart.equals(getLocalPart(p.name));
+            return (namespaceURI == null || namespaceURI.equals(naming.getURI(p.name))) && localPart.equals(naming.getLocalPart(p.name));
          }
       }
 
@@ -389,7 +392,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
       private String peekURI()
       {
-         return getURI(peek().name);
+         return naming.getURI(peek().name);
       }
 
       private String peekValue()
@@ -410,7 +413,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          String prefix = start.getPrefix();
          String uri = start.getNamespaceURI();
          String localPart = start.getLocalPart();
-         N name = getName(uri, prefix, localPart);
+         N name = naming.getName(uri, prefix, localPart);
 
          //
          Element element = new Element(current, name);
@@ -462,14 +465,6 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          current = current.parent;
       }
    }
-
-   protected abstract String getLocalPart(N name);
-
-   protected abstract String getURI(N name);
-
-   protected abstract String getPrefix(N name);
-
-   protected abstract N getName(String uri, String prefix, String localPart);
 
    class Element implements ElementVisitor
    {

@@ -17,8 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import org.staxnav.QualifedStaxNavigator;
 import org.staxnav.StaxNavigator;
+import org.staxnav.StaxNavigatorFactory;
 
 import javax.xml.namespace.QName;
 import java.io.InputStream;
@@ -33,7 +33,7 @@ public class QualifiedBrowseTestCase extends AbstractBrowseTestCase<QName>
    @Override
    protected StaxNavigator<QName> createNavigator(InputStream is)
    {
-      return new QualifedStaxNavigator(is);
+      return StaxNavigatorFactory.newQualifiedStaxNavigator(is);
    }
 
    @Override
