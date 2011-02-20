@@ -19,7 +19,7 @@
 
 package org.staxnav;
 
-import org.staxnav.xml.AttributeContainer;
+import org.staxnav.xml.ElementVisitor;
 import org.staxnav.xml.XMLTokenType;
 import org.staxnav.xml.XMLTokenizer;
 import org.staxnav.xml.event.EventXMLTokenizer;
@@ -416,7 +416,7 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          Element element = new Element(current, name);
 
          //
-         reader.fillAttributes(element);
+         reader.visitElement(element);
 
          //
          reader.next();
@@ -471,13 +471,14 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
 
    protected abstract N getName(String uri, String prefix, String localPart);
 
-   class Element implements AttributeContainer
+   class Element implements ElementVisitor
    {
 
       final Element parent;
       final N name;
       String value;
       private Map<String, String> attributes;
+      private Map<String, String> namespaces;
 
       protected Element(N name)
       {
@@ -490,19 +491,35 @@ public abstract class AbstractStaxNavigator<N> implements StaxNavigator<N>
          this.name = name;
          this.value = null;
          this.attributes = Collections.emptyMap();
+         this.namespaces = Collections.emptyMap();
       }
 
-      public void start()
+      public void startAttributes()
       {
          attributes = new HashMap<String, String>();
       }
 
-      public void add(QName name, String value)
+      public void addAttribute(QName name, String value)
       {
          attributes.put(name.getLocalPart(), value);
       }
 
-      public void end()
+      public void endAttributes()
+      {
+         // Nothing to do
+      }
+
+      public void startNamespaces()
+      {
+         namespaces = new HashMap<String, String>();
+      }
+
+      public void addNamespace(String prefix, String namespaceURI)
+      {
+         namespaces.put(prefix,  namespaceURI);
+      }
+
+      public void endNamespaces()
       {
          // Nothing to do
       }

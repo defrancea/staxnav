@@ -19,23 +19,20 @@
 
 package org.staxnav.xml.event;
 
-import org.staxnav.xml.AttributeContainer;
+import org.staxnav.xml.ElementVisitor;
 import org.staxnav.xml.XMLTokenType;
 import org.staxnav.xml.XMLTokenizer;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -217,20 +214,60 @@ public class EventXMLTokenizer implements XMLTokenizer
       }
    }
 
-   public void fillAttributes(AttributeContainer container) throws IllegalStateException, XMLStreamException
+   public void visitElement(ElementVisitor container) throws IllegalStateException, XMLStreamException
    {
       XMLEvent current = peekEvent();
       if (current instanceof StartElement)
       {
          StartElement start = (StartElement)current;
-         Iterator<Attribute> i = start.getAttributes();
+
+         //
+         Iterator<Attribute> attributes = start.getAttributes();
+         if (attributes.hasNext())
+         {
+            container.startAttributes();
+            while (attributes.hasNext())
+            {
+               Attribute attribute = attributes.next();
+               container.addAttribute(attribute.getName(), attribute.getValue());
+            }
+            container.endAttributes();
+         }
+
+         //
+         Iterator<Namespace> namespaces = start.getNamespaces();
+         if (namespaces.hasNext())
+         {
+            container.startNamespaces();
+            while (namespaces.hasNext())
+            {
+               Namespace namespace = namespaces.next();
+               container.addNamespace(namespace.getPrefix(), namespace.getNamespaceURI());
+            }
+            container.endNamespaces();
+         }
+      }
+      else
+      {
+         throw new IllegalStateException();
+      }
+   }
+
+/*
+   public void fillNamespaces(NamespaceContainer container) throws IllegalStateException, XMLStreamException
+   {
+      XMLEvent current = peekEvent();
+      if (current instanceof StartElement)
+      {
+         StartElement start = (StartElement)current;
+         Iterator<Namespace> i = start.getNamespaces();
          if (i.hasNext())
          {
             container.start();
             while (i.hasNext())
             {
-               Attribute attribute = i.next();
-               container.add(attribute.getName(), attribute.getValue());
+               Namespace namespace = i.next();
+               container.add(namespace.getPrefix(), namespace.getNamespaceURI());
             }
             container.end();
          }
@@ -240,6 +277,7 @@ public class EventXMLTokenizer implements XMLTokenizer
          throw new IllegalStateException();
       }
    }
+*/
 
    public String getCharacters() throws IllegalStateException, XMLStreamException
    {

@@ -45,7 +45,7 @@ public interface XMLTokenizer
 
    QName getElementName() throws IllegalStateException, XMLStreamException;
 
-   void fillAttributes(AttributeContainer container) throws IllegalStateException, XMLStreamException;
+   void visitElement(ElementVisitor container) throws IllegalStateException, XMLStreamException;
 
    String getCharacters() throws IllegalStateException, XMLStreamException;
 

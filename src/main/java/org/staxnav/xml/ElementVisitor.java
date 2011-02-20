@@ -27,12 +27,18 @@ import javax.xml.namespace.QName;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public interface AttributeContainer
+public interface ElementVisitor
 {
 
-   void start();
+   void startAttributes();
 
-   void add(QName name, String value);
+   void addAttribute(QName name, String value);
 
-   void end();
+   void endAttributes();
+
+   void startNamespaces();
+
+   void addNamespace(String prefix, String namespaceURI);
+
+   void endNamespaces();
 }
