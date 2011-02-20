@@ -464,12 +464,26 @@ class AbstractStaxNavigator<N> implements StaxNavigator<N>
    class Element implements ElementVisitor
    {
 
+      /** The element parent. */
       final Element parent;
+
+      /** The element name. */
       final N name;
+
+      /** The current element depth. */
       final int depth;
+
+      /** An approximation of the element content. */
       String value;
+
+      /** The attribute map. */
       private Map<String, String> attributes;
+
+      /** The namespace map. */
       private Map<String, String> namespaces;
+
+      /** The next element if not null, this element was already computed. */
+      private Element next;
 
       protected Element(N name)
       {
