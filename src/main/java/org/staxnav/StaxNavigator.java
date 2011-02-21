@@ -19,8 +19,6 @@
 
 package org.staxnav;
 
-import javax.xml.stream.XMLStreamException;
-
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
@@ -33,17 +31,17 @@ public interface StaxNavigator<N>
     * Returns the current navigated element name.
     *
     * @return the element name
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   N getName() throws XMLStreamException;
+   N getName() throws StaxNavException;
 
    /**
     * Returns the current navigated element depth.
     *
     * @return the element level
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   int getDepth() throws XMLStreamException;
+   int getDepth() throws StaxNavException;
 
    /**
     * Returns the current navigated element textual content. Note that this method is only valid when an element
@@ -51,103 +49,109 @@ public interface StaxNavigator<N>
     * it would likely return the first chunk of text found.
     *
     * @return the element text content
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   String getContent() throws XMLStreamException;
+   String getContent() throws StaxNavException;
 
    /**
     * Attemps to navigate to an element following the current one when it has the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happen and the method return false.
     *
+    *
     * @param name the element name to find
     * @return true if the desired element is reached
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   boolean find(N name) throws XMLStreamException;
+   boolean find(N name) throws StaxNavException;
 
    /**
     * Navigates to the next element and returns its name.
     *
     * @return the element name
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   N next() throws XMLStreamException;
+   N next() throws StaxNavException;
 
    /**
     * Attempt to navigate to the next element when it has the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happen and the method return false.
     *
+    *
     * @param name the desired element name
     * @return true if the desired element is reached
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   boolean next(N name) throws XMLStreamException;
+   boolean next(N name) throws StaxNavException;
 
    /**
     * Attempts to navigate to the first child found and return its name. If no such child exist then null
     * is returned.
     *
     * @return the child name
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   N child() throws XMLStreamException;
+   N child() throws StaxNavException;
 
    /**
     * Attempts to navigate to the first child with the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happen and the method return false.
     *
+    *
     * @param name the child name
     * @return true if the desired element is reached
     * @throws NullPointerException if the name argument is null
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   boolean child(N name) throws NullPointerException, XMLStreamException;
+   boolean child(N name) throws NullPointerException, StaxNavException;
 
    /**
     * Returns an attribute of the current element or null if such attribute does not exist.
+    *
     *
     * @param name the attribute name
     * @return the attribute value
     * @throws NullPointerException if the name argument is null
     * @throws IllegalStateException if no element is currently navigated
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   String getAttribute(String name) throws NullPointerException, IllegalStateException, XMLStreamException;
+   String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException;
 
    /**
     * Returns a namespace URI by its prefix or return null if it is not bound.
     *
     *
+    *
     * @param prefix the prefix
     * @return the corresponding namespace URI
     * @throws NullPointerException if the prefix is null
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   String getNamespaceByPrefix(String prefix) throws NullPointerException, XMLStreamException;
+   String getNamespaceByPrefix(String prefix) throws NullPointerException, StaxNavException;
 
    /**
     * Attempt to navigate to the next sibling and return its name. If no such sibling exists
     * then null is returned.
     *
     * @return the next sibling name
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   N sibling() throws XMLStreamException;
+   N sibling() throws StaxNavException;
 
    /**
     * Attempts to navigate to the next sibling with the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happen and the method return false.
     *
+    *
     * @param name the next sibling name
     * @return true if the desired element is reached
     * @throws NullPointerException if the name argument is null
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   boolean sibling(N name) throws NullPointerException, XMLStreamException;
+   boolean sibling(N name) throws NullPointerException, StaxNavException;
 
    /**
     * Attempts to navigate to the first descendant with the specified name. The returned value should be interpreted as:
@@ -156,10 +160,11 @@ public interface StaxNavigator<N>
     * <li>any other value is the difference of depth between the two elements</li>
     * </ul>
     *
+    *
     * @param name the descendant name
     * @return the
     * @throws NullPointerException if the name is null
-    * @throws XMLStreamException any underlying XMLStreamException
+    * @throws StaxNavException any StaxNavException
     */
-   int descendant(N name) throws NullPointerException, XMLStreamException;
+   int descendant(N name) throws NullPointerException, StaxNavException;
 }

@@ -60,29 +60,36 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       this.current = null;
    }
 
-   private Element getCurrent() throws XMLStreamException
+   private Element getCurrent() throws StaxNavException
    {
-      // Lazy initialization
-      if (current == null)
+      try
       {
-         // Find the tail
-         Element tail = null;
-         while (stream.hasNext())
+// Lazy initialization
+         if (current == null)
          {
-            int type = stream.getEventType();
-            if (type == XMLStreamConstants.START_ELEMENT)
+            // Find the tail
+            Element tail = null;
+            while (stream.hasNext())
             {
-               tail = new Element();
-               break;
+               int type = stream.getEventType();
+               if (type == XMLStreamConstants.START_ELEMENT)
+               {
+                  tail = new Element();
+                  break;
+               }
+               else
+               {
+                  stream.next();
+               }
             }
-            else
-            {
-               stream.next();
-            }
+            current = tail;
          }
-         current = tail;
+         return current;
       }
-      return current;
+      catch (XMLStreamException e)
+      {
+         throw new StaxNavException(e);
+      }
    }
 
    private void setCurrent(Element current)
@@ -90,27 +97,27 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       this.current = current;
    }
 
-   public N getName() throws XMLStreamException
+   public N getName() throws StaxNavException
    {
       return naming.getName(getCurrent().name);
    }
 
-   public int getDepth() throws XMLStreamException
+   public int getDepth() throws StaxNavException
    {
       return getCurrent().depth;
    }
 
-   public String getContent() throws XMLStreamException
+   public String getContent() throws StaxNavException
    {
       return getCurrent().content.toString();
    }
 
-   public String getAttribute(String name) throws XMLStreamException
+   public String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException
    {
       return getCurrent().attributes.get(name);
    }
 
-   public String getNamespaceByPrefix(String prefix) throws NullPointerException, XMLStreamException
+   public String getNamespaceByPrefix(String prefix) throws NullPointerException, StaxNavException
    {
       if (prefix == null)
       {
@@ -119,12 +126,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return getCurrent().getNamespaceByPrefix(prefix);
    }
 
-   public N next() throws XMLStreamException
+   public N next() throws StaxNavException
    {
       return next(null, null);
    }
 
-   public boolean next(N name) throws XMLStreamException
+   public boolean next(N name) throws StaxNavException
    {
       if (name == null)
       {
@@ -133,7 +140,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return name.equals(next(naming.getURI(name), naming.getLocalPart(name)));
    }
 
-   public N next(String namespaceURI, String localPart) throws XMLStreamException
+   public N next(String namespaceURI, String localPart) throws StaxNavException
    {
       Element next = getCurrent().next();
       if (next != null && next.hasName(namespaceURI, localPart))
@@ -147,7 +154,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
    }
 
-   public boolean find(N name) throws NullPointerException, XMLStreamException
+   public boolean find(N name) throws StaxNavException
    {
       if (name == null)
       {
@@ -156,7 +163,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return name.equals(find(naming.getURI(name), naming.getLocalPart(name)));
    }
 
-   public N find(String namespaceURI, String localPart) throws XMLStreamException
+   public N find(String namespaceURI, String localPart) throws StaxNavException
    {
       Element element = getCurrent();
       while (true)
@@ -182,12 +189,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return null;
    }
 
-   public N child() throws XMLStreamException
+   public N child() throws StaxNavException
    {
       return child(null, null);
    }
 
-   public boolean child(N name) throws NullPointerException, XMLStreamException
+   public boolean child(N name) throws NullPointerException, StaxNavException
    {
       if (name == null)
       {
@@ -196,7 +203,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return name.equals(child(naming.getURI(name), naming.getLocalPart(name)));
    }
 
-   public N child(String namespaceURI, String localPart) throws XMLStreamException
+   public N child(String namespaceURI, String localPart) throws StaxNavException
    {
       Element element = getCurrent();
       while (true)
@@ -222,17 +229,17 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return null;
    }
 
-   public N sibling() throws XMLStreamException
+   public N sibling() throws StaxNavException
    {
       return sibling(null, null);
    }
 
-   public boolean sibling(N name) throws NullPointerException, XMLStreamException
+   public boolean sibling(N name) throws NullPointerException, StaxNavException
    {
       return name.equals(sibling(naming.getURI(name), naming.getLocalPart(name)));
    }
 
-   public N sibling(String namespaceURI, String localPart) throws XMLStreamException
+   public N sibling(String namespaceURI, String localPart) throws StaxNavException
    {
       Element element = getCurrent();
       while (true)
@@ -258,7 +265,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return null;
    }
 
-   public int descendant(N name) throws NullPointerException, XMLStreamException
+   public int descendant(N name) throws NullPointerException, StaxNavException
    {
       if (name == null)
       {
@@ -267,7 +274,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return descendant(naming.getURI(name), naming.getLocalPart(name));
    }
 
-   public int descendant(String namespaceURI, String localPart) throws XMLStreamException
+   public int descendant(String namespaceURI, String localPart) throws StaxNavException
    {
       Element element = getCurrent();
       while (true)
@@ -432,35 +439,42 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          return null;
       }
 
-      private Element next() throws XMLStreamException
+      private Element next() throws StaxNavException
       {
-         if (next == null)
+         try
          {
-            Element parent = this;
-            while (true)
+            if (next == null)
             {
-               int type = stream.getEventType();
-               if (type == XMLStreamConstants.START_ELEMENT)
+               Element parent = this;
+               while (true)
                {
-                  next = new Element(parent);
-                  break;
-               }
-               else if (type == XMLStreamConstants.END_ELEMENT)
-               {
-                  parent = parent.parent;
-                  stream.next();
-               }
-               else if (type == XMLStreamConstants.END_DOCUMENT)
-               {
-                  break;
-               }
-               else
-               {
-                  stream.next();
+                  int type = stream.getEventType();
+                  if (type == XMLStreamConstants.START_ELEMENT)
+                  {
+                     next = new Element(parent);
+                     break;
+                  }
+                  else if (type == XMLStreamConstants.END_ELEMENT)
+                  {
+                     parent = parent.parent;
+                     stream.next();
+                  }
+                  else if (type == XMLStreamConstants.END_DOCUMENT)
+                  {
+                     break;
+                  }
+                  else
+                  {
+                     stream.next();
+                  }
                }
             }
+            return next;
          }
-         return next;
+         catch (XMLStreamException e)
+         {
+            throw new StaxNavException(e);
+         }
       }
    }
 }
