@@ -138,6 +138,41 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
    }
 
+   public boolean find(N name) throws NullPointerException, XMLStreamException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+      return name.equals(find(naming.getURI(name), naming.getLocalPart(name)));
+   }
+
+   public N find(String namespaceURI, String localPart) throws XMLStreamException
+   {
+      Element element = getCurrent();
+      while (true)
+      {
+         Element next = element.next();
+         if (next != null)
+         {
+            if (next.hasName(namespaceURI, localPart))
+            {
+               setCurrent(next);
+               return naming.getName(next.name);
+            }
+            else
+            {
+               element = next;
+            }
+         }
+         else
+         {
+            break;
+         }
+      }
+      return null;
+   }
+
    public N child() throws XMLStreamException
    {
       return child(null, null);

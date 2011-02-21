@@ -56,6 +56,17 @@ public interface StaxNavigator<N>
    String getContent() throws XMLStreamException;
 
    /**
+    * Attemps to navigate to an element following the current one when it has the specified name.
+    * If the navigation occurs, the navigator now points to that element and the method returns true.
+    * Otherwise no navigation happen and the method return false.
+    *
+    * @param name the element name to find
+    * @return true if the desired element is reached
+    * @throws XMLStreamException any underlying XMLStreamException
+    */
+   boolean find(N name) throws XMLStreamException;
+
+   /**
     * Navigates to the next element and returns its name.
     *
     * @return the element name
@@ -65,11 +76,11 @@ public interface StaxNavigator<N>
 
    /**
     * Attempt to navigate to the next element when it has the specified name.
-    * If the navigation occurs, the navigator now points to the next element with the specified name
-    * and the method returns true. Otherwise no navigation happens and the method returns false.
+    * If the navigation occurs, the navigator now points to that element and the method returns true.
+    * Otherwise no navigation happen and the method return false.
     *
     * @param name the desired element name
-    * @return true if the element is reached
+    * @return true if the desired element is reached
     * @throws XMLStreamException any underlying XMLStreamException
     */
    boolean next(N name) throws XMLStreamException;
@@ -85,11 +96,11 @@ public interface StaxNavigator<N>
 
    /**
     * Attempts to navigate to the first child with the specified name.
-    * If the navigation occurs, the navigator now points to the first child with the specified name
-    * and the method returns true. Otherwise no navigation happens and the method returns false.
+    * If the navigation occurs, the navigator now points to that element and the method returns true.
+    * Otherwise no navigation happen and the method return false.
     *
     * @param name the child name
-    * @return true when the child is found
+    * @return true if the desired element is reached
     * @throws NullPointerException if the name argument is null
     * @throws XMLStreamException any underlying XMLStreamException
     */
@@ -102,6 +113,7 @@ public interface StaxNavigator<N>
     * @return the attribute value
     * @throws NullPointerException if the name argument is null
     * @throws IllegalStateException if no element is currently navigated
+    * @throws XMLStreamException any underlying XMLStreamException
     */
    String getAttribute(String name) throws NullPointerException, IllegalStateException, XMLStreamException;
 
@@ -116,11 +128,11 @@ public interface StaxNavigator<N>
 
    /**
     * Attempts to navigate to the next sibling with the specified name.
-    * If the navigation occurs, the navigator now points to the next sibling with the specified name
-    * and the method returns true. Otherwise no navigation happens and the method returns false.
+    * If the navigation occurs, the navigator now points to that element and the method returns true.
+    * Otherwise no navigation happen and the method return false.
     *
     * @param name the next sibling name
-    * @return true when the next sibling is found
+    * @return true if the desired element is reached
     * @throws NullPointerException if the name argument is null
     * @throws XMLStreamException any underlying XMLStreamException
     */
