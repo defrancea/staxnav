@@ -31,7 +31,7 @@ import java.util.Map;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class StaxNavigatorImpl<N>
+public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 {
 
    /** . */
@@ -95,7 +95,7 @@ public class StaxNavigatorImpl<N>
       return naming.getName(getCurrent().name);
    }
 
-   public int getLevel() throws XMLStreamException
+   public int getDepth() throws XMLStreamException
    {
       return getCurrent().depth;
    }

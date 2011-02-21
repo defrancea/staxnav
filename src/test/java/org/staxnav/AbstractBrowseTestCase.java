@@ -65,7 +65,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
    public void testInit() throws Exception
    {
       assertNameEquals("foo1", navigator.getName());
-      assertEquals(1, navigator.getLevel());
+      assertEquals(1, navigator.getDepth());
    }
 
    public void testContent() throws Exception
@@ -88,7 +88,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertNameEquals("foo1", navigator.getName());
       assertNameEquals("bar1", navigator.child());
       assertNameEquals("bar1", navigator.getName());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
    }
 
    public void testChildWithName() throws Exception
@@ -96,7 +96,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertNameEquals("foo1", navigator.getName());
       assertEquals(true, navigator.child(createName("foobar1")));
       assertNameEquals("foobar1", navigator.getName());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
    }
 
    public void testChildOver() throws Exception
@@ -114,7 +114,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertEquals(true, navigator.child(createName("foo2")));
       assertFalse(navigator.child(createName("donotexist")));
       assertNameEquals("foo2", navigator.getName());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
       assertEquals(true, navigator.sibling(createName("foobar1")));
       assertNameEquals("foobar2", navigator.sibling());
    }
@@ -125,20 +125,20 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertNameEquals("bar1", navigator.child());
       assertNameEquals("foo2", navigator.sibling());
       assertNameEquals("foo2", navigator.getName());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
       assertNameEquals("foobar1", navigator.sibling());
       assertNameEquals("foobar1", navigator.getName());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
    }
 
    public void testsiblingWithName() throws Exception
    {
       assertNameEquals("foo1", navigator.getName());
       assertNameEquals("bar1", navigator.child());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
       assertEquals(true, navigator.sibling(createName("foobar1")));
       assertNameEquals("foobar1", navigator.getName());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
    }
 
    public void testsiblingOver() throws Exception
@@ -176,11 +176,11 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertNameEquals("foo2", navigator.getName());
       assertFalse(navigator.sibling(createName("donotexist")));
       assertNameEquals("foo2", navigator.getName());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
       assertEquals(true, navigator.sibling(createName("foobar1")));
       assertNameEquals("foobar1", navigator.getName());
 //      assertEquals("3", navigator.getContent());
-      assertEquals(2, navigator.getLevel());
+      assertEquals(2, navigator.getDepth());
       assertNameEquals("foobar2", navigator.sibling());
    }
 
@@ -204,7 +204,7 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       assertNameEquals("bar2", navigator.getName());
       assertFalse(navigator.sibling(createName("donotexist")));
       assertNameEquals("bar2", navigator.getName());
-      assertEquals(3, navigator.getLevel());
+      assertEquals(3, navigator.getDepth());
       assertEquals("b", navigator.getAttribute("a"));
       assertEquals("c", navigator.getAttribute("b"));
       assertEquals(null, navigator.getAttribute("donotexists"));

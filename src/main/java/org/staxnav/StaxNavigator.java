@@ -33,15 +33,17 @@ public interface StaxNavigator<N>
     * Returns the current navigated element name.
     *
     * @return the element name
+    * @throws XMLStreamException any underlying XMLStreamException
     */
-   N getName();
+   N getName() throws XMLStreamException;
 
    /**
-    * Returns the current navigated element level.
+    * Returns the current navigated element depth.
     *
     * @return the element level
+    * @throws XMLStreamException any underlying XMLStreamException
     */
-   int getLevel();
+   int getDepth() throws XMLStreamException;
 
    /**
     * Returns the current navigated element textual content. Note that this method is only valid when an element
@@ -49,22 +51,9 @@ public interface StaxNavigator<N>
     * it would likely return the first chunk of text found.
     *
     * @return the element text content
+    * @throws XMLStreamException any underlying XMLStreamException
     */
-   String getContent();
-
-   String getTrimmedContent();
-
-   /**
-    * Parse the current content to the specified value type.
-    *
-    * @param valueType the value type to parse to
-    * @param <V> the value generic type
-    * @return the parsed value
-    * @throws NullPointerException if the value type is null
-    * @throws IllegalStateException if the navigator is not navigated to a content container
-    * @throws TypeConversionException anything that would prevent type conversion to happen
-    */
-   <V> V parseContent(ValueType<V> valueType) throws NullPointerException, IllegalStateException, TypeConversionException;
+   String getContent() throws XMLStreamException;
 
    /**
     * Navigates to the next element and returns its name.
@@ -114,7 +103,7 @@ public interface StaxNavigator<N>
     * @throws NullPointerException if the name argument is null
     * @throws IllegalStateException if no element is currently navigated
     */
-   String getAttribute(String name) throws NullPointerException, IllegalStateException;
+   String getAttribute(String name) throws NullPointerException, IllegalStateException, XMLStreamException;
 
    /**
     * Attempt to navigate to the next sibling and return its name. If no such sibling exists
