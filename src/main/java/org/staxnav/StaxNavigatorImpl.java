@@ -57,45 +57,57 @@ public class StaxNavigatorImpl<N>
       //
       this.naming = naming;
       this.stream = stream;
+      this.current = null;
+   }
 
-      // Find the tail
-      Element tail = null;
-      while (stream.hasNext())
+   private Element getCurrent() throws XMLStreamException
+   {
+      // Lazy initialization
+      if (current == null)
       {
-         int type = stream.getEventType();
-         if (type == XMLStreamConstants.START_ELEMENT)
+         // Find the tail
+         Element tail = null;
+         while (stream.hasNext())
          {
-            tail = new Element();
-            break;
+            int type = stream.getEventType();
+            if (type == XMLStreamConstants.START_ELEMENT)
+            {
+               tail = new Element();
+               break;
+            }
+            else
+            {
+               stream.next();
+            }
          }
-         else
-         {
-            stream.next();
-         }
+         current = tail;
       }
+      return current;
+   }
 
-      //
-      this.current = tail;
+   private void setCurrent(Element current)
+   {
+      this.current = current;
    }
 
    public N getName() throws XMLStreamException
    {
-      return naming.getName(current.name);
+      return naming.getName(getCurrent().name);
    }
 
    public int getLevel() throws XMLStreamException
    {
-      return current.depth;
+      return getCurrent().depth;
    }
 
-   public String getContent()
+   public String getContent() throws XMLStreamException
    {
-      return current.content.toString();
+      return getCurrent().content.toString();
    }
 
-   public String getAttribute(String name)
+   public String getAttribute(String name) throws XMLStreamException
    {
-      return current.attributes.get(name);
+      return getCurrent().attributes.get(name);
    }
 
    public N next() throws XMLStreamException
@@ -114,10 +126,10 @@ public class StaxNavigatorImpl<N>
 
    public N next(String namespaceURI, String localPart) throws XMLStreamException
    {
-      Element next = current.next();
+      Element next = getCurrent().next();
       if (next != null && next.hasName(namespaceURI, localPart))
       {
-         current = next;
+         setCurrent(next);
          return naming.getName(next.name);
       }
       else
@@ -142,15 +154,15 @@ public class StaxNavigatorImpl<N>
 
    public N child(String namespaceURI, String localPart) throws XMLStreamException
    {
-      Element element = current;
+      Element element = getCurrent();
       while (true)
       {
          Element next = element.next();
-         if (next != null && next.depth > current.depth)
+         if (next != null && next.depth > getCurrent().depth)
          {
-            if (next.depth == current.depth + 1 && next.hasName(namespaceURI, localPart))
+            if (next.depth == getCurrent().depth + 1 && next.hasName(namespaceURI, localPart))
             {
-               current = next;
+               setCurrent(next);
                return naming.getName(next.name);
             }
             else
@@ -178,15 +190,15 @@ public class StaxNavigatorImpl<N>
 
    public N sibling(String namespaceURI, String localPart) throws XMLStreamException
    {
-      Element element = current;
+      Element element = getCurrent();
       while (true)
       {
          Element next = element.next();
-         if (next != null && next.depth >= current.depth)
+         if (next != null && next.depth >= getCurrent().depth)
          {
-            if (next.depth == current.depth && next.hasName(namespaceURI, localPart))
+            if (next.depth == getCurrent().depth && next.hasName(namespaceURI, localPart))
             {
-               current = next;
+               setCurrent(next);
                return naming.getName(next.name);
             }
             else
@@ -213,16 +225,16 @@ public class StaxNavigatorImpl<N>
 
    public int descendant(String namespaceURI, String localPart) throws XMLStreamException
    {
-      Element element = current;
+      Element element = getCurrent();
       while (true)
       {
          Element next = element.next();
-         if (next != null && next.depth >= current.depth)
+         if (next != null && next.depth >= getCurrent().depth)
          {
             if (next.hasName(namespaceURI, localPart))
             {
-               int diff = next.depth - current.depth;
-               current = next;
+               int diff = next.depth - getCurrent().depth;
+               setCurrent(next);
                return diff;
             }
             else
