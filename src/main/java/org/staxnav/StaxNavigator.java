@@ -118,11 +118,13 @@ public interface StaxNavigator<N>
    String getAttribute(String name) throws NullPointerException, IllegalStateException, XMLStreamException;
 
    /**
+    * Returns a namespace URI by its prefix or return null if it is not bound.
     *
-    * @param prefix
-    * @return
-    * @throws NullPointerException
-    * @throws XMLStreamException
+    *
+    * @param prefix the prefix
+    * @return the corresponding namespace URI
+    * @throws NullPointerException if the prefix is null
+    * @throws XMLStreamException any underlying XMLStreamException
     */
    String getNamespaceByPrefix(String prefix) throws NullPointerException, XMLStreamException;
 
