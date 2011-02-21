@@ -66,7 +66,7 @@ public interface StaxNavigator<N>
    boolean find(N name) throws StaxNavException;
 
    /**
-    * Navigates to the next element and returns its name.
+    * Navigates to the next element and returns its name or null if the end of the stream is reached.
     *
     * @return the element name
     * @throws StaxNavException any StaxNavException
