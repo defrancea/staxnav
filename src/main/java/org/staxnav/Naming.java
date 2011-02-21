@@ -25,7 +25,7 @@ import javax.xml.namespace.QName;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-abstract class Naming<N>
+public abstract class Naming<N>
 {
 
    abstract String getLocalPart(N name);
@@ -38,7 +38,7 @@ abstract class Naming<N>
 
    abstract N getName(String uri, String prefix, String localPart);
 
-   static class Local extends Naming<String>
+   public static class Local extends Naming<String>
    {
 
       @Override
@@ -72,7 +72,7 @@ abstract class Naming<N>
       }
    }
 
-   static class Qualified extends Naming<QName>
+   public static class Qualified extends Naming<QName>
    {
 
       @Override
@@ -106,13 +106,13 @@ abstract class Naming<N>
       }
    }
 
-   static class Enumerated<E extends Enum<E>> extends Naming<E>
+   public static class Enumerated<E extends Enum<E>> extends Naming<E>
    {
 
       /** . */
       private final Class<E> enumType;
 
-      Enumerated(Class<E> enumType)
+      public Enumerated(Class<E> enumType)
       {
          this.enumType = enumType;
       }
