@@ -118,6 +118,15 @@ public interface StaxNavigator<N>
    String getAttribute(String name) throws NullPointerException, IllegalStateException, XMLStreamException;
 
    /**
+    *
+    * @param prefix
+    * @return
+    * @throws NullPointerException
+    * @throws XMLStreamException
+    */
+   String getNamespaceByPrefix(String prefix) throws NullPointerException, XMLStreamException;
+
+   /**
     * Attempt to navigate to the next sibling and return its name. If no such sibling exists
     * then null is returned.
     *

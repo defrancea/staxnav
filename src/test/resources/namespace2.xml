@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<foo xmlns:ns="http://www.w3.org/TR/html4/">
+  <bar xmlns:ns="http://www.w3.org/2000/svg">
+    <juu></juu>
+  </bar>
+</foo>

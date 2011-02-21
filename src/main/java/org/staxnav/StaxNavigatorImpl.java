@@ -110,6 +110,15 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return getCurrent().attributes.get(name);
    }
 
+   public String getNamespaceByPrefix(String prefix) throws NullPointerException, XMLStreamException
+   {
+      if (prefix == null)
+      {
+         throw new NullPointerException();
+      }
+      return getCurrent().getNamespaceByPrefix(prefix);
+   }
+
    public N next() throws XMLStreamException
    {
       return next(null, null);
@@ -301,10 +310,13 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       private final StringBuilder content;
 
       /** . */
-      private Element next;
+      private final Map<String, String> attributes;
 
       /** . */
-      private Map<String, String> attributes;
+      private final Map<String, String> namespaces;
+
+      /** . */
+      private Element next;
 
       private Element() throws XMLStreamException
       {
@@ -341,6 +353,28 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
             attributes = Collections.emptyMap();
          }
 
+         //
+         Map<String, String> namespaces;
+         int namespaceCount = stream.getNamespaceCount();
+         if (namespaceCount > 0)
+         {
+            namespaces = new HashMap<String, String>();
+            for (int i = 0;i < namespaceCount;i++)
+            {
+               String namespacePrefix = stream.getNamespacePrefix(i);
+               if (namespacePrefix == null)
+               {
+                  namespacePrefix = "";
+               }
+               String namespaceURI = stream.getNamespaceURI(i);
+               namespaces.put(namespacePrefix, namespaceURI);
+            }
+         }
+         else
+         {
+            namespaces = Collections.emptyMap();
+         }
+
          // When we leave we assume that we are positionned on the next element start or the document end
          StringBuilder sb = null;
          while (true)
@@ -370,6 +404,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          this.depth = depth;
          this.content = sb;
          this.attributes = attributes;
+         this.namespaces = namespaces;
       }
 
       private boolean hasName(String namespaceURI, String localPart)
@@ -384,7 +419,20 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          }
       }
 
-      protected Element next() throws XMLStreamException
+      private String getNamespaceByPrefix(String namespacePrefix)
+      {
+         for (Element current = this;current != null;current = current.parent)
+         {
+            String namespaceURI = current.namespaces.get(namespacePrefix);
+            if (namespaceURI != null)
+            {
+               return namespaceURI;
+            }
+         }
+         return null;
+      }
+
+      private Element next() throws XMLStreamException
       {
          if (next == null)
          {
