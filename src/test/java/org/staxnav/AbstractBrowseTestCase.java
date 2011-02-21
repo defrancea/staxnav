@@ -18,7 +18,6 @@ package org.staxnav;/*
 */
 
 import junit.framework.TestCase;
-import org.staxnav.xml.event.EventXMLTokenizer;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
