@@ -67,14 +67,6 @@ public interface StaxNavigator<N>
    <V> V parseContent(ValueType<V> valueType) throws NullPointerException, IllegalStateException, TypeConversionException;
 
    /**
-    * Initialize the parsing and returns the root name found.
-    *
-    * @return the root name
-    * @throws XMLStreamException any underlying XMLStreamException
-    */
-   N root() throws XMLStreamException;
-
-   /**
     * Navigates to the next element and returns its name.
     *
     * @return the element name
