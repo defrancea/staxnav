@@ -56,13 +56,13 @@ public abstract class Naming<N>
       @Override
       protected String getPrefix(String name)
       {
-         return name == null ? null : "";
+         return "";
       }
 
       @Override
       protected String getURI(String name)
       {
-         return name == null ? null : "";
+         return null;
       }
 
       @Override
@@ -120,7 +120,7 @@ public abstract class Naming<N>
       @Override
       E getName(QName name)
       {
-         return name == null ? null : getName(name.getNamespaceURI(), name.getPrefix(), name.getLocalPart());
+         return name == null ? null : getName(null, null, name.getLocalPart());
       }
 
       @Override
@@ -137,13 +137,13 @@ public abstract class Naming<N>
       @Override
       protected String getURI(E name)
       {
-         return name == null ? null : "";
+         return null;
       }
 
       @Override
       protected String getPrefix(E name)
       {
-         return name == null ? null : "";
+         return "";
       }
 
       @Override

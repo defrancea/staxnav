@@ -47,4 +47,23 @@ public class NamespaceTestCase extends StaxNavigatorTestCase
       assertEquals("juu", navigator.next());
       assertEquals("http://www.w3.org/2000/svg", navigator.getNamespaceByPrefix("ns"));
    }
+
+   static enum Name
+   {
+      foo, bar, juu
+   }
+
+   public void testC() throws Exception
+   {
+      StaxNavigator<Name> navigator = navigator(new Naming.Enumerated<Name>(Name.class), "namespace1.xml");
+      assertEquals(Name.foo, navigator.getName());
+      assertEquals(true, navigator.next(Name.bar));
+   }
+
+   public void testD() throws Exception
+   {
+      StaxNavigator<String> navigator = navigator(new Naming.Local(), "namespace1.xml");
+      assertEquals("foo", navigator.getName());
+      assertEquals(true, navigator.next("bar"));
+   }
 }
