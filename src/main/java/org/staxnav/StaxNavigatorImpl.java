@@ -56,41 +56,44 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
 
       //
-      this.naming = naming;
       this.stream = stream;
-      this.current = null;
-   }
 
-   private Element getCurrent() throws StaxNavException
-   {
+      //
+      // Head
+      Element head = null;
       try
       {
-         // Lazy initialization
-         if (current == null)
+         while (stream.hasNext())
          {
-            // Find the tail
-            Element tail = null;
-            while (stream.hasNext())
+            int type = stream.getEventType();
+            if (type == XMLStreamConstants.START_ELEMENT)
             {
-               int type = stream.getEventType();
-               if (type == XMLStreamConstants.START_ELEMENT)
-               {
-                  tail = new Element();
-                  break;
-               }
-               else
-               {
-                  stream.next();
-               }
+               head = new Element();
+               break;
             }
-            current = tail;
+            else
+            {
+               stream.next();
+            }
          }
-         return current;
       }
       catch (XMLStreamException e)
       {
          throw new StaxNavException(e);
       }
+      if (head == null)
+      {
+         throw new StaxNavException("No head!");
+      }
+
+      //
+      this.naming = naming;
+      this.current = head;
+   }
+
+   private Element getCurrent() throws StaxNavException
+   {
+      return current;
    }
 
    private void setCurrent(Element current)
