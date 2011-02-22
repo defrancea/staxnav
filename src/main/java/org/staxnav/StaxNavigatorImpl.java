@@ -65,7 +65,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    {
       try
       {
-// Lazy initialization
+         // Lazy initialization
          if (current == null)
          {
             // Find the tail
