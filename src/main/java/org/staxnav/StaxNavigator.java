@@ -55,6 +55,8 @@ public interface StaxNavigator<N>
     */
    String getContent() throws StaxNavException;
 
+   <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException;
+
    /**
     * Attemps to navigate to an element following the current one when it has the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.

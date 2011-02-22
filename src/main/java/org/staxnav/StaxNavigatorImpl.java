@@ -113,6 +113,16 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return getCurrent().content.toString();
    }
 
+   public <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException
+   {
+      if (valueType == null)
+      {
+         throw new NullPointerException();
+      }
+      String content = getContent().trim();
+      return valueType.convert(content);
+   }
+
    public String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException
    {
       Map<String, String> attributes = getCurrent().attributes;

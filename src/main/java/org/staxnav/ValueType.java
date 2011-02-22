@@ -126,7 +126,14 @@ public abstract class ValueType<V>
       }
       catch (Exception e)
       {
-         throw new TypeConversionException(e, s);
+         if (e instanceof TypeConversionException)
+         {
+            throw (TypeConversionException)e;
+         }
+         else
+         {
+            throw new TypeConversionException(e, "Could not parse string value " + s);
+         }
       }
    }
 }
