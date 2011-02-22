@@ -19,6 +19,7 @@
 
 package org.staxnav;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -114,7 +115,39 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException
    {
-      return getCurrent().attributes.get(name);
+      Map<String, String> attributes = getCurrent().attributes;
+      if (attributes.isEmpty())
+      {
+         return null;
+      }
+      else
+      {
+         return attributes.get(name);
+      }
+   }
+
+   public String getAttribute(QName name) throws NullPointerException, IllegalStateException, StaxNavException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null attribute name expected");
+      }
+      if (XMLConstants.NULL_NS_URI.equals(name.getNamespaceURI()))
+      {
+         return getAttribute(name.getLocalPart());
+      }
+      else
+      {
+         Map<QName, String> qualifiedAttributes = getCurrent().qualifiedAttributes;
+         if (qualifiedAttributes.isEmpty())
+         {
+            return null;
+         }
+         else
+         {
+            return qualifiedAttributes.get(name);
+         }
+      }
    }
 
    public String getNamespaceByPrefix(String prefix) throws NullPointerException, StaxNavException
@@ -320,6 +353,9 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       private final Map<String, String> attributes;
 
       /** . */
+      private final Map<QName, String> qualifiedAttributes;
+
+      /** . */
       private final Map<String, String> namespaces;
 
       /** . */
@@ -342,22 +378,29 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          QName name = stream.getName();
 
          //
-         Map<String, String> attributes;
+         Map<String, String> attributes = Collections.emptyMap();
+         Map<QName, String> qualifiedAttributes = Collections.emptyMap();
          int attributeCount = stream.getAttributeCount();
-         if (attributeCount > 0)
+         for (int i = 0;i < attributeCount;i++)
          {
-            attributes = new HashMap<String, String>(attributeCount);
-            for (int i = 0;i < attributeCount;i++)
+            String attributeValue = stream.getAttributeValue(i);
+            QName attributeName = stream.getAttributeName(i);
+            if (XMLConstants.NULL_NS_URI.equals(attributeName.getNamespaceURI()))
             {
-               String attributeName = stream.getAttributeLocalName(i);
-               String attributeValue = stream.getAttributeValue(i);
-               attributes.put(attributeName, attributeValue);
+               if (attributes.isEmpty())
+               {
+                  attributes = new HashMap<String, String>();
+               }
+               attributes.put(attributeName.getLocalPart(), attributeValue);
             }
-
-         }
-         else
-         {
-            attributes = Collections.emptyMap();
+            else
+            {
+               if (qualifiedAttributes.isEmpty())
+               {
+                  qualifiedAttributes = new HashMap<QName, String>();
+               }
+               qualifiedAttributes.put(attributeName, attributeValue);
+            }
          }
 
          //
@@ -411,6 +454,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          this.depth = depth;
          this.content = sb;
          this.attributes = attributes;
+         this.qualifiedAttributes = qualifiedAttributes;
          this.namespaces = namespaces;
       }
 

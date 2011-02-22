@@ -19,6 +19,8 @@
 
 package org.staxnav;
 
+import javax.xml.namespace.QName;
+
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -65,5 +67,15 @@ public class NamespaceTestCase extends StaxNavigatorTestCase
       StaxNavigator<String> navigator = navigator(new Naming.Local(), "namespace1.xml");
       assertEquals("foo", navigator.getName());
       assertEquals(true, navigator.next("bar"));
+   }
+
+   public void testE() throws Exception
+   {
+      StaxNavigator<String> navigator = navigator(new Naming.Local(), "namespace3.xml");
+      assertEquals("foo", navigator.getName());
+      assertEquals(true, navigator.next("bar"));
+      assertEquals("juu_value", navigator.getAttribute("juu"));
+      assertEquals("juu_value", navigator.getAttribute(new QName("", "juu")));
+      assertEquals("ns_juu_value", navigator.getAttribute(new QName("http://www.w3.org/2000/svg", "juu")));
    }
 }

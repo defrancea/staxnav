@@ -19,6 +19,8 @@
 
 package org.staxnav;
 
+import javax.xml.namespace.QName;
+
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
@@ -118,6 +120,8 @@ public interface StaxNavigator<N>
     * @throws StaxNavException any StaxNavException
     */
    String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException;
+
+   String getAttribute(QName name) throws NullPointerException, IllegalStateException, StaxNavException;
 
    /**
     * Returns a namespace URI by its prefix or return null if it is not bound.
