@@ -17,8 +17,6 @@ package org.staxnav;/*
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
 
-import junit.framework.TestCase;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
@@ -27,7 +25,7 @@ import java.io.InputStream;
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
  */
-public abstract class AbstractBrowseTestCase<N> extends TestCase
+public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
 {
 
    protected abstract Naming<N> getNaming();
@@ -49,6 +47,11 @@ public abstract class AbstractBrowseTestCase<N> extends TestCase
       //
       this.navigator = new StaxNavigatorImpl<N>(naming, stream);
       this.naming = naming;
+   }
+
+   protected final StaxNavigator<N> navigator(String document)
+   {
+      return navigator(naming, document);
    }
 
    protected N createName(String localPart)
