@@ -17,12 +17,7 @@ package org.staxnav;/*
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import junit.framework.TestCase;
-
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.InputStream;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
