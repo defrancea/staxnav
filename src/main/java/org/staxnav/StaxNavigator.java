@@ -84,8 +84,9 @@ public interface StaxNavigator<N>
 
    /**
     * Creates a navigator scoped around the currently navigated element. The returned navigator will uses the current
-    * element as navigation root and the navigation scope is the set of descendants of its root. The navigator
-    * will uses the same configuration than the navigator from which it was forked.
+    * element as navigation root and the navigation scope is the set of descendants of its root. The forked navigator
+    * will use the same configuration than the navigator from which it was forked. The current navigation will be moved
+    * to the first node not in the scope of the forked navigator.
     *
     * @return a forked navigator
     * @throws StaxNavException any StaxNavException

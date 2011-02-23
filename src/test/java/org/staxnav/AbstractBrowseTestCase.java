@@ -294,15 +294,16 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
       assertEquals(null, navigator.next());
    }
 
-   public void testNested() throws Exception
+   public void testFork() throws Exception
    {
       assertNameEquals("foo1", navigator.getName());
       assertEquals(true, navigator.find(createName("foo2")));
-      StaxNavigator<N> bilto = navigator.fork();
-      assertEquals(createName("foo2"), bilto.getName());
-      assertEquals(createName("bar2"), bilto.next());
-      assertEquals(createName("bar3"), bilto.next());
-      assertEquals(createName("foo3"), bilto.next());
-      assertEquals(null, bilto.next());
+      StaxNavigator<N> fork = navigator.fork();
+      assertEquals(createName("foo2"), fork.getName());
+      assertEquals(createName("bar2"), fork.next());
+      assertEquals(createName("bar3"), fork.next());
+      assertEquals(createName("foo3"), fork.next());
+      assertEquals(null, fork.next());
+      assertNameEquals("foobar1", navigator.getName());
    }
 }

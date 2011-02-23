@@ -160,7 +160,9 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public StaxNavigator<N> fork() throws StaxNavException
    {
-      return new StaxNavigatorImpl<N>(naming, current, trimContent);
+      StaxNavigatorImpl<N> fork = new StaxNavigatorImpl<N>(naming, current, trimContent);
+      sibling();
+      return fork;
    }
 
    public String getAttribute(QName name) throws NullPointerException, IllegalStateException, StaxNavException
