@@ -46,7 +46,7 @@ public interface StaxNavigator<N>
     * @return the element location
     * @throws StaxNavException any StaxNavException
     */
-   Location location() throws StaxNavException;
+   Location getLocation() throws StaxNavException;
 
    /**
     * Returns the current navigated element depth.

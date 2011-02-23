@@ -89,7 +89,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return naming.getName(getCurrent().name);
    }
 
-   public Location location() throws StaxNavException
+   public Location getLocation() throws StaxNavException
    {
       return getCurrent().location;
    }
