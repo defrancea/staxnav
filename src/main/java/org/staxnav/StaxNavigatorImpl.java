@@ -39,10 +39,10 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    private final Naming<N> naming;
 
    /** . */
-   private XMLStreamReader stream;
+   private Element current;
 
    /** . */
-   private Element current;
+   private final int depth;
 
    public StaxNavigatorImpl(Naming<N> naming, XMLStreamReader stream) throws XMLStreamException
    {
@@ -56,39 +56,16 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
 
       //
-      this.stream = stream;
-
-      //
-      // Head
-      Element head = null;
-      try
-      {
-         while (stream.hasNext())
-         {
-            int type = stream.getEventType();
-            if (type == XMLStreamConstants.START_ELEMENT)
-            {
-               head = new Element();
-               break;
-            }
-            else
-            {
-               stream.next();
-            }
-         }
-      }
-      catch (XMLStreamException e)
-      {
-         throw new StaxNavException(e);
-      }
-      if (head == null)
-      {
-         throw new StaxNavException("No head!");
-      }
-
-      //
       this.naming = naming;
-      this.current = head;
+      this.current = new Element(stream);
+      this.depth = 0;
+   }
+
+   public StaxNavigatorImpl(Naming<N> naming, Element current)
+   {
+      this.naming = naming;
+      this.current = current;
+      this.depth = current.depth;
    }
 
    private Element getCurrent() throws StaxNavException
@@ -137,6 +114,11 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return attributes.get(name);
       }
+   }
+
+   public StaxNavigator<N> create() throws StaxNavException
+   {
+      return new StaxNavigatorImpl<N>(naming, current);
    }
 
    public String getAttribute(QName name) throws NullPointerException, IllegalStateException, StaxNavException
@@ -189,7 +171,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    public N next(String namespaceURI, String localPart) throws StaxNavException
    {
       Element next = getCurrent().next();
-      if (next != null && next.hasName(namespaceURI, localPart))
+      if (next != null && next.depth > depth && next.hasName(namespaceURI, localPart))
       {
          setCurrent(next);
          return naming.getName(next.name);
@@ -347,8 +329,11 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return -1;
    }
 
-   private class Element
+   private static class Element
    {
+
+      /** . */
+      private final XMLStreamReader stream;
 
       /** . */
       private final Element parent;
@@ -374,12 +359,29 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       /** . */
       private Element next;
 
-      private Element() throws XMLStreamException
+      private static XMLStreamReader seekFirstElement(XMLStreamReader stream) throws XMLStreamException
       {
-         this(null);
+         while (stream.hasNext())
+         {
+            int type = stream.getEventType();
+            if (type == XMLStreamConstants.START_ELEMENT)
+            {
+               return stream;
+            }
+            else
+            {
+               stream.next();
+            }
+         }
+         throw new StaxNavException("No head!!!!");
       }
 
-      private Element(Element parent) throws XMLStreamException
+      private Element(XMLStreamReader stream) throws XMLStreamException
+      {
+         this(seekFirstElement(stream), null);
+      }
+
+      private Element(XMLStreamReader stream, Element parent) throws XMLStreamException
       {
          // We assume that the stream points to the start of the modelled element
          if (stream.getEventType() != XMLStreamConstants.START_ELEMENT)
@@ -469,6 +471,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          this.attributes = attributes;
          this.qualifiedAttributes = qualifiedAttributes;
          this.namespaces = namespaces;
+         this.stream = stream;
       }
 
       private boolean hasName(String namespaceURI, String localPart)
@@ -508,7 +511,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
                   int type = stream.getEventType();
                   if (type == XMLStreamConstants.START_ELEMENT)
                   {
-                     next = new Element(parent);
+                     next = new Element(stream, parent);
                      break;
                   }
                   else if (type == XMLStreamConstants.END_ELEMENT)

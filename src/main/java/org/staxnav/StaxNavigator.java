@@ -58,6 +58,14 @@ public interface StaxNavigator<N>
    <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException;
 
    /**
+    * Creates a navigator scoped around the currently navigated element.
+    *
+    * @return a navigator
+    * @throws StaxNavException any StaxNavException
+    */
+   StaxNavigator<N> create() throws StaxNavException;
+
+   /**
     * Attemps to navigate to an element following the current one when it has the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happen and the method return false.
