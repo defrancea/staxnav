@@ -116,7 +116,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
    }
 
-   public StaxNavigator<N> create() throws StaxNavException
+   public StaxNavigator<N> fork() throws StaxNavException
    {
       return new StaxNavigatorImpl<N>(naming, current);
    }

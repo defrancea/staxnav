@@ -278,7 +278,7 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
    {
       assertNameEquals("foo1", navigator.getName());
       assertEquals(true, navigator.find(createName("foo2")));
-      StaxNavigator<N> bilto = navigator.create();
+      StaxNavigator<N> bilto = navigator.fork();
       assertEquals(createName("foo2"), bilto.getName());
       assertEquals(createName("bar2"), bilto.next());
       assertEquals(createName("bar3"), bilto.next());

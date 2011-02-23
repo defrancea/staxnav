@@ -63,7 +63,7 @@ public interface StaxNavigator<N>
     * @return a navigator
     * @throws StaxNavException any StaxNavException
     */
-   StaxNavigator<N> create() throws StaxNavException;
+   StaxNavigator<N> fork() throws StaxNavException;
 
    /**
     * Attemps to navigate to an element following the current one when it has the specified name.
