@@ -71,9 +71,11 @@ public interface StaxNavigator<N>
    <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException;
 
    /**
-    * Creates a navigator scoped around the currently navigated element.
+    * Creates a navigator scoped around the currently navigated element. The returned navigator will uses the current
+    * element as navigation root and the navigation scope is the set of descendants of its root. The navigator
+    * will uses the same configuration than the navigator from which it was forked.
     *
-    * @return a navigator
+    * @return a forked navigator
     * @throws StaxNavException any StaxNavException
     */
    StaxNavigator<N> fork() throws StaxNavException;
