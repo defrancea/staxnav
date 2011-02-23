@@ -54,6 +54,10 @@ public interface StaxNavigator<N>
     */
    String getContent() throws StaxNavException;
 
+   void setTrimContent(boolean trimContent);
+
+   boolean getTrimContent();
+
    <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException;
 
    /**

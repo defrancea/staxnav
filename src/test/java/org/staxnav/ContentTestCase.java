@@ -28,26 +28,22 @@ import java.io.InputStream;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class MixedContentTestCase extends TestCase
+public class ContentTestCase extends AbstractXMLTestCase
 {
 
-   /** . */
-   private StaxNavigatorImpl<String> navigator;
-
-   @Override
-   protected void setUp() throws Exception
+   public void testMixed() throws XMLStreamException
    {
-      InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("mixedcontent.xml");
-      XMLInputFactory factory = XMLInputFactory.newInstance();
-      XMLStreamReader stream = factory.createXMLStreamReader(is);
-
-      //
-      navigator = new StaxNavigatorImpl<String>(new Naming.Local(), stream);
+      StaxNavigator<String> nav = navigator(new Naming.Local(), "<foo>abc<def/></foo>");
+      assertEquals("foo", nav.getName());
+      assertEquals(null, nav.getContent());
    }
 
-   public void testFoo() throws XMLStreamException
+   public void testTrimmed() throws XMLStreamException
    {
-      assertEquals("foo", navigator.getName());
-      assertEquals(null, navigator.getContent());
+      StaxNavigator<String> nav = navigator(new Naming.Local(), "<foo> abc </foo>");
+      assertEquals("foo", nav.getName());
+      assertEquals(" abc ", nav.getContent());
+      nav.setTrimContent(true);
+      assertEquals("abc", nav.getContent());
    }
 }

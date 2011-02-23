@@ -44,6 +44,9 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    /** . */
    private final int depth;
 
+   /** . */
+   private boolean trimContent;
+
    public StaxNavigatorImpl(Naming<N> naming, XMLStreamReader stream) throws XMLStreamException
    {
       if (naming == null)
@@ -59,13 +62,15 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       this.naming = naming;
       this.current = new Element(stream);
       this.depth = 0;
+      this.trimContent = false;
    }
 
-   public StaxNavigatorImpl(Naming<N> naming, Element current)
+   private StaxNavigatorImpl(Naming<N> naming, Element current, boolean trimContent)
    {
       this.naming = naming;
       this.current = current;
       this.depth = current.depth;
+      this.trimContent = trimContent;
    }
 
    private Element getCurrent() throws StaxNavException
@@ -88,10 +93,19 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return getCurrent().depth;
    }
 
+   public void setTrimContent(boolean trimContent)
+   {
+      this.trimContent = trimContent;
+   }
+
+   public boolean getTrimContent()
+   {
+      return trimContent;
+   }
+
    public String getContent() throws StaxNavException
    {
-      Object content = getCurrent().content;
-      return content != null ? content.toString() : null;
+      return getCurrent().getContent(trimContent);
    }
 
    public <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException
@@ -119,7 +133,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public StaxNavigator<N> fork() throws StaxNavException
    {
-      return new StaxNavigatorImpl<N>(naming, current);
+      return new StaxNavigatorImpl<N>(naming, current, trimContent);
    }
 
    public String getAttribute(QName name) throws NullPointerException, IllegalStateException, StaxNavException
@@ -556,6 +570,23 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          catch (XMLStreamException e)
          {
             throw new StaxNavException(e);
+         }
+      }
+
+      private String getContent(boolean trim)
+      {
+         if (content != null)
+         {
+            String s = content.toString();
+            if (trim)
+            {
+               s = s.trim();
+            }
+            return s;
+         }
+         else
+         {
+            return null;
          }
       }
    }
