@@ -54,8 +54,18 @@ public interface StaxNavigator<N>
     */
    String getContent() throws StaxNavException;
 
+   /**
+    * Configures the content trimming when {@link #getContent()} method is invoked.
+    *
+    * @param trimContent true to trim content
+    */
    void setTrimContent(boolean trimContent);
 
+   /**
+    * Returns the trim content configuration.
+    *
+    * @return the trim content value
+    */
    boolean getTrimContent();
 
    <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException;
