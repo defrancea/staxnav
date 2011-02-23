@@ -19,28 +19,58 @@
 
 package org.staxnav;
 
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamException;
+
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
 public class StaxNavException extends RuntimeException
 {
-   public StaxNavException()
+
+   /** . */
+   private final Location location;
+
+   public Location getLocation()
    {
+      return location;
    }
 
-   public StaxNavException(String message)
+   public StaxNavException(Location location)
+   {
+      this.location = location;
+   }
+
+   public StaxNavException(Location location, String message)
    {
       super(message);
+
+      //
+      this.location = location;
    }
 
-   public StaxNavException(String message, Throwable cause)
+   public StaxNavException(Location location, String message, Throwable cause)
    {
       super(message, cause);
+
+      //
+      this.location = location;
    }
 
-   public StaxNavException(Throwable cause)
+   public StaxNavException(Location location, Throwable cause)
    {
       super(cause);
+
+      //
+      this.location = location;
+   }
+
+   public StaxNavException(XMLStreamException cause)
+   {
+      super(cause);
+
+      //
+      this.location = cause.getLocation();
    }
 }

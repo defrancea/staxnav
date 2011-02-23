@@ -106,34 +106,4 @@ public abstract class ValueType<V>
     */
    protected abstract V parse(String s) throws Exception;
 
-   /**
-    * Parse the string to the java type for a specifed value.
-    *
-    * @param s the string value to parse
-    * @return the parsed value
-    * @throws NullPointerException if the provided value is null
-    * @throws TypeConversionException any exception that would prevent the type conversion to happen
-    */
-   public final V convert(String s) throws NullPointerException, TypeConversionException
-   {
-      if (s == null)
-      {
-         throw new NullPointerException();
-      }
-      try
-      {
-         return parse(s);
-      }
-      catch (Exception e)
-      {
-         if (e instanceof TypeConversionException)
-         {
-            throw (TypeConversionException)e;
-         }
-         else
-         {
-            throw new TypeConversionException(e, "Could not parse string value " + s);
-         }
-      }
-   }
 }

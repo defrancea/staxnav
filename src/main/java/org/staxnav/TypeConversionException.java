@@ -19,6 +19,8 @@
 
 package org.staxnav;
 
+import javax.xml.stream.Location;
+
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -29,14 +31,19 @@ public class TypeConversionException extends StaxNavException
    /** . */
    private final String string;
 
-   public TypeConversionException(String string)
+   public TypeConversionException(Location location, String string)
    {
+      super(location);
+
+      //
       this.string = string;
    }
 
-   public TypeConversionException(Throwable cause, String string)
+   public TypeConversionException(Location location, Throwable cause, String string)
    {
-      super(cause);
+      super(location, cause);
+
+      //
       this.string = string;
    }
 }

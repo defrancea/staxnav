@@ -21,6 +21,7 @@ package org.staxnav;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -88,6 +89,11 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return naming.getName(getCurrent().name);
    }
 
+   public Location location() throws StaxNavException
+   {
+      return getCurrent().location;
+   }
+
    public int getDepth() throws StaxNavException
    {
       return getCurrent().depth;
@@ -108,14 +114,33 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return getCurrent().getContent(trimContent);
    }
 
-   public <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException
+   public <V> V parseContent(ValueType<V> valueType) throws IllegalStateException, NullPointerException, StaxNavException
    {
       if (valueType == null)
       {
          throw new NullPointerException();
       }
-      String content = getContent().trim();
-      return valueType.convert(content);
+      Element element = getCurrent();
+      String content = element.getContent(true);
+      if (content == null)
+      {
+         throw new IllegalStateException("No content available for parsing");
+      }
+      try
+      {
+         return valueType.parse(content);
+      }
+      catch (Exception e)
+      {
+         if (e instanceof TypeConversionException)
+         {
+            throw (TypeConversionException)e;
+         }
+         else
+         {
+            throw new TypeConversionException(element.location, e, "Could not parse string value " + content);
+         }
+      }
    }
 
    public String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException
@@ -363,6 +388,9 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       private final Object content;
 
       /** . */
+      private final Location location;
+
+      /** . */
       private final Map<String, String> attributes;
 
       /** . */
@@ -388,7 +416,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
                stream.next();
             }
          }
-         throw new StaxNavException("No head!!!!");
+         throw new StaxNavException(stream.getLocation(), "No head!!!!");
       }
 
       private Element(XMLStreamReader stream) throws XMLStreamException
@@ -406,6 +434,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
          //
          QName name = stream.getName();
+         Location location = stream.getLocation();
 
          //
          Map<String, String> attributes = Collections.emptyMap();
@@ -508,6 +537,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          this.qualifiedAttributes = qualifiedAttributes;
          this.namespaces = namespaces;
          this.stream = stream;
+         this.location = location;
       }
 
       private boolean hasName(String namespaceURI, String localPart)

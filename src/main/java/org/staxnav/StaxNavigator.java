@@ -20,6 +20,9 @@
 package org.staxnav;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.Location;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
@@ -36,6 +39,14 @@ public interface StaxNavigator<N>
     * @throws StaxNavException any StaxNavException
     */
    N getName() throws StaxNavException;
+
+   /**
+    * Returns the location of the start tag of the currently navigated element.
+    *
+    * @return the element location
+    * @throws StaxNavException any StaxNavException
+    */
+   Location location() throws StaxNavException;
 
    /**
     * Returns the current navigated element depth.
@@ -68,7 +79,7 @@ public interface StaxNavigator<N>
     */
    boolean getTrimContent();
 
-   <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException;
+   <V> V parseContent(ValueType<V> valueType) throws IllegalStateException, NullPointerException, StaxNavException;
 
    /**
     * Creates a navigator scoped around the currently navigated element. The returned navigator will uses the current
