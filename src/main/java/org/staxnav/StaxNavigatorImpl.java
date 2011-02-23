@@ -219,7 +219,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          throw new NullPointerException("No null name accepted");
       }
       Element next = _next();
-      if (next.hasName(naming.getURI(name), naming.getLocalPart(name)))
+      if (next != null && next.hasName(naming.getURI(name), naming.getLocalPart(name)))
       {
          setCurrent(next);
          return true;
