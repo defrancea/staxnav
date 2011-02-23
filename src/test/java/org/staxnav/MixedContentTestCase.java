@@ -47,8 +47,7 @@ public class MixedContentTestCase extends TestCase
 
    public void testFoo() throws XMLStreamException
    {
-//      navigator.root();
       assertEquals("foo", navigator.getName());
-      assertEquals("abc", navigator.getContent());
+      assertEquals(null, navigator.getContent());
    }
 }

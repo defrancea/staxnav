@@ -90,7 +90,8 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public String getContent() throws StaxNavException
    {
-      return getCurrent().content.toString();
+      Object content = getCurrent().content;
+      return content != null ? content.toString() : null;
    }
 
    public <V> V parseContent(ValueType<V> valueType) throws NullPointerException, StaxNavException
@@ -344,8 +345,8 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       /** . */
       private final int depth;
 
-      /** The content approxmimation. */
-      private final StringBuilder content;
+      /** The content is not null. */
+      private final Object content;
 
       /** . */
       private final Map<String, String> attributes;
@@ -442,21 +443,42 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
          // When we leave we assume that we are positionned on the next element start or the document end
          StringBuilder sb = null;
+         String chunk = null;
+         Object content = null;
          while (true)
          {
             stream.next();
             int type = stream.getEventType();
-            if (type == XMLStreamConstants.START_ELEMENT || type == XMLStreamConstants.END_DOCUMENT || type == XMLStreamConstants.END_ELEMENT)
+            if (type == XMLStreamConstants.END_DOCUMENT || type == XMLStreamConstants.START_ELEMENT)
             {
                break;
             }
             else if (type == XMLStreamConstants.CHARACTERS)
             {
-               if (sb == null)
+               if (chunk == null)
                {
-                  sb = new StringBuilder();
+                  chunk = stream.getText();
                }
-               sb.append(stream.getText());
+               else
+               {
+                  if (sb == null)
+                  {
+                     sb = new StringBuilder(chunk);
+                  }
+                  sb.append(stream.getText());
+               }
+            }
+            else if (type == XMLStreamConstants.END_ELEMENT)
+            {
+               if (sb != null)
+               {
+                  content = sb;
+               }
+               else
+               {
+                  content = chunk;
+               }
+               break;
             }
          }
 
@@ -467,7 +489,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          this.parent = parent;
          this.name = name;
          this.depth = depth;
-         this.content = sb;
+         this.content = content;
          this.attributes = attributes;
          this.qualifiedAttributes = qualifiedAttributes;
          this.namespaces = namespaces;

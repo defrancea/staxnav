@@ -47,8 +47,7 @@ public interface StaxNavigator<N>
 
    /**
     * Returns the current navigated element textual content. Note that this method is only valid when an element
-    * content is not mixed, if an element has a mixed content then this method will not return an accurate result
-    * it would likely return the first chunk of text found.
+    * content is not mixed, if an element has a mixed content then this method will return null instead.
     *
     * @return the element text content
     * @throws StaxNavException any StaxNavException
