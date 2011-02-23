@@ -20,6 +20,8 @@ package org.staxnav;/*
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
@@ -258,6 +260,24 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
       assertEquals(true, navigator.next(createName("foo3")));
       assertEquals(createName("foobar1"), navigator.next());
       assertEquals(createName("foobar2"), navigator.next());
+   }
+
+   public void testNext3() throws Exception
+   {
+      assertNameEquals("foo1", navigator.getName());
+      Set<N> names = new HashSet<N>();
+      names.add(createName("bar1"));
+      names.add(createName("foo2"));
+      assertEquals(createName("bar1"), navigator.next(names));
+      assertEquals(createName("foo2"), navigator.next(names));
+      try
+      {
+         navigator.next(names);
+         fail();
+      }
+      catch (StaxNavException e)
+      {
+      }
    }
 
    public void testfind1() throws Exception

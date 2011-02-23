@@ -28,6 +28,8 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -196,7 +198,16 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N next() throws StaxNavException
    {
-      return next(null, null);
+      Element _next = _next();
+      if (_next != null)
+      {
+         setCurrent(_next);
+         return naming.getName(_next.name);
+      }
+      else
+      {
+         return null;
+      }
    }
 
    public boolean next(N name) throws StaxNavException
@@ -205,16 +216,50 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      return name.equals(next(naming.getURI(name), naming.getLocalPart(name)));
-   }
-
-   public N next(String namespaceURI, String localPart) throws StaxNavException
-   {
-      Element next = getCurrent().next();
-      if (next != null && next.depth > depth && next.hasName(namespaceURI, localPart))
+      Element next = _next();
+      if (next.hasName(naming.getURI(name), naming.getLocalPart(name)))
       {
          setCurrent(next);
-         return naming.getName(next.name);
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   public N next(Set<N> names) throws StaxNavException
+   {
+      if (names == null)
+      {
+         throw new NullPointerException();
+      }
+      Element next = _next();
+      if (next != null)
+      {
+         N name = naming.getName(next.name);
+         if (names.contains(name))
+         {
+            setCurrent(next);
+            return name;
+         }
+         else
+         {
+            throw new StaxNavException(next.location, "Was not expecting an element among " + names + " instead of " + name);
+         }
+      }
+      else
+      {
+         throw new StaxNavException(current.location);
+      }
+   }
+
+   private Element _next() throws StaxNavException
+   {
+      Element next = getCurrent().next();
+      if (next != null && next.depth > depth)
+      {
+         return next;
       }
       else
       {
@@ -538,6 +583,16 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          this.namespaces = namespaces;
          this.stream = stream;
          this.location = location;
+      }
+
+      private <N> N getName(Naming<N> naming)
+      {
+         return naming.getName(name);
+      }
+
+      private <N> boolean hasName(Naming<N> naming, N name)
+      {
+         return hasName(naming.getURI(name), naming.getLocalPart(name));
       }
 
       private boolean hasName(String namespaceURI, String localPart)

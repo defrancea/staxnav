@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
@@ -120,8 +121,11 @@ public interface StaxNavigator<N>
     * @param name the desired element name
     * @return true if the desired element is reached
     * @throws StaxNavException any StaxNavException
+    * @throws NullPointerException if the specified name is null
     */
-   boolean next(N name) throws StaxNavException;
+   boolean next(N name) throws NullPointerException, StaxNavException;
+
+   N next(Set<N> names) throws NullPointerException, StaxNavException;
 
    /**
     * Attempts to navigate to the first child found and return its name. If no such child exist then null
