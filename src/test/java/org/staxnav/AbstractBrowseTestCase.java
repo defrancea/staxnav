@@ -283,6 +283,7 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
    public void testfind1() throws Exception
    {
       assertNameEquals("foo1", navigator.getName());
+      assertEquals(true, navigator.find(createName("foo1")));
       assertEquals(true, navigator.find(createName("bar2")));
       assertEquals(true, navigator.find(createName("foobar1")));
    }

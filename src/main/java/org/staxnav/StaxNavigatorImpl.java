@@ -281,24 +281,16 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    public N find(String namespaceURI, String localPart) throws StaxNavException
    {
       Element element = getCurrent();
-      while (true)
+      while (element != null)
       {
-         Element next = element.next();
-         if (next != null)
+         if (element.hasName(namespaceURI, localPart))
          {
-            if (next.hasName(namespaceURI, localPart))
-            {
-               setCurrent(next);
-               return naming.getName(next.name);
-            }
-            else
-            {
-               element = next;
-            }
+            setCurrent(element);
+            return naming.getName(element.name);
          }
          else
          {
-            break;
+            element = element.next();
          }
       }
       return null;
