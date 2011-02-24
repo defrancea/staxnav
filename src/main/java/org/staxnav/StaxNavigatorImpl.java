@@ -28,7 +28,6 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -88,7 +87,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N getName() throws StaxNavException
    {
-      return naming.getName(getCurrent().name);
+      return getCurrent().getName(naming);
    }
 
    public Location getLocation() throws StaxNavException
@@ -200,11 +199,11 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N next() throws StaxNavException
    {
-      Element _next = _next();
-      if (_next != null)
+      Element next = getCurrent().next(depth);
+      if (next != null)
       {
-         setCurrent(_next);
-         return naming.getName(_next.name);
+         setCurrent(next);
+         return naming.getName(next.name);
       }
       else
       {
@@ -218,7 +217,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      Element next = _next();
+      Element next = getCurrent().next(depth);
       if (next != null && next.hasName(naming.getURI(name), naming.getLocalPart(name)))
       {
          setCurrent(next);
@@ -236,7 +235,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException();
       }
-      Element next = _next();
+      Element next = getCurrent().next(depth);
       if (next != null)
       {
          N name = naming.getName(next.name);
@@ -253,19 +252,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       else
       {
          throw new StaxNavException(current.location);
-      }
-   }
-
-   private Element _next() throws StaxNavException
-   {
-      Element next = getCurrent().next();
-      if (next != null && next.depth > depth)
-      {
-         return next;
-      }
-      else
-      {
-         return null;
       }
    }
 
@@ -612,6 +598,19 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
             }
          }
          return null;
+      }
+
+      private Element next(int depth) throws StaxNavException
+      {
+         Element next = next();
+         if (next != null && next.depth > depth)
+         {
+            return next;
+         }
+         else
+         {
+            return null;
+         }
       }
 
       private Element next() throws StaxNavException
