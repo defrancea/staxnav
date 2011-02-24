@@ -62,7 +62,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
       //
       this.naming = naming;
-      this.current = new Element(stream);
+      this.current = new HeadElement(stream);
       this.depth = 0;
       this.trimContent = false;
    }
@@ -394,7 +394,158 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return -1;
    }
 
-   private static class Element
+   private static abstract class Element
+   {
+
+      protected abstract Element getParent();
+
+      protected abstract <N> N getName(Naming<N> naming);
+
+      protected abstract <N> boolean hasName(Naming<N> naming, N name);
+
+      protected abstract String getContent(boolean trim);
+
+      protected abstract boolean hasName(String namespaceURI, String localPart);
+
+      protected abstract String getNamespaceByPrefix(String namespacePrefix);
+
+      protected abstract Element next(int depth) throws StaxNavException;
+
+      protected abstract Element next() throws StaxNavException;
+
+      protected abstract QName getName();
+
+      protected abstract int getDepth();
+
+      protected abstract Location getLocation();
+
+      protected abstract Map<String, String> getAttributes();
+
+      protected abstract Map<QName, String> getQualifiedAttributes();
+
+      protected abstract Map<String, String> getNamespaces();
+   }
+
+   private static class HeadElement extends Element
+   {
+
+      /** . */
+      private final XMLStreamReader stream;
+
+      /** . */
+      private Element root;
+
+      private HeadElement(XMLStreamReader stream)
+      {
+         this.stream = stream;
+         this.root = null;
+      }
+
+      private Element get()
+      {
+         if (root == null)
+         {
+            try
+            {
+               while (stream.hasNext())
+               {
+                  int type = stream.getEventType();
+                  if (type == XMLStreamConstants.START_ELEMENT)
+                  {
+                     root = new StreamElement(stream, null);
+                     break;
+                  }
+                  else
+                  {
+                     stream.next();
+                  }
+               }
+            }
+            catch (XMLStreamException e)
+            {
+               throw new StaxNavException(stream.getLocation());
+            }
+         }
+         if (root == null)
+         {
+            throw new StaxNavException(stream.getLocation(), "No head!!!!");
+         }
+         return root;
+      }
+
+      @Override
+      protected Element getParent()
+      {
+         return null;
+      }
+
+      protected <N> N getName(Naming<N> naming)
+      {
+         return get().getName(naming);
+      }
+
+      protected <N> boolean hasName(Naming<N> naming, N name)
+      {
+         return get().hasName(naming, name);
+      }
+
+      protected String getContent(boolean trim)
+      {
+         return get().getContent(trim);
+      }
+
+      protected boolean hasName(String namespaceURI, String localPart)
+      {
+         return get().hasName(namespaceURI, localPart);
+      }
+
+      protected String getNamespaceByPrefix(String namespacePrefix)
+      {
+         return get().getNamespaceByPrefix(namespacePrefix);
+      }
+
+      protected Element next(int depth) throws StaxNavException
+      {
+         return get().next(depth);
+      }
+
+      protected Element next() throws StaxNavException
+      {
+         return get().next();
+      }
+
+      protected QName getName()
+      {
+         return get().getName();
+      }
+
+      protected int getDepth()
+      {
+         return get().getDepth();
+      }
+
+      protected Location getLocation()
+      {
+         return get().getLocation();
+      }
+
+      protected Map<String, String> getAttributes()
+      {
+         return get().getAttributes();
+      }
+
+      protected Map<QName, String> getQualifiedAttributes()
+      {
+         return get().getQualifiedAttributes();
+      }
+
+      protected Map<String, String> getNamespaces()
+      {
+         return get().getNamespaces();
+      }
+   }
+
+   private static class StreamElement extends Element
    {
 
       /** . */
@@ -427,29 +578,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       /** . */
       private Element next;
 
-      private static XMLStreamReader seekFirstElement(XMLStreamReader stream) throws XMLStreamException
-      {
-         while (stream.hasNext())
-         {
-            int type = stream.getEventType();
-            if (type == XMLStreamConstants.START_ELEMENT)
-            {
-               return stream;
-            }
-            else
-            {
-               stream.next();
-            }
-         }
-         throw new StaxNavException(stream.getLocation(), "No head!!!!");
-      }
-
-      private Element(XMLStreamReader stream) throws XMLStreamException
-      {
-         this(seekFirstElement(stream), null);
-      }
-
-      private Element(XMLStreamReader stream, Element parent) throws XMLStreamException
+      private StreamElement(XMLStreamReader stream, Element parent) throws XMLStreamException
       {
          // We assume that the stream points to the start of the modelled element
          if (stream.getEventType() != XMLStreamConstants.START_ELEMENT)
@@ -565,17 +694,23 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          this.location = location;
       }
 
-      private <N> N getName(Naming<N> naming)
+      @Override
+      protected Element getParent()
+      {
+         return parent;
+      }
+
+      protected <N> N getName(Naming<N> naming)
       {
          return naming.getName(getName());
       }
 
-      private <N> boolean hasName(Naming<N> naming, N name)
+      protected <N> boolean hasName(Naming<N> naming, N name)
       {
          return hasName(naming.getURI(name), naming.getLocalPart(name));
       }
 
-      private boolean hasName(String namespaceURI, String localPart)
+      protected boolean hasName(String namespaceURI, String localPart)
       {
          if (localPart == null)
          {
@@ -587,9 +722,9 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          }
       }
 
-      private String getNamespaceByPrefix(String namespacePrefix)
+      protected String getNamespaceByPrefix(String namespacePrefix)
       {
-         for (Element current = this;current != null;current = current.parent)
+         for (Element current = this;current != null;current = current.getParent())
          {
             String namespaceURI = current.getNamespaces().get(namespacePrefix);
             if (namespaceURI != null)
@@ -600,7 +735,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          return null;
       }
 
-      private Element next(int depth) throws StaxNavException
+      protected Element next(int depth) throws StaxNavException
       {
          Element next = next();
          if (next != null && next.getDepth() > depth)
@@ -613,7 +748,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          }
       }
 
-      private Element next() throws StaxNavException
+      protected Element next() throws StaxNavException
       {
          try
          {
@@ -625,12 +760,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
                   int type = stream.getEventType();
                   if (type == XMLStreamConstants.START_ELEMENT)
                   {
-                     next = new Element(stream, parent);
+                     next = new StreamElement(stream, parent);
                      break;
                   }
                   else if (type == XMLStreamConstants.END_ELEMENT)
                   {
-                     parent = parent.parent;
+                     parent = parent.getParent();
                      stream.next();
                   }
                   else if (type == XMLStreamConstants.END_DOCUMENT)
@@ -651,7 +786,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          }
       }
 
-      private String getContent(boolean trim)
+      protected String getContent(boolean trim)
       {
          if (content != null)
          {
@@ -668,32 +803,32 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          }
       }
 
-      private QName getName()
+      protected QName getName()
       {
          return name;
       }
 
-      private int getDepth()
+      protected int getDepth()
       {
          return depth;
       }
 
-      private Location getLocation()
+      protected Location getLocation()
       {
          return location;
       }
 
-      private Map<String, String> getAttributes()
+      protected Map<String, String> getAttributes()
       {
          return attributes;
       }
 
-      private Map<QName, String> getQualifiedAttributes()
+      protected Map<QName, String> getQualifiedAttributes()
       {
          return qualifiedAttributes;
       }
 
-      private Map<String, String> getNamespaces()
+      protected Map<String, String> getNamespaces()
       {
          return namespaces;
       }
