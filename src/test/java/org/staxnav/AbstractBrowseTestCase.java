@@ -292,10 +292,12 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
    {
       assertNameEquals("foo1", navigator.getName());
       assertEquals(true, navigator.find(createName("foobar2")));
+      assertEquals(createName("foobar2"), navigator.getName());
       assertEquals(null, navigator.next());
+      assertEquals(null, navigator.getName());
    }
 
-   public void testFork() throws Exception
+   public void testFork1() throws Exception
    {
       assertNameEquals("foo1", navigator.getName());
       assertEquals(true, navigator.find(createName("foo2")));
@@ -306,5 +308,15 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
       assertEquals(createName("foo3"), fork.next());
       assertEquals(null, fork.next());
       assertNameEquals("foobar1", navigator.getName());
+   }
+
+   public void testFork2() throws Exception
+   {
+      assertNameEquals("foo1", navigator.getName());
+      assertEquals(true, navigator.find(createName("foobar2")));
+      StaxNavigator<N> fork = navigator.fork();
+      assertNameEquals("foobar2", fork.getName());
+      assertEquals(null, fork.next());
+      assertEquals(null, navigator.getName());
    }
 }
