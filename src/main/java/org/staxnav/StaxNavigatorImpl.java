@@ -616,6 +616,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return get().getNamespaces();
       }
+
+      @Override
+      public String toString()
+      {
+         return "HeadElement";
+      }
    }
 
    private static class StreamElement extends Element
@@ -904,6 +910,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       protected Map<String, String> getNamespaces()
       {
          return namespaces;
+      }
+
+      @Override
+      public String toString()
+      {
+         return "StreamElement[name=" + name + ",location=" + location + "]";
       }
    }
 }
