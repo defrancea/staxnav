@@ -75,29 +75,19 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       this.trimContent = trimContent;
    }
 
-   private Element getCurrent() throws StaxNavException
-   {
-      return current;
-   }
-
-   private void setCurrent(Element current)
-   {
-      this.current = current;
-   }
-
    public N getName() throws StaxNavException
    {
-      return getCurrent().getName(naming);
+      return current.getName(naming);
    }
 
    public Location getLocation() throws StaxNavException
    {
-      return getCurrent().getLocation();
+      return current.getLocation();
    }
 
    public int getDepth() throws StaxNavException
    {
-      return getCurrent().getDepth();
+      return current.getDepth();
    }
 
    public void setTrimContent(boolean trimContent)
@@ -112,7 +102,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public String getContent() throws StaxNavException
    {
-      return getCurrent().getContent(trimContent);
+      return current.getContent(trimContent);
    }
 
    public <V> V parseContent(ValueType<V> valueType) throws IllegalStateException, NullPointerException, StaxNavException
@@ -121,7 +111,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException();
       }
-      Element element = getCurrent();
+      Element element = current;
       String content = element.getContent(true);
       if (content == null)
       {
@@ -146,7 +136,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException
    {
-      Map<String, String> attributes = getCurrent().getAttributes();
+      Map<String, String> attributes = current.getAttributes();
       if (attributes.isEmpty())
       {
          return null;
@@ -176,7 +166,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
       else
       {
-         Map<QName, String> qualifiedAttributes = getCurrent().getQualifiedAttributes();
+         Map<QName, String> qualifiedAttributes = current.getQualifiedAttributes();
          if (qualifiedAttributes.isEmpty())
          {
             return null;
@@ -194,15 +184,15 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException();
       }
-      return getCurrent().getNamespaceByPrefix(prefix);
+      return current.getNamespaceByPrefix(prefix);
    }
 
    public N next() throws StaxNavException
    {
-      Element next = getCurrent().next(depth);
+      Element next = current.next(depth);
       if (next != null)
       {
-         setCurrent(next);
+         current = next;
          return naming.getName(next.getName());
       }
       else
@@ -217,10 +207,10 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      Element next = getCurrent().next(depth);
+      Element next = current.next(depth);
       if (next != null && next.hasName(naming.getURI(name), naming.getLocalPart(name)))
       {
-         setCurrent(next);
+         current = next;
          return true;
       }
       else
@@ -235,13 +225,13 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException();
       }
-      Element next = getCurrent().next(depth);
+      Element next = current.next(depth);
       if (next != null)
       {
          N name = naming.getName(next.getName());
          if (names.contains(name))
          {
-            setCurrent(next);
+            current = next;
             return name;
          }
          else
@@ -266,12 +256,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N find(String namespaceURI, String localPart) throws StaxNavException
    {
-      Element element = getCurrent();
+      Element element = current;
       while (element != null)
       {
          if (element.hasName(namespaceURI, localPart))
          {
-            setCurrent(element);
+            current = element;
             return naming.getName(element.getName());
          }
          else
@@ -298,15 +288,15 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N child(String namespaceURI, String localPart) throws StaxNavException
    {
-      Element element = getCurrent();
+      Element element = current;
       while (true)
       {
          Element next = element.next();
-         if (next != null && next.getDepth() > getCurrent().getDepth())
+         if (next != null && next.getDepth() > current.getDepth())
          {
-            if (next.getDepth() == getCurrent().getDepth() + 1 && next.hasName(namespaceURI, localPart))
+            if (next.getDepth() == current.getDepth() + 1 && next.hasName(namespaceURI, localPart))
             {
-               setCurrent(next);
+               current = next;
                return naming.getName(next.getName());
             }
             else
@@ -334,15 +324,15 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N sibling(String namespaceURI, String localPart) throws StaxNavException
    {
-      Element element = getCurrent();
+      Element element = current;
       while (true)
       {
          Element next = element.next();
-         if (next != null && next.getDepth() >= getCurrent().getDepth())
+         if (next != null && next.getDepth() >= current.getDepth())
          {
-            if (next.getDepth() == getCurrent().getDepth() && next.hasName(namespaceURI, localPart))
+            if (next.getDepth() == current.getDepth() && next.hasName(namespaceURI, localPart))
             {
-               setCurrent(next);
+               current = next;
                return naming.getName(next.getName());
             }
             else
@@ -369,16 +359,16 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public int descendant(String namespaceURI, String localPart) throws StaxNavException
    {
-      Element element = getCurrent();
+      Element element = current;
       while (true)
       {
          Element next = element.next();
-         if (next != null && next.getDepth() >= getCurrent().getDepth())
+         if (next != null && next.getDepth() >= current.getDepth())
          {
             if (next.hasName(namespaceURI, localPart))
             {
-               int diff = next.getDepth() - getCurrent().getDepth();
-               setCurrent(next);
+               int diff = next.getDepth() - current.getDepth();
+               current = next;
                return diff;
             }
             else
