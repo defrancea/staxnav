@@ -1,0 +1,3 @@
+- next() / hasNext() because of switch!!!!!!
+- cdata support
+- leak test case
