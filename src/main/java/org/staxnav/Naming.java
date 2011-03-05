@@ -142,6 +142,21 @@ public abstract class Naming<N>
          return "";
       }
 
+      /**
+       * <p>A naming implementation mapping enum elements to names by doing a lower case conversion
+       * and substituting the hyphen character by the underscore character, for instance the enumeration:</p>
+       *
+       * <p><code><pre>
+       * public enum MyElement
+       * {
+       *   FOO, BAR, FOO_BAR
+       * }
+       * </pre></code></p>
+       *
+       * <p>is mapped to the names { "foo", "bar", "foo-bar" }.</p>
+       *
+       * @param <E> the generic enum type
+       */
       public static class Simple<E extends Enum<E>> extends Enumerated<E>
       {
 
