@@ -188,9 +188,15 @@ public abstract class Naming<N>
    public static class MappedEnum<E extends Enum<E> & EnumElement<E>> extends Enumerated<E>
    {
 
+      /** . */
+      private final  E[] all;
+
       public MappedEnum(Class<E> enumType, E noSuchElement)
       {
          super(enumType, noSuchElement);
+
+         //
+         this.all = enumType.getEnumConstants();
       }
 
       @Override
@@ -202,7 +208,7 @@ public abstract class Naming<N>
       @Override
       protected E getName(String uri, String prefix, String localPart)
       {
-         for (E e : enumType.getEnumConstants())
+         for (E e : all)
          {
             if (localPart.equals(e.getLocalName()))
             {
