@@ -69,7 +69,7 @@ public class NamespaceTestCase extends StaxNavigatorTestCase
 
    public void testC() throws Exception
    {
-      StaxNavigator<Name> navigator = navigator(new Naming.Enumerated<Name>(Name.class, Name.NOT_FOUND), "namespace1.xml");
+      StaxNavigator<Name> navigator = navigator(new Naming.MappedEnum<Name>(Name.class, Name.NOT_FOUND), "namespace1.xml");
       assertEquals(Name.FOO, navigator.getName());
       assertEquals(true, navigator.next(Name.BAR));
       assertEquals(Name.NOT_FOUND, navigator.next());

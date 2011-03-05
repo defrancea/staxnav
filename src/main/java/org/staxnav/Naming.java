@@ -20,6 +20,9 @@
 package org.staxnav;
 
 import javax.xml.namespace.QName;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -106,14 +109,16 @@ public abstract class Naming<N>
       }
    }
 
-   public static class Enumerated<E extends Enum<E> & EnumElement<E>> extends Naming<E>
+   public static abstract class Enumerated<E extends Enum<E>> extends Naming<E>
    {
 
       /** . */
-      private final Class<E> enumType;
-      private final E noSuchElement;
+      protected final Class<E> enumType;
 
-      public Enumerated(Class<E> enumType, E noSuchElement)
+      /** . */
+      protected final E noSuchElement;
+
+      protected Enumerated(Class<E> enumType, E noSuchElement)
       {
          this.enumType = enumType;
          this.noSuchElement = noSuchElement;
@@ -123,12 +128,6 @@ public abstract class Naming<N>
       E getName(QName name)
       {
          return name == null ? null : getName(null, null, name.getLocalPart());
-      }
-
-      @Override
-      protected String getLocalPart(E name)
-      {
-         return name.getLocalName();
       }
 
       @Override
@@ -142,6 +141,63 @@ public abstract class Naming<N>
       {
          return "";
       }
+   }
+
+   public static class SimpleEnumerated<E extends Enum<E>> extends Enumerated<E>
+   {
+
+      /** . */
+      private final Map<String, E> toName;
+
+      /** . */
+      private final Map<E, String> toLocalPart;
+
+      public SimpleEnumerated(Class<E> enumType, E noSuchElement)
+      {
+         super(enumType, noSuchElement);
+
+         //
+         Map<String, E> toName = new HashMap<String, E>();
+         Map<E, String> toLocalPart = new EnumMap<E, String>(enumType);
+         for (E value : enumType.getEnumConstants())
+         {
+            String localPart = value.name().toLowerCase().replace('_', '-');
+            toName.put(localPart, value);
+            toLocalPart.put(value, localPart);
+         }
+
+         //
+         this.toName = toName;
+         this.toLocalPart = toLocalPart;
+      }
+
+      @Override
+      protected String getLocalPart(E name)
+      {
+         return toLocalPart.get(name);
+      }
+
+      @Override
+      protected E getName(String uri, String prefix, String localPart)
+      {
+         E name = toName.get(localPart);
+         return name != null ? name : noSuchElement;
+      }
+   }
+
+   public static class MappedEnum<E extends Enum<E> & EnumElement<E>> extends Enumerated<E>
+   {
+
+      public MappedEnum(Class<E> enumType, E noSuchElement)
+      {
+         super(enumType, noSuchElement);
+      }
+
+      @Override
+      protected String getLocalPart(E name)
+      {
+         return name.getLocalName();
+      }
 
       @Override
       protected E getName(String uri, String prefix, String localPart)
@@ -153,7 +209,6 @@ public abstract class Naming<N>
                return e;
             }
          }
-
          return noSuchElement;
       }
    }
