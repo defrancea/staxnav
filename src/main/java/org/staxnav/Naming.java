@@ -141,81 +141,82 @@ public abstract class Naming<N>
       {
          return "";
       }
-   }
 
-   public static class SimpleEnumerated<E extends Enum<E>> extends Enumerated<E>
-   {
-
-      /** . */
-      private final Map<String, E> toName;
-
-      /** . */
-      private final Map<E, String> toLocalPart;
-
-      public SimpleEnumerated(Class<E> enumType, E noSuchElement)
+      public static class Simple<E extends Enum<E>> extends Enumerated<E>
       {
-         super(enumType, noSuchElement);
 
-         //
-         Map<String, E> toName = new HashMap<String, E>();
-         Map<E, String> toLocalPart = new EnumMap<E, String>(enumType);
-         for (E value : enumType.getEnumConstants())
+         /** . */
+         private final Map<String, E> toName;
+
+         /** . */
+         private final Map<E, String> toLocalPart;
+
+         public Simple(Class<E> enumType, E noSuchElement)
          {
-            String localPart = value.name().toLowerCase().replace('_', '-');
-            toName.put(localPart, value);
-            toLocalPart.put(value, localPart);
-         }
+            super(enumType, noSuchElement);
 
-         //
-         this.toName = toName;
-         this.toLocalPart = toLocalPart;
-      }
-
-      @Override
-      protected String getLocalPart(E name)
-      {
-         return toLocalPart.get(name);
-      }
-
-      @Override
-      protected E getName(String uri, String prefix, String localPart)
-      {
-         E name = toName.get(localPart);
-         return name != null ? name : noSuchElement;
-      }
-   }
-
-   public static class MappedEnum<E extends Enum<E> & EnumElement<E>> extends Enumerated<E>
-   {
-
-      /** . */
-      private final  E[] all;
-
-      public MappedEnum(Class<E> enumType, E noSuchElement)
-      {
-         super(enumType, noSuchElement);
-
-         //
-         this.all = enumType.getEnumConstants();
-      }
-
-      @Override
-      protected String getLocalPart(E name)
-      {
-         return name.getLocalName();
-      }
-
-      @Override
-      protected E getName(String uri, String prefix, String localPart)
-      {
-         for (E e : all)
-         {
-            if (localPart.equals(e.getLocalName()))
+            //
+            Map<String, E> toName = new HashMap<String, E>();
+            Map<E, String> toLocalPart = new EnumMap<E, String>(enumType);
+            for (E value : enumType.getEnumConstants())
             {
-               return e;
+               String localPart = value.name().toLowerCase().replace('_', '-');
+               toName.put(localPart, value);
+               toLocalPart.put(value, localPart);
             }
+
+            //
+            this.toName = toName;
+            this.toLocalPart = toLocalPart;
          }
-         return noSuchElement;
+
+         @Override
+         protected String getLocalPart(E name)
+         {
+            return toLocalPart.get(name);
+         }
+
+         @Override
+         protected E getName(String uri, String prefix, String localPart)
+         {
+            E name = toName.get(localPart);
+            return name != null ? name : noSuchElement;
+         }
+      }
+
+      public static class Mapped<E extends Enum<E> & EnumElement<E>> extends Enumerated<E>
+      {
+
+         /** . */
+         private final  E[] all;
+
+         public Mapped(Class<E> enumType, E noSuchElement)
+         {
+            super(enumType, noSuchElement);
+
+            //
+            this.all = enumType.getEnumConstants();
+         }
+
+         @Override
+         protected String getLocalPart(E name)
+         {
+            return name.getLocalName();
+         }
+
+         @Override
+         protected E getName(String uri, String prefix, String localPart)
+         {
+            for (E e : all)
+            {
+               if (localPart.equals(e.getLocalName()))
+               {
+                  return e;
+               }
+            }
+            return noSuchElement;
+         }
       }
    }
+
 }

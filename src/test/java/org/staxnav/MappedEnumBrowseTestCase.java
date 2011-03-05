@@ -27,6 +27,6 @@ public class MappedEnumBrowseTestCase extends AbstractBrowseTestCase<SampleName>
    @Override
    protected Naming<SampleName> getNaming()
    {
-      return new Naming.MappedEnum<SampleName>(SampleName.class, SampleName.DONOTEXIST);
+      return new Naming.Enumerated.Mapped<SampleName>(SampleName.class, SampleName.DONOTEXIST);
    }
 }

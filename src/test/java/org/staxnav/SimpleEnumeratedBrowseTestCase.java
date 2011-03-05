@@ -10,6 +10,6 @@ public class SimpleEnumeratedBrowseTestCase extends AbstractBrowseTestCase<Sampl
    @Override
    protected Naming<SampleName> getNaming()
    {
-      return new Naming.SimpleEnumerated<SampleName>(SampleName.class, SampleName.DONOTEXIST);
+      return new Naming.Enumerated.Simple<SampleName>(SampleName.class, SampleName.DONOTEXIST);
    }
 }
