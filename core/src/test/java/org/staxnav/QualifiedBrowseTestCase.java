@@ -18,7 +18,6 @@ package org.staxnav;/*
  */
 
 import javax.xml.namespace.QName;
-import java.io.InputStream;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
