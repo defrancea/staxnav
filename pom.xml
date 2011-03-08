@@ -8,6 +8,16 @@
    <version>1.1-SNAPSHOT</version>
    <name>Staxnav - Parent</name>
 
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.staxnav</groupId>
+            <artifactId>staxnav.core</artifactId>
+            <version>1.1-SNAPSHOT</version>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+
    <dependencies>
       <dependency>
          <groupId>junit</groupId>
@@ -51,6 +61,7 @@
 
    <modules>
       <module>core</module>
+      <module>tests</module>
       <module>docs</module>
    </modules>
 
