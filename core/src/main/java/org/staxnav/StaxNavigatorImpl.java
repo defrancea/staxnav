@@ -336,7 +336,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return null;
       }
-
       Entry next = current.next(depth);
       if (next == null)
       {
@@ -351,13 +350,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
       else
       {
-         Set<String> localNames = new HashSet<String>(names.size());
-         for (N n : names)
-         {
-            localNames.add(naming.getLocalPart(n));
-         }
-
-         throw new StaxNavException(next.getElement().getLocation(), "Was expecting an element among " + localNames + " instead of " + naming.getLocalPart(name));
+         return null;
       }
    }
 

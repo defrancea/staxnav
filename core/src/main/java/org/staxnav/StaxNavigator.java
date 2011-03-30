@@ -144,11 +144,21 @@ public interface StaxNavigator<N>
     *
     * @param name the desired element name
     * @return true if the desired element is reached
-    * @throws StaxNavException any StaxNavException
     * @throws NullPointerException if the specified name is null
+    * @throws StaxNavException any StaxNavException
     */
    boolean next(N name) throws NullPointerException, StaxNavException;
 
+   /**
+    * Attempts to navigate to the next element when it belongs to the set of specified names.
+    * If the navigation occurs, the navigator now points to that element and the method returns
+    * the element that was navigated to. Otherwise no navigation happens and the method return null.
+    *
+    * @param names the set of desired element names
+    * @return the matched name
+    * @throws NullPointerException if the names argument is null
+    * @throws StaxNavException any StaxNavException
+    */
    N next(Set<N> names) throws NullPointerException, StaxNavException;
 
    /**

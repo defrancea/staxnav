@@ -272,14 +272,7 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
       names.add(createName("foo2"));
       assertEquals(createName("bar1"), navigator.next(names));
       assertEquals(createName("foo2"), navigator.next(names));
-      try
-      {
-         navigator.next(names);
-         fail();
-      }
-      catch (StaxNavException e)
-      {
-      }
+      assertNull(navigator.next(names));
    }
 
    public void testNext4() throws Exception
