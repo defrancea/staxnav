@@ -287,11 +287,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return current.getElement().getNamespaceByPrefix(prefix);
    }
 
-   public boolean hasNext() throws StaxNavException
-   {
-      return current != null && current.hasNext(depth);
-   }
-
    public N next() throws StaxNavException
    {
       if (current == null)

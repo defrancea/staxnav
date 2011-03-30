@@ -130,14 +130,6 @@ public interface StaxNavigator<N>
    boolean find(N name) throws StaxNavException;
 
    /**
-    * Indicates if there's more elements to be parsed. No navigation occurs.
-    *
-    * @return true if more elements can be parsed.
-    * @throws StaxNavException any StaxNavException
-    */
-   boolean hasNext() throws StaxNavException;
-
-   /**
     * Navigates to the next element and returns its name or null if the end of the stream is reached.
     *
     * @return the element name

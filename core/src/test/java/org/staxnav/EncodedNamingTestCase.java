@@ -66,9 +66,8 @@ public class EncodedNamingTestCase extends StaxNavigatorTestCase
          int relatedBookCount = 0;
          int relatedBookBookCount = 0;
          int notFoundCount = 0;
-         while (fork.hasNext())
+         for (EncodedElement element = fork.next();element!= null; element = fork.next())
          {
-            EncodedElement element = fork.next();
             if (element.equals(EncodedElement.TITLE_ELEMENT))
             {
                titleCount++;
