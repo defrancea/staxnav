@@ -27,7 +27,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -195,7 +194,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       StaxNavigatorImpl<N> fork = new StaxNavigatorImpl<N>(naming, current, trimContent);
       if (current != null)
       {
-         current = sibling(null, null);
+         current = _sibling(null);
       }
       return fork;
    }
@@ -315,7 +314,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          return false;
       }
       Entry next = current.next(depth);
-      if (next != null && next.getElement().hasName(naming.getURI(name), naming.getLocalPart(name)))
+      if (next == null)
+      {
+         return false;
+      }
+      N nextName = naming.getName(next.getElement().getName());
+      if (name.equals(nextName))
       {
          current = next;
          return true;
@@ -341,7 +345,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return null;
       }
-
       N name = naming.getName(next.getElement().getName());
       if (names.contains(name))
       {
@@ -364,7 +367,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return false;
       }
-      Entry element = find(naming.getURI(name), naming.getLocalPart(name));
+      Entry element = _find(name);
       if (element != null)
       {
          current = element;
@@ -376,18 +379,19 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
    }
 
-   private Entry find(String namespaceURI, String localPart) throws StaxNavException
+   private Entry _find(N name) throws StaxNavException
    {
-      Entry element = current;
-      while (element != null)
+      Entry entry = current;
+      while (entry != null)
       {
-         if (element.getElement().hasName(namespaceURI, localPart))
+         N findName = naming.getName(entry.getElement().getName());
+         if (name.equals(findName))
          {
-            return element;
+            return entry;
          }
          else
          {
-            element = element.next();
+            entry = entry.next();
          }
       }
       return null;
@@ -395,7 +399,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N child() throws StaxNavException
    {
-      return child(null, null);
+      return _child(null);
    }
 
    public boolean child(N name) throws NullPointerException, StaxNavException
@@ -404,10 +408,10 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      return name.equals(child(naming.getURI(name), naming.getLocalPart(name)));
+      return _child(name) != null;
    }
 
-   public N child(String namespaceURI, String localPart) throws StaxNavException
+   public N _child(N name) throws StaxNavException
    {
       if (current == null)
       {
@@ -419,10 +423,23 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          Entry next = element.next();
          if (next != null && next.getElement().getDepth() > current.getElement().getDepth())
          {
-            if (next.getElement().getDepth() == current.getElement().getDepth() + 1 && next.getElement().hasName(namespaceURI, localPart))
+            if (next.getElement().getDepth() == current.getElement().getDepth() + 1)
             {
-               current = next;
-               return naming.getName(next.getElement().getName());
+               N nextName = naming.getName(next.getElement().getName());
+               if (name == null)
+               {
+                  current = next;
+                  return nextName;
+               }
+               else if (name.equals(nextName))
+               {
+                  current = next;
+                  return nextName;
+               }
+               else
+               {
+                  element = next;
+               }
             }
             else
             {
@@ -443,7 +460,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return null;
       }
-      Entry sibling = sibling(null, null);
+      Entry sibling = _sibling(null);
       if (sibling != null)
       {
          current = sibling;
@@ -461,7 +478,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return false;
       }
-      Entry sibling = sibling(naming.getURI(name), naming.getLocalPart(name));
+      Entry sibling = _sibling(name);
       if (sibling != null)
       {
          current = sibling;
@@ -473,7 +490,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
    }
 
-   private Entry sibling(String namespaceURI, String localPart) throws StaxNavException
+   private Entry _sibling(N name) throws StaxNavException
    {
       Entry element = current;
       while (true)
@@ -481,9 +498,24 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          Entry next = element.next();
          if (next != null && next.getElement().getDepth() >= current.getElement().getDepth())
          {
-            if (next.getElement().getDepth() == current.getElement().getDepth() && next.getElement().hasName(namespaceURI, localPart))
+            if (next.getElement().getDepth() == current.getElement().getDepth())
             {
-               return next;
+               if (name == null)
+               {
+                  return next;
+               }
+               else
+               {
+                  N siblingName = naming.getName(next.getElement().getName());
+                  if (name.equals(siblingName))
+                  {
+                     return next;
+                  }
+                  else
+                  {
+                     element = next;
+                  }
+               }
             }
             else
             {
@@ -508,10 +540,10 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return 0;
       }
-      return descendant(naming.getURI(name), naming.getLocalPart(name));
+      return _descendant(name);
    }
 
-   private int descendant(String namespaceURI, String localPart) throws StaxNavException
+   private int _descendant(N name) throws StaxNavException
    {
       Entry element = current;
       while (true)
@@ -519,7 +551,8 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          Entry next = element.next();
          if (next != null && next.getElement().getDepth() >= current.getElement().getDepth())
          {
-            if (next.getElement().hasName(namespaceURI, localPart))
+            N descendantName = naming.getName(next.getElement().getName());
+            if (name.equals(descendantName))
             {
                int diff = next.getElement().getDepth() - current.getElement().getDepth();
                current = next;
@@ -888,23 +921,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       protected <N> N getName(Naming<N> naming)
       {
          return naming.getName(getName());
-      }
-
-      protected <N> boolean hasName(Naming<N> naming, N name)
-      {
-         return hasName(naming.getURI(name), naming.getLocalPart(name));
-      }
-
-      protected boolean hasName(String namespaceURI, String localPart)
-      {
-         if (localPart == null)
-         {
-            return true;
-         }
-         else
-         {
-            return (namespaceURI == null || namespaceURI.equals(getName().getNamespaceURI())) && localPart.equals(getName().getLocalPart());
-         }
       }
 
       protected String getNamespaceByPrefix(String namespacePrefix)

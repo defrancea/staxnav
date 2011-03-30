@@ -4,7 +4,7 @@ package org.staxnav;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class SimpleEnumeratedBrowseTestCase extends AbstractBrowseTestCase<SampleName>
+public class SimpleEnumeratedBrowseTestCase extends AbstractEnumeratedBrowseTestCase
 {
 
    @Override

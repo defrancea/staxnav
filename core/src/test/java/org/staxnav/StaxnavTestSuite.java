@@ -36,7 +36,7 @@ public class StaxnavTestSuite
       suite.addTest(new TestSuite(EncodedNamingTestCase.class));
       suite.addTest(new TestSuite(GateInTestCase.class));
       suite.addTest(new TestSuite(LocalBrowseTestCase.class));
-      suite.addTest(new TestSuite(MappedEnumBrowseTestCase.class));
+      suite.addTest(new TestSuite(MappedEnumeratedBrowseTestCase.class));
       suite.addTest(new TestSuite(NamespaceTestCase.class));
       suite.addTest(new TestSuite(QualifiedBrowseTestCase.class));
       suite.addTest(new TestSuite(SimpleEnumeratedBrowseTestCase.class));

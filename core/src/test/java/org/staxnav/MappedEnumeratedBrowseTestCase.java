@@ -21,7 +21,7 @@ package org.staxnav;/*
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class MappedEnumBrowseTestCase extends AbstractBrowseTestCase<SampleName>
+public class MappedEnumeratedBrowseTestCase extends AbstractEnumeratedBrowseTestCase
 {
 
    @Override
