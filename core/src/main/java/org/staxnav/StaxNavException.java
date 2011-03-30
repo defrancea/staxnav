@@ -30,11 +30,21 @@ public class StaxNavException extends RuntimeException
 {
 
    /** . */
-   private final Location location;
+   private Location location;
 
    public Location getLocation()
    {
       return location;
+   }
+
+   public StaxNavException(String message)
+   {
+      super(message);
+   }
+
+   public StaxNavException(String message, Throwable t)
+   {
+      super(message, t);
    }
 
    public StaxNavException(Location location)
@@ -72,5 +82,20 @@ public class StaxNavException extends RuntimeException
 
       //
       this.location = cause.getLocation();
+   }
+
+   @Override
+   public String getMessage()
+   {
+      String message = super.getMessage();
+      if (location != null && ! (getCause() instanceof XMLStreamException))
+      {
+         return new StringBuilder().append(message).append(" at [row,col]:[")
+            .append(location.getLineNumber()).append(",").append(location.getColumnNumber()).append("]").toString();
+      }
+      else
+      {
+         return message;
+      }
    }
 }
