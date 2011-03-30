@@ -93,7 +93,18 @@ public interface StaxNavigator<N>
     */
    boolean getTrimContent();
 
-   <V> V parseContent(ValueType<V> valueType) throws IllegalStateException, NullPointerException, StaxNavException;
+   /**
+    * Parses the content of the currently navigated element and return the parsed value.
+    *
+    * @param valueType the content value type
+    * @param <V> the generic type of the value
+    * @return the parsed content value
+    * @throws IllegalStateException if the current element does not point to a content
+    * @throws NullPointerException if the value type argument is null
+    * @throws StaxNavException any StaxNavException
+    * @throws TypeConversionException when the a type conversion error occured
+    */
+   <V> V parseContent(ValueType<V> valueType) throws IllegalStateException, NullPointerException, StaxNavException, TypeConversionException;
 
    /**
     * Creates a navigator scoped around the currently navigated element. The returned navigator will uses the current
@@ -175,7 +186,6 @@ public interface StaxNavigator<N>
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happens and the method returns false.
     *
-    *
     * @param name the child name
     * @return true if the desired element is reached
     * @throws NullPointerException if the name argument is null
@@ -186,7 +196,6 @@ public interface StaxNavigator<N>
    /**
     * Returns an attribute of the current element or null if such attribute does not exist.
     *
-    *
     * @param name the attribute name
     * @return the attribute value
     * @throws NullPointerException if the name argument is null
@@ -195,6 +204,15 @@ public interface StaxNavigator<N>
     */
    String getAttribute(String name) throws NullPointerException, IllegalStateException, StaxNavException;
 
+   /**
+    * Returns an attribute of the current element or null if such attribute does not exist.
+    *
+    * @param name the attribute name
+    * @return the attribute value
+    * @throws NullPointerException if the name argument is null
+    * @throws IllegalStateException if no element is currently navigated
+    * @throws StaxNavException any StaxNavException
+    */
    String getAttribute(QName name) throws NullPointerException, IllegalStateException, StaxNavException;
 
    /**
