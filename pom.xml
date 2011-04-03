@@ -31,21 +31,72 @@
       <connection>scm:git:git://github.com/defrancea/staxnav.git</connection>
    </scm>
 
+   <properties>
+     <maven.compiler.source>1.5</maven.compiler.source>
+     <maven.compiler.target>1.5</maven.compiler.target>
+     <wikbook.version>0.9.32</wikbook.version>
+   </properties>
+
    <build>
+      <pluginManagement>
+        <plugins>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-compiler-plugin</artifactId>
+             <version>2.3.2</version>
+          </plugin>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-assembly-plugin</artifactId>
+             <version>2.2.1</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.2</version>
+          </plugin>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-jar-plugin</artifactId>
+             <version>2.3.1</version>
+          </plugin>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-resources-plugin</artifactId>
+             <version>2.5</version>
+          </plugin>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-source-plugin</artifactId>
+             <version>2.1.2</version>
+          </plugin>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-surefire-plugin</artifactId>
+             <version>2.8</version>
+          </plugin>
+          <plugin>
+             <groupId>org.codehaus.mojo</groupId>
+             <artifactId>build-helper-maven-plugin</artifactId>
+             <version>1.5</version>
+          </plugin>
+          <plugin>
+            <groupId>com.agilejava.docbkx</groupId>
+            <artifactId>docbkx-maven-plugin</artifactId>
+            <!-- The build is broken if we upgrade it -->
+            <version>2.0.7</version>
+          </plugin>
+          <plugin>
+            <groupId>org.wikbook</groupId>
+            <artifactId>wikbook.maven</artifactId>
+            <version>${wikbook.version}</version>
+          </plugin>
+        </plugins>
+      </pluginManagement>
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
-            <configuration>
-               <target>1.5</target>
-               <source>1.5</source>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>2.1.2</version>
             <executions>
                <execution>
                   <id>attach-sources</id>
