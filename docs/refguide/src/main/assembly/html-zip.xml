@@ -2,6 +2,7 @@
   <formats>
     <format>zip</format>
   </formats>
+  <id>html-zip</id>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
    <fileSet>
