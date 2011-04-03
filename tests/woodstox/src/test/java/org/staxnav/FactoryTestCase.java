@@ -21,7 +21,7 @@ package org.staxnav;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.ctc.wstx.stax.WstxOutputFactory;
-import com.ctc.wstx.stax.evt.WstxEventFactory;
+import com.ctc.wstx.stax.WstxEventFactory;
 import junit.framework.TestCase;
 
 import javax.xml.stream.XMLEventFactory;

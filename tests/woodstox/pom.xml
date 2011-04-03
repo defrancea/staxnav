@@ -28,9 +28,10 @@
       </dependency>
 
       <dependency>
-         <groupId>woodstox</groupId>
-         <artifactId>wstx</artifactId>
-         <version>1.0.7</version>
+         <groupId>org.codehaus.woodstox</groupId>
+         <artifactId>woodstox-core-asl</artifactId>
+         <version>4.1.1</version>
+         <scope>test</scope>
       </dependency>
    </dependencies>
 
