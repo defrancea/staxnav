@@ -7,7 +7,56 @@
    <artifactId>staxnav.parent</artifactId>
    <packaging>pom</packaging>
    <version>1.1-SNAPSHOT</version>
+
    <name>Staxnav - Parent</name>
+   <description>Staxnav is a simple framework for the STAX API focusing on simplicity and efficiency.</description>
+   <url>https://github.com/vietj/staxnav/</url>
+
+   <organization>
+      <name>eXo Platform SAS</name>
+      <url>http://www.exoplatform.com</url>
+   </organization>
+   <licenses>
+      <license>
+         <name>LGPL, version 2.1</name>
+         <url>http://www.opensource.org/licenses/lgpl-license.php</url>
+      </license>
+   </licenses>
+
+   <developers>
+      <developer>
+         <id>vietj</id>
+         <name>Julien Viet</name>
+         <email>julien.viet@exoplatform.com</email>
+         <roles>
+            <role>Commiter</role>
+         </roles>
+      </developer>
+      <developer>
+         <id>defrancea</id>
+         <name>Alain Defrance</name>
+         <email>alain.defrance@exoplatform.com</email>
+         <roles>
+            <role>Commiter</role>
+         </roles>
+      </developer>
+      <developer>
+         <id>nscavell</id>
+         <name>Nick Scavelli</name>
+         <email>nscavell@redhat.com</email>
+         <roles>
+            <role>Commiter</role>
+         </roles>
+      </developer>
+      <developer>
+         <id>aheritier</id>
+         <name>Arnaud Heritier</name>
+         <email>arnaud.heritier@exoplatform.com</email>
+         <roles>
+            <role>Committer</role>
+         </roles>
+      </developer>
+   </developers>
 
    <dependencyManagement>
       <dependencies>
@@ -30,9 +79,27 @@
 
    <scm>
       <connection>scm:git:git://github.com/vietj/staxnav.git</connection>
+      <developerConnection>scm:git:git://github.com/vietj/staxnav.git</developerConnection>
+      <url>https://github.com/vietj/staxnav</url>
    </scm>
 
+   <distributionManagement>
+      <repository>
+         <id>repository.exoplatform.org</id>
+         <url>${staxnav.releases.repo.url}</url>
+      </repository>
+      <snapshotRepository>
+         <id>repository.exoplatform.org</id>
+         <url>${staxnav.snapshots.repo.url}</url>
+      </snapshotRepository>
+  </distributionManagement>
+
    <properties>
+
+      <!-- Repositories URLs -->
+      <staxnav.releases.repo.url>http://repository.exoplatform.org/service/local/staging/deploy/maven2/</staxnav.releases.repo.url>
+      <staxnav.snapshots.repo.url>http://repository.exoplatform.org/content/repositories/staxnav-snapshots/</staxnav.snapshots.repo.url>
+
       <maven.compiler.source>1.5</maven.compiler.source>
       <maven.compiler.target>1.5</maven.compiler.target>
       <wikbook.version>0.9.32</wikbook.version>
