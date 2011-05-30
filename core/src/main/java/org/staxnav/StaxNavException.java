@@ -90,8 +90,18 @@ public class StaxNavException extends RuntimeException
       String message = super.getMessage();
       if (location != null && ! (getCause() instanceof XMLStreamException))
       {
-         return new StringBuilder().append(message).append(" at [row,col]:[")
-            .append(location.getLineNumber()).append(",").append(location.getColumnNumber()).append("]").toString();
+         StringBuilder sb = new StringBuilder().append(message);
+         sb.append(" at [row,col]:[")
+           .append(location.getLineNumber())
+           .append(",")
+           .append(location.getColumnNumber())
+           .append("]");
+         String systemId = location.getSystemId();
+         if (systemId != null)
+         {
+            sb.append(" found at ").append(systemId);
+         }
+         return sb.toString();
       }
       else
       {
