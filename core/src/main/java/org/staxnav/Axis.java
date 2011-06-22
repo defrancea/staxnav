@@ -29,6 +29,8 @@ public enum Axis
 
    NEXT,
 
-   SIBLING
+   FOLLOWING_SIBLING,
+
+   FOLLOWING,
 
 }

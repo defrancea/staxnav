@@ -329,12 +329,17 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N sibling() throws StaxNavException
    {
-      return navigate(Axis.SIBLING);
+      return navigate(Axis.FOLLOWING_SIBLING);
    }
 
    public boolean sibling(N name) throws NullPointerException, StaxNavException
    {
-      return navigate(Axis.SIBLING, name);
+      return navigate(Axis.FOLLOWING_SIBLING, name);
+   }
+
+   public boolean find(N name) throws StaxNavException
+   {
+      return navigate(Axis.FOLLOWING, name);
    }
 
    private boolean _navigate(Axis axis, N name)
@@ -345,8 +350,10 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
             return _next(name);
          case CHILD:
             return _child(name);
-         case SIBLING:
+         case FOLLOWING_SIBLING:
             return _sibling(name);
+         case FOLLOWING:
+            return _following(name);
          default:
             throw new AssertionError();
       }
@@ -453,6 +460,32 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return false;
    }
 
+   private boolean _following(N name) throws StaxNavException
+   {
+      if (name == null)
+      {
+         throw new UnsupportedOperationException("todo");
+      }
+      if (current != null)
+      {
+         Entry entry = current;
+         while (entry != null)
+         {
+            N findName = naming.getName(entry.getElement().getName());
+            if (name.equals(findName))
+            {
+               current = entry;
+               return true;
+            }
+            else
+            {
+               entry = entry.next();
+            }
+         }
+      }
+      return false;
+   }
+
    // Other methods
 
    public N next(Set<N> names) throws StaxNavException
@@ -480,46 +513,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          return null;
       }
-   }
-
-   public boolean find(N name) throws StaxNavException
-   {
-      if (name == null)
-      {
-         throw new NullPointerException("No null name accepted");
-      }
-      if (current == null)
-      {
-         return false;
-      }
-      Entry element = _find(name);
-      if (element != null)
-      {
-         current = element;
-         return true;
-      }
-      else
-      {
-         return false;
-      }
-   }
-
-   private Entry _find(N name) throws StaxNavException
-   {
-      Entry entry = current;
-      while (entry != null)
-      {
-         N findName = naming.getName(entry.getElement().getName());
-         if (name.equals(findName))
-         {
-            return entry;
-         }
-         else
-         {
-            entry = entry.next();
-         }
-      }
-      return null;
    }
 
    public int descendant(N name) throws NullPointerException, StaxNavException
