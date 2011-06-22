@@ -192,9 +192,14 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    public StaxNavigator<N> fork() throws StaxNavException
    {
       StaxNavigatorImpl<N> fork = new StaxNavigatorImpl<N>(naming, current, trimContent);
-      if (current != null)
+      if (_sibling(null))
       {
-         current = _sibling(null);
+         //
+      }
+      else
+      {
+         // To fix later: I don't like it much
+         current = null;
       }
       return fork;
    }
@@ -285,6 +290,8 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
       return current.getElement().getNamespaceByPrefix(prefix);
    }
+
+   // Unified methods
 
    public N next() throws StaxNavException
    {
@@ -397,6 +404,63 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return false;
    }
 
+   public N sibling() throws StaxNavException
+   {
+      return _sibling(null) ? getName() : null;
+   }
+
+   public boolean sibling(N name) throws NullPointerException, StaxNavException
+   {
+      return _sibling(name);
+   }
+
+   private boolean _sibling(N name) throws StaxNavException
+   {
+      if (current != null)
+      {
+         Entry element = current;
+         while (true)
+         {
+            Entry next = element.next();
+            if (next != null && next.getElement().getDepth() >= current.getElement().getDepth())
+            {
+               if (next.getElement().getDepth() == current.getElement().getDepth())
+               {
+                  if (name == null)
+                  {
+                     current = next;
+                     return true;
+                  }
+                  else
+                  {
+                     N siblingName = naming.getName(next.getElement().getName());
+                     if (name.equals(siblingName))
+                     {
+                        current = next;
+                        return true;
+                     }
+                     else
+                     {
+                        element = next;
+                     }
+                  }
+               }
+               else
+               {
+                  element = next;
+               }
+            }
+            else
+            {
+               break;
+            }
+         }
+      }
+      return false;
+   }
+
+   // Other methods
+
    public boolean find(N name) throws StaxNavException
    {
       if (name == null)
@@ -432,82 +496,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          else
          {
             entry = entry.next();
-         }
-      }
-      return null;
-   }
-
-   public N sibling() throws StaxNavException
-   {
-      if (current == null)
-      {
-         return null;
-      }
-      Entry sibling = _sibling(null);
-      if (sibling != null)
-      {
-         current = sibling;
-         return sibling.getElement().getName(naming);
-      }
-      else
-      {
-         return null;
-      }
-   }
-
-   public boolean sibling(N name) throws NullPointerException, StaxNavException
-   {
-      if (current == null)
-      {
-         return false;
-      }
-      Entry sibling = _sibling(name);
-      if (sibling != null)
-      {
-         current = sibling;
-         return true;
-      }
-      else
-      {
-         return false;
-      }
-   }
-
-   private Entry _sibling(N name) throws StaxNavException
-   {
-      Entry element = current;
-      while (true)
-      {
-         Entry next = element.next();
-         if (next != null && next.getElement().getDepth() >= current.getElement().getDepth())
-         {
-            if (next.getElement().getDepth() == current.getElement().getDepth())
-            {
-               if (name == null)
-               {
-                  return next;
-               }
-               else
-               {
-                  N siblingName = naming.getName(next.getElement().getName());
-                  if (name.equals(siblingName))
-                  {
-                     return next;
-                  }
-                  else
-                  {
-                     element = next;
-                  }
-               }
-            }
-            else
-            {
-               element = next;
-            }
-         }
-         else
-         {
-            break;
          }
       }
       return null;
