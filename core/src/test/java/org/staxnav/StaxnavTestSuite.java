@@ -27,7 +27,7 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
  */
-public class StaxnavTestSuite
+public class StaxNavTestSuite
 {
    public static Test suite()
    {
