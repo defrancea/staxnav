@@ -288,19 +288,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public N next() throws StaxNavException
    {
-      if (current == null)
-      {
-         return null;
-      }
-      current = current.next(depth);
-      if (current != null)
-      {
-         return naming.getName(current.getElement().getName());
-      }
-      else
-      {
-         return null;
-      }
+      return _next(null) ? getName() : null;
    }
 
    public boolean next(N name) throws StaxNavException
@@ -309,25 +297,21 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       {
          throw new NullPointerException("No null name accepted");
       }
-      if (current == null)
+      return _next(name);
+   }
+
+   private boolean _next(N name) throws StaxNavException
+   {
+      if (current != null)
       {
-         return false;
+         Entry next = current.next(depth);
+         if (name == null || name.equals(naming.getName(next.getElement().getName())))
+         {
+            current = next;
+            return true;
+         }
       }
-      Entry next = current.next(depth);
-      if (next == null)
-      {
-         return false;
-      }
-      N nextName = naming.getName(next.getElement().getName());
-      if (name.equals(nextName))
-      {
-         current = next;
-         return true;
-      }
-      else
-      {
-         return false;
-      }
+      return false;
    }
 
    public N next(Set<N> names) throws StaxNavException
