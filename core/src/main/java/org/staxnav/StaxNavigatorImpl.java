@@ -291,20 +291,65 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return current.getElement().getNamespaceByPrefix(prefix);
    }
 
-   // Unified methods
+   // Axis methods
 
-   public N next() throws StaxNavException
+   public N navigate(Axis axis) throws StaxNavException
    {
-      return _next(null) ? getName() : null;
+      return _navigate(axis, null) ? getName() : null;
    }
 
-   public boolean next(N name) throws StaxNavException
+   public boolean navigate(Axis axis, N name) throws StaxNavException
    {
       if (name == null)
       {
          throw new NullPointerException("No null name accepted");
       }
-      return _next(name);
+      return _navigate(axis, name);
+   }
+
+   public N next() throws StaxNavException
+   {
+      return navigate(Axis.NEXT);
+   }
+
+   public boolean next(N name) throws StaxNavException
+   {
+      return navigate(Axis.NEXT, name);
+   }
+
+   public N child() throws StaxNavException
+   {
+      return navigate(Axis.CHILD);
+   }
+
+   public boolean child(N name) throws NullPointerException, StaxNavException
+   {
+      return navigate(Axis.CHILD, name);
+   }
+
+   public N sibling() throws StaxNavException
+   {
+      return navigate(Axis.SIBLING);
+   }
+
+   public boolean sibling(N name) throws NullPointerException, StaxNavException
+   {
+      return navigate(Axis.SIBLING, name);
+   }
+
+   private boolean _navigate(Axis axis, N name)
+   {
+      switch (axis)
+      {
+         case NEXT:
+            return _next(name);
+         case CHILD:
+            return _child(name);
+         case SIBLING:
+            return _sibling(name);
+         default:
+            throw new AssertionError();
+      }
    }
 
    private boolean _next(N name) throws StaxNavException
@@ -319,47 +364,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          }
       }
       return false;
-   }
-
-   public N next(Set<N> names) throws StaxNavException
-   {
-      if (names == null)
-      {
-         throw new NullPointerException();
-      }
-      if (current == null)
-      {
-         return null;
-      }
-      Entry next = current.next(depth);
-      if (next == null)
-      {
-         return null;
-      }
-      N name = naming.getName(next.getElement().getName());
-      if (names.contains(name))
-      {
-         current = next;
-         return name;
-      }
-      else
-      {
-         return null;
-      }
-   }
-
-   public N child() throws StaxNavException
-   {
-      return _child(null) ? getName() : null;
-   }
-
-   public boolean child(N name) throws NullPointerException, StaxNavException
-   {
-      if (name == null)
-      {
-         throw new NullPointerException("No null name accepted");
-      }
-      return _child(name);
    }
 
    private boolean _child(N name) throws StaxNavException
@@ -402,16 +406,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          }
       }
       return false;
-   }
-
-   public N sibling() throws StaxNavException
-   {
-      return _sibling(null) ? getName() : null;
-   }
-
-   public boolean sibling(N name) throws NullPointerException, StaxNavException
-   {
-      return _sibling(name);
    }
 
    private boolean _sibling(N name) throws StaxNavException
@@ -460,6 +454,33 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    }
 
    // Other methods
+
+   public N next(Set<N> names) throws StaxNavException
+   {
+      if (names == null)
+      {
+         throw new NullPointerException();
+      }
+      if (current == null)
+      {
+         return null;
+      }
+      Entry next = current.next(depth);
+      if (next == null)
+      {
+         return null;
+      }
+      N name = naming.getName(next.getElement().getName());
+      if (names.contains(name))
+      {
+         current = next;
+         return name;
+      }
+      else
+      {
+         return null;
+      }
+   }
 
    public boolean find(N name) throws StaxNavException
    {

@@ -141,6 +141,29 @@ public interface StaxNavigator<N>
    boolean find(N name) throws StaxNavException;
 
    /**
+    * Navigates to the next element according to the axis argument and returns its name or null if the end of the stream
+    * is reached.
+    *
+    * @param axis the navigation axis
+    * @return the element name
+    * @throws StaxNavException any StaxNavException
+    */
+   N navigate(Axis axis) throws StaxNavException;
+
+   /**
+    * Attempt to navigate to the next element according to the axis argument having the specified name.
+    * If the navigation occurs, the navigator now points to that element and the method returns true.
+    * Otherwise no navigation happens and the method returns false.
+    *
+    * @param axis the navigation axis
+    * @param name the desired element name
+    * @return true if the desired element is reached
+    * @throws NullPointerException if the specified name is null
+    * @throws StaxNavException any StaxNavException
+    */
+   boolean navigate(Axis axis, N name) throws StaxNavException;
+
+   /**
     * Navigates to the next element and returns its name or null if the end of the stream is reached.
     *
     * @return the element name
@@ -149,7 +172,7 @@ public interface StaxNavigator<N>
    N next() throws StaxNavException;
 
    /**
-    * Attempt to navigate to the next element when it has the specified name.
+    * Attempt to navigate to the next element having the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happens and the method returns false.
     *
@@ -182,7 +205,7 @@ public interface StaxNavigator<N>
    N child() throws StaxNavException;
 
    /**
-    * Attempts to navigate to the first child with the specified name.
+    * Attempts to navigate to the first child having the specified name.
     * If the navigation occurs, the navigator now points to that element and the method returns true.
     * Otherwise no navigation happens and the method returns false.
     *
@@ -192,6 +215,27 @@ public interface StaxNavigator<N>
     * @throws StaxNavException any StaxNavException
     */
    boolean child(N name) throws NullPointerException, StaxNavException;
+
+   /**
+    * Attempt to navigate to the next sibling and return its name. If no such sibling exists
+    * then null is returned.
+    *
+    * @return the next sibling name
+    * @throws StaxNavException any StaxNavException
+    */
+   N sibling() throws StaxNavException;
+
+   /**
+    * Attempts to navigate to the next sibling having the specified name.
+    * If the navigation occurs, the navigator now points to that element and the method returns true.
+    * Otherwise no navigation happens and the method returns false.
+    *
+    * @param name the next sibling name
+    * @return true if the desired element is reached
+    * @throws NullPointerException if the name argument is null
+    * @throws StaxNavException any StaxNavException
+    */
+   boolean sibling(N name) throws NullPointerException, StaxNavException;
 
    /**
     * Returns an attribute of the current element or null if such attribute does not exist.
@@ -224,27 +268,6 @@ public interface StaxNavigator<N>
     * @throws StaxNavException any StaxNavException
     */
    String getNamespaceByPrefix(String prefix) throws NullPointerException, StaxNavException;
-
-   /**
-    * Attempt to navigate to the next sibling and return its name. If no such sibling exists
-    * then null is returned.
-    *
-    * @return the next sibling name
-    * @throws StaxNavException any StaxNavException
-    */
-   N sibling() throws StaxNavException;
-
-   /**
-    * Attempts to navigate to the next sibling with the specified name.
-    * If the navigation occurs, the navigator now points to that element and the method returns true.
-    * Otherwise no navigation happens and the method returns false.
-    *
-    * @param name the next sibling name
-    * @return true if the desired element is reached
-    * @throws NullPointerException if the name argument is null
-    * @throws StaxNavException any StaxNavException
-    */
-   boolean sibling(N name) throws NullPointerException, StaxNavException;
 
    /**
     * Attempts to navigate to the first descendant with the specified name. The returned value should be interpreted as:
