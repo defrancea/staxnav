@@ -25,6 +25,7 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -191,33 +192,48 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public StaxNavigator<N> fork() throws StaxNavException
    {
+      return fork(Axis.FOLLOWING_SIBLING);
+   }
+
+   public StaxNavigator<N> fork(Axis axis) throws StaxNavException
+   {
       StaxNavigatorImpl<N> fork = new StaxNavigatorImpl<N>(naming, current, trimContent);
-      if (_sibling(null))
-      {
-         //
-      }
-      else
-      {
-         // To fix later: I don't like it much
-         current = null;
-      }
+      current = _navigate(current, axis, null);
       return fork;
    }
 
    public Iterable<StaxNavigator<N>> fork(N name)
    {
-      List<Entry> elements = Collections.emptyList();
-      while (find(name))
+      return fork(Axis.FOLLOWING_SIBLING, name);
+   }
+
+   public Iterable<StaxNavigator<N>> fork(Axis axis, N name)
+   {
+      List<Entry> elements;
+      if (name.equals(getName()))
+      {
+         elements = new ArrayList<Entry>();
+         elements.add(current);
+      }
+      else
+      {
+         elements = Collections.emptyList();
+      }
+
+      //
+      while (navigate(axis, name))
       {
          if (elements.isEmpty())
          {
             elements = new LinkedList<Entry>();
          }
          elements.add(current);
-         if (sibling() == null)
-         {
-            break;
-         }
+      }
+
+      //
+      if (name.equals(getName()))
+      {
+         navigate(axis);
       }
 
       // Freeze what we need
@@ -293,20 +309,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    // Axis methods
 
-   public N navigate(Axis axis) throws StaxNavException
-   {
-      return _navigate(axis, null) ? getName() : null;
-   }
-
-   public boolean navigate(Axis axis, N name) throws StaxNavException
-   {
-      if (name == null)
-      {
-         throw new NullPointerException("No null name accepted");
-      }
-      return _navigate(axis, name);
-   }
-
    public N next() throws StaxNavException
    {
       return navigate(Axis.NEXT);
@@ -337,29 +339,56 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       return navigate(Axis.FOLLOWING_SIBLING, name);
    }
 
-   public boolean find(N name) throws StaxNavException
+   public N navigate(Axis axis) throws StaxNavException
    {
-      return navigate(Axis.FOLLOWING, name);
+      Entry entry = _navigate(current, axis, null);
+      if (entry != null)
+      {
+         current = entry;
+         return getName();
+      }
+      else
+      {
+         return null;
+      }
    }
 
-   private boolean _navigate(Axis axis, N name)
+   public boolean navigate(Axis axis, N name) throws StaxNavException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+      Entry entry = _navigate(current, axis, name);
+      if (entry != null)
+      {
+         current = entry;
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   private Entry _navigate(Entry current, Axis axis, N name)
    {
       switch (axis)
       {
          case NEXT:
-            return _next(name);
+            return _next(current, name);
          case CHILD:
-            return _child(name);
+            return _child(current, name);
          case FOLLOWING_SIBLING:
-            return _sibling(name);
+            return _sibling(current, name);
          case FOLLOWING:
-            return _following(name);
+            return _following(current, name);
          default:
             throw new AssertionError();
       }
    }
 
-   private boolean _next(N name) throws StaxNavException
+   private Entry _next(Entry current, N name) throws StaxNavException
    {
       if (current != null)
       {
@@ -367,13 +396,13 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          if (name == null || name.equals(naming.getName(next.getElement().getName())))
          {
             current = next;
-            return true;
+            return current;
          }
       }
-      return false;
+      return null;
    }
 
-   private boolean _child(N name) throws StaxNavException
+   private Entry _child(Entry current, N name) throws StaxNavException
    {
       if (current != null)
       {
@@ -389,12 +418,12 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
                   if (name == null)
                   {
                      current = next;
-                     return true;
+                     return current;
                   }
                   else if (name.equals(nextName))
                   {
                      current = next;
-                     return true;
+                     return current;
                   }
                   else
                   {
@@ -412,10 +441,10 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
             }
          }
       }
-      return false;
+      return null;
    }
 
-   private boolean _sibling(N name) throws StaxNavException
+   private Entry _sibling(Entry current, N name) throws StaxNavException
    {
       if (current != null)
       {
@@ -430,7 +459,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
                   if (name == null)
                   {
                      current = next;
-                     return true;
+                     return current;
                   }
                   else
                   {
@@ -438,7 +467,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
                      if (name.equals(siblingName))
                      {
                         current = next;
-                        return true;
+                        return current;
                      }
                      else
                      {
@@ -457,10 +486,10 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
             }
          }
       }
-      return false;
+      return null;
    }
 
-   private boolean _following(N name) throws StaxNavException
+   private Entry _following(Entry current, N name) throws StaxNavException
    {
       if (name == null)
       {
@@ -468,14 +497,14 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
       if (current != null)
       {
-         Entry entry = current;
+         Entry entry = current.next();
          while (entry != null)
          {
             N findName = naming.getName(entry.getElement().getName());
             if (name.equals(findName))
             {
                current = entry;
-               return true;
+               return current;
             }
             else
             {
@@ -483,10 +512,26 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
             }
          }
       }
-      return false;
+      return null;
    }
 
    // Other methods
+
+   public boolean find(N name) throws StaxNavException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+      if (name.equals(naming.getName(current.getElement().getName())))
+      {
+         return true;
+      }
+      else
+      {
+         return navigate(Axis.FOLLOWING, name);
+      }
+   }
 
    public N next(Set<N> names) throws StaxNavException
    {

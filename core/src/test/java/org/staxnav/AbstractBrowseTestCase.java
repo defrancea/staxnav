@@ -307,7 +307,7 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
       assertEquals(true, navigator.find(createName("foobar2")));
       assertEquals(createName("foobar2"), navigator.getName());
       assertEquals(null, navigator.next());
-      assertEquals(null, navigator.getName());
+      assertEquals(createName("foobar2"), navigator.getName());
    }
 
    public void testFork1() throws Exception
@@ -335,7 +335,47 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
 
    public void testFork3() throws Exception
    {
+      StaxNavigator<N> nav = navigator("<foo1><bar1><foo2/></bar1></foo1>");
+      assertTrue(nav.find(createName("bar1")));
+      StaxNavigator<N> bar1 = nav.fork();
+      assertNameEquals("bar1", bar1.getName());
+      assertEquals(null, nav.getName());
+   }
+
+   public void testFork4() throws Exception
+   {
+      StaxNavigator<N> nav = navigator("<foo1><bar1><foo2/></bar1></foo1>");
+      assertTrue(nav.find(createName("bar1")));
+      StaxNavigator<N> bar1 = nav.fork();
+      assertNameEquals("bar1", bar1.getName());
+      assertEquals(null, nav.getName());
+   }
+
+   public void testFork5() throws Exception
+   {
+      StaxNavigator<N> nav = navigator(
+         "<foo1>" +
+            "<bar1><foo2/></bar1>" +
+         "</foo1>");
+      nav.find(createName("bar1"));
+
+      //
+      Iterator<StaxNavigator<N>> bar1Nav = nav.fork(createName("bar1")).iterator();
+      assertTrue(bar1Nav.hasNext());
+      StaxNavigator<N> bar1 = bar1Nav.next();
+      assertNameEquals("bar1", bar1.getName());
+      assertNameEquals("foo2", bar1.next());
+      assertEquals(null, bar1.next());
+
+      //
+      Iterator<StaxNavigator<N>> foo2Nav = nav.fork(createName("foo2")).iterator();
+      assertFalse(foo2Nav.hasNext());
+   }
+
+   public void testNamedFork1() throws Exception
+   {
       StaxNavigator<N> nav = navigator("<foo1><bar1><foo2/></bar1><bar1/><bar2/><bar1><bar3/></bar1><foo3/></foo1>");
+      assertTrue(nav.find(createName("bar1")));
       Iterable<StaxNavigator<N>> iterable = nav.fork(createName("bar1"));
       Iterator<StaxNavigator<N>> iterator = iterable.iterator();
       assertTrue(iterator.hasNext());
@@ -357,23 +397,12 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
       assertNull(nav.next());
    }
 
-   public void testFork4() throws Exception
+   public void testNamedFork2() throws Exception
    {
-      StaxNavigator<N> nav = navigator("<foo1><bar1><foo2/></bar1></foo1>");
+      StaxNavigator<N> nav = navigator("<foo1><bar1/><bar2/></foo1>");
       assertTrue(nav.find(createName("bar1")));
-      StaxNavigator<N> bar1 = nav.fork();
-      assertNameEquals("bar1", bar1.getName());
-      assertEquals(null, nav.getName());
-   }
-
-   public void testFork5() throws Exception
-   {
-      StaxNavigator<N> nav = navigator("<foo1><bar1><foo2/></bar1></foo1>");
-      Iterator<StaxNavigator<N>> i = nav.fork(createName("bar1")).iterator();
-/*
-      StaxNavigator<N> bar1 = nav.fork();
-      assertNameEquals("bar1", bar1.getName());
-      assertEquals(null, nav.getName());
-*/
+      Iterator<StaxNavigator<N>> i = nav.fork(createName("bar3")).iterator();
+      assertFalse(i.hasNext());
+      assertNameEquals("bar1", nav.getName());
    }
 }

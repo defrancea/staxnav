@@ -117,17 +117,23 @@ public interface StaxNavigator<N>
     */
    StaxNavigator<N> fork() throws StaxNavException;
 
+   StaxNavigator<N> fork(Axis axis);
+
    /**
     * Returns an iterable of stax navigator that is built according to the rules:
     * <ul>
-    *    <li>Each element is found by the {@link #find(Object)}.</li>
-    *    <li>When an element is found, the {@link #sibling()} method is invoked.</li>
+    *    <li>The current element is added if it matches the specified name.</li>
+    *    <li>Subsequent elements are found thanks to the {@link #sibling(Object)} method.</li>
     * </ul>
+    * Once the elements have been collected, the {@link #sibling()} method is invoked if the current
+    * navigator references an element matching the name argument.
     *
     * @param name the name of the root elements of the forked navigator
     * @return an iterable of the forks
     */
    Iterable<StaxNavigator<N>> fork(N name);
+
+   Iterable<StaxNavigator<N>> fork(Axis axis, N name);
 
    /**
     * Attempts to navigate to an element following the current one when it has the specified name.

@@ -31,6 +31,6 @@ public enum Axis
 
    FOLLOWING_SIBLING,
 
-   FOLLOWING,
+   FOLLOWING
 
 }
