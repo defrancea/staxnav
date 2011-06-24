@@ -393,7 +393,7 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       if (current != null)
       {
          Entry next = current.next(depth);
-         if (name == null || name.equals(naming.getName(next.getElement().getName())))
+         if (next != null && (name == null || name.equals(naming.getName(next.getElement().getName()))))
          {
             current = next;
             return current;
