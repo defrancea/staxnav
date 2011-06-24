@@ -23,6 +23,6 @@ package org.staxnav;
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
  */
-public class WoodstoxTestSuite extends StaxNavTestSuite
+public class WoodstoxTestSuite extends TheTestSuite
 {
 }
