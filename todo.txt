@@ -1,4 +1,17 @@
-- consider implementing find() as navigate(Axis.SELF_OR_FOLLOWING) for having uniform things
+1/ consider implementing find() as navigate(Axis.SELF_OR_FOLLOWING) for having uniform things
+
+2/ consider providing support for closure combined with fork
+
+instead of: for (StaxNavigator<String> fooNav : root.fork("foo")) { }
+
+we would have : root.fork("foo", fooParser);
+
+where fooParser would be like
+
+fooParser = new Parser() {
+   public void parse(StaxNavigator<String> nav) { ... }
+}
+
 - next() / hasNext() because of switch!!!!!!
 - cdata support
 - leak test case
