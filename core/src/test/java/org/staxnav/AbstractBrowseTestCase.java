@@ -314,7 +314,7 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
    {
       assertNameEquals("foo1", navigator.getName());
       assertEquals(true, navigator.find(createName("foo2")));
-      StaxNavigator<N> fork = navigator.fork();
+      StaxNavigator<N> fork = navigator.fork(Axis.FOLLOWING_SIBLING);
       assertEquals(createName("foo2"), fork.getName());
       assertEquals(createName("bar2"), fork.next());
       assertEquals(createName("bar3"), fork.next());
@@ -327,28 +327,28 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
    {
       assertNameEquals("foo1", navigator.getName());
       assertEquals(true, navigator.find(createName("foobar2")));
-      StaxNavigator<N> fork = navigator.fork();
+      StaxNavigator<N> fork = navigator.fork(Axis.FOLLOWING_SIBLING);
       assertNameEquals("foobar2", fork.getName());
       assertEquals(null, fork.next());
-      assertEquals(null, navigator.getName());
+      assertNameEquals("foobar2", navigator.getName());
    }
 
    public void testFork3() throws Exception
    {
       StaxNavigator<N> nav = navigator("<foo1><bar1><foo2/></bar1></foo1>");
       assertTrue(nav.find(createName("bar1")));
-      StaxNavigator<N> bar1 = nav.fork();
+      StaxNavigator<N> bar1 = nav.fork(Axis.FOLLOWING_SIBLING);
       assertNameEquals("bar1", bar1.getName());
-      assertEquals(null, nav.getName());
+      assertNameEquals("bar1", nav.getName());
    }
 
    public void testFork4() throws Exception
    {
       StaxNavigator<N> nav = navigator("<foo1><bar1><foo2/></bar1></foo1>");
       assertTrue(nav.find(createName("bar1")));
-      StaxNavigator<N> bar1 = nav.fork();
+      StaxNavigator<N> bar1 = nav.fork(Axis.FOLLOWING_SIBLING);
       assertNameEquals("bar1", bar1.getName());
-      assertEquals(null, nav.getName());
+      assertNameEquals("bar1", nav.getName());
    }
 
    public void testFork5() throws Exception
@@ -393,7 +393,9 @@ public abstract class AbstractBrowseTestCase<N> extends AbstractXMLTestCase
       assertNameEquals("bar3", n3.next());
       assertNull(n3.next());
       assertFalse(iterator.hasNext());
-      assertNameEquals("foo3", nav.getName());
+      assertNameEquals("bar1", nav.getName());
+      assertNameEquals("bar3", nav.next());
+      assertNameEquals("foo3", nav.next());
       assertNull(nav.next());
    }
 

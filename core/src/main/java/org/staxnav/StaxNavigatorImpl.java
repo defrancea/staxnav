@@ -192,13 +192,21 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public StaxNavigator<N> fork() throws StaxNavException
    {
-      return fork(Axis.FOLLOWING_SIBLING);
+      return fork(Axis.SELF);
    }
 
    public StaxNavigator<N> fork(Axis axis) throws StaxNavException
    {
+      if (axis == null)
+      {
+         throw new NullPointerException("No null axis accepted");
+      }
       StaxNavigatorImpl<N> fork = new StaxNavigatorImpl<N>(naming, current, trimContent);
-      current = _navigate(current, axis, null);
+      Entry next = _navigate(current, axis, null);
+      if (next != null)
+      {
+         current = next;
+      }
       return fork;
    }
 
@@ -209,6 +217,16 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
 
    public Iterable<StaxNavigator<N>> fork(Axis axis, N name)
    {
+      if (axis == null)
+      {
+         throw new NullPointerException("No null axis accepted");
+      }
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+
+      //
       List<Entry> elements;
       if (name.equals(getName()))
       {
@@ -228,12 +246,6 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
             elements = new LinkedList<Entry>();
          }
          elements.add(current);
-      }
-
-      //
-      if (name.equals(getName()))
-      {
-         navigate(axis);
       }
 
       // Freeze what we need
@@ -375,6 +387,8 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
    {
       switch (axis)
       {
+         case SELF:
+            return _current(current, name);
          case NEXT:
             return _next(current, name);
          case CHILD:
@@ -386,6 +400,18 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
          default:
             throw new AssertionError();
       }
+   }
+
+   private Entry _current(Entry current, N name) throws StaxNavException
+   {
+      if (current != null)
+      {
+         if (name == null ||name.equals(naming.getName(current.getElement().getName())))
+         {
+            return current;
+         }
+      }
+      return null;
    }
 
    private Entry _next(Entry current, N name) throws StaxNavException

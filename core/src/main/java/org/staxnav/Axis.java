@@ -25,6 +25,8 @@ package org.staxnav;
 public enum Axis
 {
 
+   SELF,
+
    CHILD,
 
    NEXT,

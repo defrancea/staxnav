@@ -109,15 +109,26 @@ public interface StaxNavigator<N>
    /**
     * Creates a navigator scoped around the currently navigated element. The returned navigator will uses the current
     * element as navigation root and the navigation scope is the set of descendants of its root. The forked navigator
-    * will use the same configuration than the navigator from which it was forked. The current navigation will be moved
-    * to the next sibling of the current node.
+    * will use the same configuration than the navigator from which it was forked. The current navigation state will
+    * not be affected.
     *
     * @return a forked navigator
     * @throws StaxNavException any StaxNavException
     */
    StaxNavigator<N> fork() throws StaxNavException;
 
-   StaxNavigator<N> fork(Axis axis);
+   /**
+    * Creates a navigator scoped around the currently navigated element. The returned navigator will uses the current
+    * element as navigation root and the navigation scope is the set of descendants of its root. The forked navigator
+    * will use the same configuration than the navigator from which it was forked. The current navigation state will
+    * be moved according to the <code>axis</code> argument value when a valid element is found otherwise it will not
+    * change.
+    *
+    * @param axis the axis
+    * @return a forked navigator
+    * @throws NullPointerException if the axis argument is null
+    */
+   StaxNavigator<N> fork(Axis axis) throws NullPointerException;
 
    /**
     * Returns an iterable of stax navigator that is built according to the rules:
@@ -125,15 +136,27 @@ public interface StaxNavigator<N>
     *    <li>The current element is added if it matches the specified name.</li>
     *    <li>Subsequent elements are found thanks to the {@link #sibling(Object)} method.</li>
     * </ul>
-    * Once the elements have been collected, the {@link #sibling()} method is invoked if the current
-    * navigator references an element matching the name argument.
     *
     * @param name the name of the root elements of the forked navigator
     * @return an iterable of the forks
+    * @throws NullPointerException if the name argument is null
     */
-   Iterable<StaxNavigator<N>> fork(N name);
+   Iterable<StaxNavigator<N>> fork(N name) throws NullPointerException;
 
-   Iterable<StaxNavigator<N>> fork(Axis axis, N name);
+
+   /**
+    * Returns an iterable of stax navigator that is built according to the rules:
+    * <ul>
+    *    <li>The current element is added if it matches the specified name.</li>
+    *    <li>Subsequent elements are found thanks to the provided axis.</li>
+    * </ul>
+    *
+    * @param axis the axis of navigation for the forks
+    * @param name the name of the root elements of the forked navigator
+    * @return an iterable of the forks
+    * @throws NullPointerException if the name argument is null
+    */
+   Iterable<StaxNavigator<N>> fork(Axis axis, N name) throws NullPointerException;
 
    /**
     * Attempts to navigate to an element following the current one when it has the specified name.
