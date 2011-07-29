@@ -91,4 +91,18 @@ public class NamespaceTestCase extends StaxNavigatorTestCase
       assertEquals("juu_value", navigator.getAttribute(new QName("", "juu")));
       assertEquals("ns_juu_value", navigator.getAttribute(new QName("http://www.w3.org/2000/svg", "juu")));
    }
+
+   public void testF() throws Exception
+   {
+      StaxNavigator<String> navigator = navigator(new Naming.Local(), "namespace3.xml");
+      assertEquals("foo", navigator.getName());
+      assertEquals(true, navigator.next("bar"));
+
+      assertEquals(1, navigator.getAttributes().size());
+      assertEquals("juu_value", navigator.getAttributes().get("juu"));
+
+      assertEquals(2, navigator.getQualifiedAttributes().size());
+      assertEquals("juu_value", navigator.getQualifiedAttributes().get(new QName("", "juu")));
+      assertEquals("ns_juu_value", navigator.getQualifiedAttributes().get(new QName("http://www.w3.org/2000/svg", "juu")));
+   }
 }

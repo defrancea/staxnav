@@ -21,6 +21,7 @@ package org.staxnav;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -287,6 +288,24 @@ public interface StaxNavigator<N>
     * @throws StaxNavException any StaxNavException
     */
    String getAttribute(QName name) throws NullPointerException, IllegalStateException, StaxNavException;
+
+   /**
+    * Returns all attributes of the current element or null if such attribute does not exist.
+    *
+    * @return all attributes
+    * @throws IllegalStateException if no element is currently navigated
+    * @throws StaxNavException any StaxNavException
+    */
+   Map<String, String> getAttributes() throws IllegalStateException, StaxNavException;
+
+   /**
+    * Returns all attributes of the current element or null if such attribute does not exist.
+    *
+    * @return all attributes
+    * @throws IllegalStateException if no element is currently navigated
+    * @throws StaxNavException any StaxNavException
+    */
+   Map<QName, String> getQualifiedAttributes() throws IllegalStateException, StaxNavException;
 
    /**
     * Returns a namespace URI by its prefix or return null if it is not bound.

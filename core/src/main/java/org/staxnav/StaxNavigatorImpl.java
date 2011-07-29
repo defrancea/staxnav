@@ -306,7 +306,48 @@ public class StaxNavigatorImpl<N> implements StaxNavigator<N>
       }
    }
 
-   public String getNamespaceByPrefix(String prefix) throws NullPointerException, StaxNavException
+   public Map<String, String> getAttributes() throws NullPointerException, IllegalStateException, StaxNavException
+   {
+      if (current == null)
+      {
+         return null;
+      }
+      Map<String, String> attributes = current.getElement().getAttributes();
+      if (attributes.isEmpty())
+      {
+         return Collections.emptyMap();
+      }
+      else
+      {
+         return attributes;
+      }
+   }
+
+   public Map<QName, String> getQualifiedAttributes() throws NullPointerException, IllegalStateException, StaxNavException
+   {
+      if (current == null)
+      {
+         return null;
+      }
+      else
+      {
+         Map<QName, String> qualifiedAttributes = current.getElement().getQualifiedAttributes();
+         Map<String, String> attributes = getAttributes();
+         for (String key : attributes.keySet()) {
+            qualifiedAttributes.put(new QName(key), attributes.get(key));
+         }
+         if (qualifiedAttributes.isEmpty())
+         {
+            return Collections.emptyMap();
+         }
+         else
+         {
+            return qualifiedAttributes;
+         }
+      }
+   }
+
+  public String getNamespaceByPrefix(String prefix) throws NullPointerException, StaxNavException
    {
       if (prefix == null)
       {
