@@ -1,3 +1,4 @@
+- consider implementing find() as navigate(Axis.SELF_OR_FOLLOWING) for having uniform things
 - next() / hasNext() because of switch!!!!!!
 - cdata support
 - leak test case
